@@ -1,0 +1,3164 @@
+[NOTE]: symbol blame for .config
+
+  CONFIG_CC_VERSION_TEXT : "x86_64-poky-linux-musl-gcc (GCC) 14.2.0" ## .config: 4 :
+  CONFIG_CC_IS_GCC : y ## .config: 5 :
+  CONFIG_GCC_VERSION : 140200 ## .config: 6 :
+  CONFIG_CLANG_VERSION : 0 ## .config: 7 :
+  CONFIG_AS_IS_GNU : y ## .config: 8 :
+  CONFIG_AS_VERSION : 24301 ## .config: 9 :
+  CONFIG_LD_IS_BFD : y ## .config: 10 :
+  CONFIG_LD_VERSION : 24301 ## .config: 11 :
+  CONFIG_LLD_VERSION : 0 ## .config: 12 :
+  CONFIG_CC_HAS_ASM_GOTO_OUTPUT : y ## .config: 13 :
+  CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT : y ## .config: 14 :
+  CONFIG_TOOLS_SUPPORT_RELR : y ## .config: 15 :
+  CONFIG_CC_HAS_ASM_INLINE : y ## .config: 16 :
+  CONFIG_CC_HAS_NO_PROFILE_FN_ATTR : y ## .config: 17 :
+  CONFIG_PAHOLE_VERSION : 0 ## .config: 18 :
+  CONFIG_IRQ_WORK : y ## .config: 19 :
+  CONFIG_BUILDTIME_TABLE_SORT : y ## .config: 20 :
+  CONFIG_THREAD_INFO_IN_TASK : y ## .config: 21 :
+  CONFIG_INIT_ENV_ARG_LIMIT : 32 ## .config: 26 :
+  CONFIG_COMPILE_TEST : n ## .config: 27 :
+  CONFIG_WERROR : n ## .config: 28 :
+  CONFIG_LOCALVERSION : "-yocto-tiny" ## .config: 29 :configs/v6.10/ktypes/base/base.cfg ("") 
+    [NOTE]: 'CONFIG_LOCALVERSION' last val ("") and .config val ("-yocto-tiny") do not match
+    [INFO]: raw config text:
+
+        config LOCALVERSION
+        	string "Local version - append to kernel release"
+        	help
+        	  Append an extra string to the end of your kernel version.
+        	  This will show up when you type uname, for example.
+        	  The string you set here will be appended after the contents of
+        	  any files with a filename matching localversion* in your
+        	  object and source tree, in that order.  Your total string can
+        	  be a maximum of 64 characters.
+
+    [INFO]: config 'CONFIG_LOCALVERSION' was set, but it wasn't assignable, check (parent) dependencies
+  CONFIG_LOCALVERSION_AUTO : n ## .config: 30 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_BUILD_SALT : "" ## .config: 31 :
+  CONFIG_HAVE_KERNEL_GZIP : y ## .config: 32 :
+  CONFIG_HAVE_KERNEL_BZIP2 : y ## .config: 33 :
+  CONFIG_HAVE_KERNEL_LZMA : y ## .config: 34 :
+  CONFIG_HAVE_KERNEL_XZ : y ## .config: 35 :
+  CONFIG_HAVE_KERNEL_LZO : y ## .config: 36 :
+  CONFIG_HAVE_KERNEL_LZ4 : y ## .config: 37 :
+  CONFIG_HAVE_KERNEL_ZSTD : y ## .config: 38 :
+  CONFIG_KERNEL_GZIP : n ## .config: 39 :
+  CONFIG_KERNEL_BZIP2 : n ## .config: 40 :
+  CONFIG_KERNEL_LZMA : y ## .config: 41 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_KERNEL_XZ : n ## .config: 42 :
+  CONFIG_KERNEL_LZO : n ## .config: 43 :
+  CONFIG_KERNEL_LZ4 : n ## .config: 44 :
+  CONFIG_KERNEL_ZSTD : n ## .config: 45 :
+  CONFIG_DEFAULT_INIT : "" ## .config: 46 :
+  CONFIG_DEFAULT_HOSTNAME : "(none)" ## .config: 47 :
+  CONFIG_SYSVIPC : y ## .config: 48 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_SYSVIPC_SYSCTL : y ## .config: 49 :
+  CONFIG_SYSVIPC_COMPAT : y ## .config: 50 :
+  CONFIG_WATCH_QUEUE : n ## .config: 51 :
+  CONFIG_CROSS_MEMORY_ATTACH : n ## .config: 52 :
+  CONFIG_USELIB : n ## .config: 53 :
+  CONFIG_HAVE_ARCH_AUDITSYSCALL : y ## .config: 54 :
+  CONFIG_GENERIC_IRQ_PROBE : y ## .config: 59 :
+  CONFIG_GENERIC_IRQ_SHOW : y ## .config: 60 :
+  CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK : y ## .config: 61 :
+  CONFIG_GENERIC_PENDING_IRQ : y ## .config: 62 :
+  CONFIG_GENERIC_IRQ_MIGRATION : y ## .config: 63 :
+  CONFIG_HARDIRQS_SW_RESEND : y ## .config: 64 :
+  CONFIG_IRQ_DOMAIN : y ## .config: 65 :
+  CONFIG_IRQ_DOMAIN_HIERARCHY : y ## .config: 66 :
+  CONFIG_GENERIC_MSI_IRQ : y ## .config: 67 :
+  CONFIG_IRQ_MSI_IOMMU : y ## .config: 68 :
+  CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR : y ## .config: 69 :
+  CONFIG_GENERIC_IRQ_RESERVATION_MODE : y ## .config: 70 :
+  CONFIG_IRQ_FORCED_THREADING : y ## .config: 71 :
+  CONFIG_SPARSE_IRQ : y ## .config: 72 :
+  CONFIG_CLOCKSOURCE_WATCHDOG : y ## .config: 75 :
+  CONFIG_ARCH_CLOCKSOURCE_INIT : y ## .config: 76 :
+  CONFIG_CLOCKSOURCE_VALIDATE_LAST_CYCLE : y ## .config: 77 :
+  CONFIG_GENERIC_TIME_VSYSCALL : y ## .config: 78 :
+  CONFIG_GENERIC_CLOCKEVENTS : y ## .config: 79 :
+  CONFIG_GENERIC_CLOCKEVENTS_BROADCAST : y ## .config: 80 :
+  CONFIG_GENERIC_CLOCKEVENTS_BROADCAST_IDLE : y ## .config: 81 :
+  CONFIG_GENERIC_CLOCKEVENTS_MIN_ADJUST : y ## .config: 82 :
+  CONFIG_GENERIC_CMOS_UPDATE : y ## .config: 83 :
+  CONFIG_HAVE_POSIX_CPU_TIMERS_TASK_WORK : y ## .config: 84 :
+  CONFIG_POSIX_CPU_TIMERS_TASK_WORK : y ## .config: 85 :
+  CONFIG_CONTEXT_TRACKING : y ## .config: 86 :
+  CONFIG_CONTEXT_TRACKING_IDLE : y ## .config: 87 :
+  CONFIG_TICK_ONESHOT : y ## .config: 92 :
+  CONFIG_NO_HZ_COMMON : y ## .config: 93 :
+  CONFIG_HZ_PERIODIC : n ## .config: 94 :
+  CONFIG_NO_HZ_IDLE : y ## .config: 95 :configs/v6.10/standard/tiny/cfg/timer/no_hz.cfg (y) 
+  CONFIG_NO_HZ_FULL : n ## .config: 96 :
+  CONFIG_NO_HZ : y ## .config: 97 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_HIGH_RES_TIMERS : n ## .config: 98 :
+  CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US : 125 ## .config: 99 :
+  CONFIG_HAVE_EBPF_JIT : y ## .config: 102 :
+  CONFIG_ARCH_WANT_DEFAULT_BPF_JIT : y ## .config: 103 :
+  CONFIG_BPF_SYSCALL : n ## .config: 108 :
+  CONFIG_PREEMPT_BUILD : y ## .config: 111 :
+  CONFIG_PREEMPT_NONE : n ## .config: 112 :
+  CONFIG_PREEMPT_VOLUNTARY : n ## .config: 113 :
+  CONFIG_PREEMPT : y ## .config: 114 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_PREEMPT_COUNT : y ## .config: 115 :
+  CONFIG_PREEMPTION : y ## .config: 116 :
+  CONFIG_PREEMPT_DYNAMIC : n ## .config: 117 :
+  CONFIG_SCHED_CORE : n ## .config: 118 :
+  CONFIG_TICK_CPU_ACCOUNTING : y ## .config: 123 :
+  CONFIG_VIRT_CPU_ACCOUNTING_GEN : n ## .config: 124 :
+  CONFIG_IRQ_TIME_ACCOUNTING : n ## .config: 125 :
+  CONFIG_PSI : n ## .config: 126 :
+  CONFIG_CPU_ISOLATION : n ## .config: 129 :
+  CONFIG_TREE_RCU : y ## .config: 134 :
+  CONFIG_PREEMPT_RCU : y ## .config: 135 :
+  CONFIG_RCU_EXPERT : n ## .config: 136 :
+  CONFIG_TREE_SRCU : y ## .config: 137 :
+  CONFIG_RCU_STALL_COMMON : y ## .config: 138 :
+  CONFIG_RCU_NEED_SEGCBLIST : y ## .config: 139 :
+  CONFIG_IKCONFIG : n ## .config: 142 :
+  CONFIG_IKHEADERS : n ## .config: 143 :
+  CONFIG_LOG_BUF_SHIFT : 17 ## .config: 144 :
+  CONFIG_LOG_CPU_MAX_BUF_SHIFT : 12 ## .config: 145 :
+  CONFIG_HAVE_UNSTABLE_SCHED_CLOCK : y ## .config: 146 :
+  CONFIG_UCLAMP_TASK : n ## .config: 151 :
+  CONFIG_ARCH_SUPPORTS_NUMA_BALANCING : y ## .config: 154 :
+  CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH : y ## .config: 155 :
+  CONFIG_CC_HAS_INT128 : y ## .config: 156 :
+  CONFIG_CC_IMPLICIT_FALLTHROUGH : "-Wimplicit-fallthrough=5" ## .config: 157 :
+  CONFIG_GCC10_NO_ARRAY_BOUNDS : y ## .config: 158 :
+  CONFIG_CC_NO_ARRAY_BOUNDS : y ## .config: 159 :
+  CONFIG_GCC_NO_STRINGOP_OVERFLOW : y ## .config: 160 :
+  CONFIG_CC_NO_STRINGOP_OVERFLOW : y ## .config: 161 :
+  CONFIG_ARCH_SUPPORTS_INT128 : y ## .config: 162 :
+  CONFIG_CGROUPS : n ## .config: 163 :
+  CONFIG_CHECKPOINT_RESTORE : n ## .config: 164 :
+  CONFIG_SCHED_AUTOGROUP : n ## .config: 165 :
+  CONFIG_RELAY : y ## .config: 166 :
+  CONFIG_BLK_DEV_INITRD : y ## .config: 167 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_INITRAMFS_SOURCE : "" ## .config: 168 :configs/v6.10/ktypes/base/base.cfg ("") 
+  CONFIG_RD_GZIP : y ## .config: 169 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_RD_BZIP2 : n ## .config: 170 :
+  CONFIG_RD_LZMA : n ## .config: 171 :
+  CONFIG_RD_XZ : n ## .config: 172 :
+  CONFIG_RD_LZO : n ## .config: 173 :
+  CONFIG_RD_LZ4 : n ## .config: 174 :
+  CONFIG_RD_ZSTD : n ## .config: 175 :
+  CONFIG_BOOT_CONFIG : n ## .config: 176 :
+  CONFIG_INITRAMFS_PRESERVE_MTIME : n ## .config: 177 :
+  CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE : n ## .config: 178 :
+  CONFIG_CC_OPTIMIZE_FOR_SIZE : y ## .config: 179 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_LD_ORPHAN_WARN : y ## .config: 180 :
+  CONFIG_LD_ORPHAN_WARN_LEVEL : "warn" ## .config: 181 :
+  CONFIG_SYSCTL : y ## .config: 182 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_HAVE_UID16 : y ## .config: 183 :
+  CONFIG_SYSCTL_EXCEPTION_TRACE : y ## .config: 184 :
+  CONFIG_HAVE_PCSPKR_PLATFORM : y ## .config: 185 :
+  CONFIG_EXPERT : y ## .config: 186 :configs/v6.10/ktypes/base/base.cfg (n) configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_MULTIUSER : n ## .config: 187 :
+  CONFIG_SGETMASK_SYSCALL : n ## .config: 188 :
+  CONFIG_SYSFS_SYSCALL : n ## .config: 189 :
+  CONFIG_FHANDLE : n ## .config: 190 :
+  CONFIG_POSIX_TIMERS : y ## .config: 191 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_PRINTK : y ## .config: 192 :configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) configs/v6.10/standard/tiny/features/debug/printk.cfg (y) 
+  CONFIG_BUG : n ## .config: 193 :
+  CONFIG_PCSPKR_PLATFORM : n ## .config: 194 :
+  CONFIG_BASE_SMALL : n ## .config: 195 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (1) 
+    [NOTE]: 'CONFIG_BASE_SMALL' last val (1) and .config val (n) do not match
+    [INFO]: raw config text:
+
+        config BASE_SMALL
+        	bool "Enable smaller-sized data structures for core" if EXPERT
+        	help
+        	  Enabling this option reduces the size of miscellaneous core
+        	  kernel data structures. This saves memory on small machines,
+        	  but may reduce performance.
+
+  CONFIG_FUTEX : y ## .config: 196 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_FUTEX_PI : y ## .config: 197 :
+  CONFIG_EPOLL : y ## .config: 198 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_SIGNALFD : y ## .config: 199 :configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_TIMERFD : n ## .config: 200 :
+  CONFIG_EVENTFD : n ## .config: 201 :
+  CONFIG_SHMEM : y ## .config: 202 :
+  CONFIG_AIO : n ## .config: 203 :
+  CONFIG_IO_URING : n ## .config: 204 :
+  CONFIG_ADVISE_SYSCALLS : n ## .config: 205 :
+  CONFIG_MEMBARRIER : n ## .config: 206 :
+  CONFIG_KCMP : y ## .config: 207 :
+  CONFIG_RSEQ : n ## .config: 208 :
+  CONFIG_CACHESTAT_SYSCALL : n ## .config: 209 :
+  CONFIG_PC104 : n ## .config: 210 :
+  CONFIG_KALLSYMS : y ## .config: 211 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_KALLSYMS_SELFTEST : n ## .config: 212 :
+  CONFIG_KALLSYMS_ALL : n ## .config: 213 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_KALLSYMS_ABSOLUTE_PERCPU : y ## .config: 214 :
+  CONFIG_ARCH_HAS_MEMBARRIER_SYNC_CORE : y ## .config: 215 :
+  CONFIG_HAVE_PERF_EVENTS : y ## .config: 216 :
+  CONFIG_PERF_EVENTS : y ## .config: 221 :
+  CONFIG_DEBUG_PERF_USE_VMALLOC : n ## .config: 222 :
+  CONFIG_PROFILING : n ## .config: 225 :
+  CONFIG_VMCORE_INFO : y ## .config: 230 :
+  CONFIG_KEXEC : n ## .config: 231 :
+  CONFIG_KEXEC_FILE : n ## .config: 232 :
+  CONFIG_64BIT : y ## .config: 236 :configs/v6.10/standard/tiny/cfg/x86_64.cfg (y) 
+  CONFIG_X86_64 : y ## .config: 237 :
+  CONFIG_X86 : y ## .config: 238 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_INSTRUCTION_DECODER : y ## .config: 239 :
+  CONFIG_OUTPUT_FORMAT : "elf64-x86-64" ## .config: 240 :
+  CONFIG_LOCKDEP_SUPPORT : y ## .config: 241 :
+  CONFIG_STACKTRACE_SUPPORT : y ## .config: 242 :
+  CONFIG_MMU : y ## .config: 243 :
+  CONFIG_ARCH_MMAP_RND_BITS_MIN : 28 ## .config: 244 :
+  CONFIG_ARCH_MMAP_RND_BITS_MAX : 32 ## .config: 245 :
+  CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MIN : 8 ## .config: 246 :
+  CONFIG_ARCH_MMAP_RND_COMPAT_BITS_MAX : 16 ## .config: 247 :
+  CONFIG_GENERIC_ISA_DMA : y ## .config: 248 :
+  CONFIG_ARCH_MAY_HAVE_PC_FDC : y ## .config: 249 :
+  CONFIG_GENERIC_CALIBRATE_DELAY : y ## .config: 250 :
+  CONFIG_ARCH_HAS_CPU_RELAX : y ## .config: 251 :
+  CONFIG_ARCH_HIBERNATION_POSSIBLE : y ## .config: 252 :
+  CONFIG_ARCH_SUSPEND_POSSIBLE : y ## .config: 253 :
+  CONFIG_AUDIT_ARCH : y ## .config: 254 :
+  CONFIG_X86_64_SMP : y ## .config: 255 :
+  CONFIG_ARCH_SUPPORTS_UPROBES : y ## .config: 256 :
+  CONFIG_FIX_EARLYCON_MEM : y ## .config: 257 :
+  CONFIG_PGTABLE_LEVELS : 4 ## .config: 258 :
+  CONFIG_CC_HAS_SANE_STACKPROTECTOR : y ## .config: 259 :
+  CONFIG_SMP : y ## .config: 264 :configs/v6.10/standard/tiny/cfg/smp_64.cfg (y) 
+  CONFIG_X86_X2APIC : y ## .config: 265 :configs/v6.10/standard/tiny/features/x2apic/x2apic.cfg (y) 
+  CONFIG_X86_POSTED_MSI : n ## .config: 266 :
+  CONFIG_X86_MPPARSE : n ## .config: 267 :
+  CONFIG_X86_CPU_RESCTRL : n ## .config: 268 :
+  CONFIG_X86_FRED : n ## .config: 269 :
+  CONFIG_X86_EXTENDED_PLATFORM : y ## .config: 270 :configs/v6.10/standard/tiny/cfg/intel.cfg (y) 
+  CONFIG_X86_VSMP : n ## .config: 271 :
+  CONFIG_X86_GOLDFISH : n ## .config: 272 :
+  CONFIG_X86_INTEL_MID : n ## .config: 273 :
+  CONFIG_X86_INTEL_LPSS : n ## .config: 274 :
+  CONFIG_X86_AMD_PLATFORM_DEVICE : y ## .config: 275 :configs/v6.10/standard/tiny/cfg/amd.cfg (y) 
+  CONFIG_IOSF_MBI : y ## .config: 276 :
+  CONFIG_X86_SUPPORTS_MEMORY_FAILURE : y ## .config: 277 :
+  CONFIG_SCHED_OMIT_FRAME_POINTER : n ## .config: 278 :
+  CONFIG_HYPERVISOR_GUEST : n ## .config: 279 :
+  CONFIG_MK8 : n ## .config: 280 :
+  CONFIG_MPSC : n ## .config: 281 :
+  CONFIG_MCORE2 : y ## .config: 282 :configs/v6.10/standard/tiny/bsp/common-pc-64/common-pc-64-cpu.cfg (y) 
+  CONFIG_MATOM : n ## .config: 283 :
+  CONFIG_GENERIC_CPU : n ## .config: 284 :
+  CONFIG_X86_INTERNODE_CACHE_SHIFT : 6 ## .config: 285 :
+  CONFIG_X86_L1_CACHE_SHIFT : 6 ## .config: 286 :
+  CONFIG_X86_INTEL_USERCOPY : y ## .config: 287 :
+  CONFIG_X86_USE_PPRO_CHECKSUM : y ## .config: 288 :
+  CONFIG_X86_P6_NOP : y ## .config: 289 :
+  CONFIG_X86_TSC : y ## .config: 290 :
+  CONFIG_X86_HAVE_PAE : y ## .config: 291 :
+  CONFIG_X86_CMPXCHG64 : y ## .config: 292 :
+  CONFIG_X86_CMOV : y ## .config: 293 :
+  CONFIG_X86_MINIMUM_CPU_FAMILY : 64 ## .config: 294 :
+  CONFIG_X86_DEBUGCTLMSR : y ## .config: 295 :
+  CONFIG_IA32_FEAT_CTL : y ## .config: 296 :
+  CONFIG_X86_VMX_FEATURE_NAMES : y ## .config: 297 :
+  CONFIG_PROCESSOR_SELECT : n ## .config: 298 :
+  CONFIG_CPU_SUP_INTEL : y ## .config: 299 :configs/v6.10/standard/tiny/cfg/intel.cfg (y) 
+  CONFIG_CPU_SUP_AMD : y ## .config: 300 :configs/v6.10/standard/tiny/cfg/amd.cfg (y) 
+  CONFIG_CPU_SUP_HYGON : y ## .config: 301 :
+  CONFIG_CPU_SUP_CENTAUR : y ## .config: 302 :
+  CONFIG_CPU_SUP_ZHAOXIN : y ## .config: 303 :
+  CONFIG_HPET_TIMER : y ## .config: 304 :configs/v6.10/standard/tiny/cfg/timer/hpet.cfg (y) 
+  CONFIG_HPET_EMULATE_RTC : y ## .config: 305 :configs/v6.10/standard/tiny/cfg/timer/hpet.cfg (y) 
+  CONFIG_DMI : n ## .config: 306 :
+  CONFIG_GART_IOMMU : n ## .config: 307 :
+  CONFIG_BOOT_VESA_SUPPORT : y ## .config: 308 :
+  CONFIG_MAXSMP : n ## .config: 309 :
+  CONFIG_NR_CPUS_RANGE_BEGIN : 2 ## .config: 310 :
+  CONFIG_NR_CPUS_RANGE_END : 512 ## .config: 311 :
+  CONFIG_NR_CPUS_DEFAULT : 64 ## .config: 312 :
+  CONFIG_NR_CPUS : 64 ## .config: 313 :configs/v6.10/standard/tiny/bsp/common-pc-64/common-pc-64-cpu.cfg (24) configs/v6.10/standard/tiny/cfg/smp_64.cfg (64) 
+  CONFIG_SCHED_CLUSTER : n ## .config: 314 :
+  CONFIG_SCHED_SMT : y ## .config: 315 :configs/v6.10/standard/tiny/cfg/smp_64.cfg (y) 
+  CONFIG_SCHED_MC : n ## .config: 316 :
+  CONFIG_X86_LOCAL_APIC : y ## .config: 317 :
+  CONFIG_X86_IO_APIC : y ## .config: 318 :
+  CONFIG_X86_REROUTE_FOR_BROKEN_BOOT_IRQS : n ## .config: 319 :
+  CONFIG_X86_MCE : y ## .config: 320 :configs/v6.10/standard/tiny/cfg/amd.cfg (y) configs/v6.10/standard/tiny/cfg/intel.cfg (y) 
+  CONFIG_X86_MCELOG_LEGACY : n ## .config: 321 :
+  CONFIG_X86_MCE_INTEL : y ## .config: 322 :configs/v6.10/standard/tiny/cfg/intel.cfg (y) 
+  CONFIG_X86_MCE_AMD : y ## .config: 323 :configs/v6.10/standard/tiny/cfg/amd.cfg (y) 
+  CONFIG_X86_MCE_THRESHOLD : y ## .config: 324 :
+  CONFIG_PERF_EVENTS_INTEL_UNCORE : n ## .config: 329 :
+  CONFIG_PERF_EVENTS_INTEL_RAPL : n ## .config: 330 :
+  CONFIG_PERF_EVENTS_INTEL_CSTATE : n ## .config: 331 :
+  CONFIG_PERF_EVENTS_AMD_POWER : n ## .config: 332 :
+  CONFIG_PERF_EVENTS_AMD_UNCORE : n ## .config: 333 :
+  CONFIG_PERF_EVENTS_AMD_BRS : n ## .config: 334 :
+  CONFIG_X86_VSYSCALL_EMULATION : n ## .config: 337 :
+  CONFIG_X86_IOPL_IOPERM : n ## .config: 338 :
+  CONFIG_MICROCODE : y ## .config: 339 :configs/v6.10/standard/tiny/cfg/amd.cfg (y) configs/v6.10/standard/tiny/cfg/intel.cfg (y) 
+  CONFIG_MICROCODE_LATE_LOADING : n ## .config: 340 :
+  CONFIG_X86_MSR : y ## .config: 341 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_X86_CPUID : y ## .config: 342 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_X86_5LEVEL : n ## .config: 343 :
+  CONFIG_X86_DIRECT_GBPAGES : y ## .config: 344 :
+  CONFIG_AMD_MEM_ENCRYPT : n ## .config: 345 :
+  CONFIG_NUMA : n ## .config: 346 :
+  CONFIG_ARCH_SPARSEMEM_ENABLE : y ## .config: 347 :
+  CONFIG_ARCH_SPARSEMEM_DEFAULT : y ## .config: 348 :
+  CONFIG_ARCH_PROC_KCORE_TEXT : y ## .config: 349 :
+  CONFIG_ILLEGAL_POINTER_VALUE : 0xdead000000000000 ## .config: 350 :
+  CONFIG_X86_CHECK_BIOS_CORRUPTION : y ## .config: 351 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK : y ## .config: 352 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_MTRR : y ## .config: 353 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_MTRR_SANITIZER : n ## .config: 354 :
+  CONFIG_X86_PAT : n ## .config: 355 :
+  CONFIG_X86_UMIP : n ## .config: 356 :
+  CONFIG_CC_HAS_IBT : y ## .config: 357 :
+  CONFIG_X86_KERNEL_IBT : n ## .config: 358 :
+  CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS : n ## .config: 359 :
+  CONFIG_X86_INTEL_TSX_MODE_OFF : y ## .config: 360 :
+  CONFIG_X86_INTEL_TSX_MODE_ON : n ## .config: 361 :
+  CONFIG_X86_INTEL_TSX_MODE_AUTO : n ## .config: 362 :
+  CONFIG_X86_USER_SHADOW_STACK : n ## .config: 363 :
+  CONFIG_EFI : y ## .config: 364 :configs/v6.10/standard/tiny/cfg/efi.cfg (y) 
+  CONFIG_EFI_STUB : y ## .config: 365 :configs/v6.10/standard/tiny/cfg/efi.cfg (y) 
+  CONFIG_EFI_HANDOVER_PROTOCOL : n ## .config: 366 :
+  CONFIG_EFI_MIXED : n ## .config: 367 :
+  CONFIG_EFI_FAKE_MEMMAP : n ## .config: 368 :
+  CONFIG_EFI_RUNTIME_MAP : n ## .config: 369 :
+  CONFIG_HZ_100 : n ## .config: 370 :configs/v6.10/standard/tiny/cfg/timer/hz_1000.cfg (n) 
+  CONFIG_HZ_250 : n ## .config: 371 :configs/v6.10/standard/tiny/cfg/timer/hz_1000.cfg (n) 
+  CONFIG_HZ_300 : n ## .config: 372 :configs/v6.10/standard/tiny/cfg/timer/hz_1000.cfg (n) 
+  CONFIG_HZ_1000 : y ## .config: 373 :configs/v6.10/standard/tiny/cfg/timer/hz_1000.cfg (y) 
+  CONFIG_HZ : 1000 ## .config: 374 :configs/v6.10/standard/tiny/cfg/timer/hz_1000.cfg (1000) 
+  CONFIG_ARCH_SUPPORTS_KEXEC : y ## .config: 375 :
+  CONFIG_ARCH_SUPPORTS_KEXEC_FILE : y ## .config: 376 :
+  CONFIG_ARCH_SUPPORTS_KEXEC_PURGATORY : y ## .config: 377 :
+  CONFIG_ARCH_SUPPORTS_KEXEC_SIG : y ## .config: 378 :
+  CONFIG_ARCH_SUPPORTS_KEXEC_SIG_FORCE : y ## .config: 379 :
+  CONFIG_ARCH_SUPPORTS_KEXEC_BZIMAGE_VERIFY_SIG : y ## .config: 380 :
+  CONFIG_ARCH_SUPPORTS_KEXEC_JUMP : y ## .config: 381 :
+  CONFIG_ARCH_SUPPORTS_CRASH_DUMP : y ## .config: 382 :
+  CONFIG_ARCH_SUPPORTS_CRASH_HOTPLUG : y ## .config: 383 :
+  CONFIG_PHYSICAL_START : 0x1000000 ## .config: 384 :
+  CONFIG_RELOCATABLE : y ## .config: 385 :
+  CONFIG_RANDOMIZE_BASE : n ## .config: 386 :
+  CONFIG_PHYSICAL_ALIGN : 0x200000 ## .config: 387 :
+  CONFIG_ADDRESS_MASKING : n ## .config: 388 :
+  CONFIG_HOTPLUG_CPU : y ## .config: 389 :
+  CONFIG_COMPAT_VDSO : n ## .config: 390 :
+  CONFIG_LEGACY_VSYSCALL_XONLY : y ## .config: 391 :
+  CONFIG_LEGACY_VSYSCALL_NONE : n ## .config: 392 :
+  CONFIG_CMDLINE_BOOL : n ## .config: 393 :
+  CONFIG_MODIFY_LDT_SYSCALL : n ## .config: 394 :
+  CONFIG_STRICT_SIGALTSTACK_SIZE : n ## .config: 395 :
+  CONFIG_HAVE_LIVEPATCH : y ## .config: 396 :
+  CONFIG_CC_HAS_NAMED_AS : y ## .config: 399 :
+  CONFIG_CC_HAS_NAMED_AS_FIXED_SANITIZERS : y ## .config: 400 :
+  CONFIG_USE_X86_SEG_SUPPORT : y ## .config: 401 :
+  CONFIG_CC_HAS_SLS : y ## .config: 402 :
+  CONFIG_CC_HAS_RETURN_THUNK : y ## .config: 403 :
+  CONFIG_CC_HAS_ENTRY_PADDING : y ## .config: 404 :
+  CONFIG_FUNCTION_PADDING_CFI : 11 ## .config: 405 :
+  CONFIG_FUNCTION_PADDING_BYTES : 16 ## .config: 406 :
+  CONFIG_CPU_MITIGATIONS : n ## .config: 407 :
+  CONFIG_ARCH_HAS_ADD_PAGES : y ## .config: 408 :
+  CONFIG_SUSPEND : n ## .config: 413 :
+  CONFIG_PM : y ## .config: 414 :configs/v6.10/standard/tiny/bsp/common-pc-64/common-pc-64-cpu.cfg (y) configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_PM_DEBUG : y ## .config: 415 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_PM_ADVANCED_DEBUG : y ## .config: 416 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_PM_CLK : y ## .config: 417 :
+  CONFIG_WQ_POWER_EFFICIENT_DEFAULT : n ## .config: 418 :
+  CONFIG_ENERGY_MODEL : n ## .config: 419 :
+  CONFIG_ARCH_SUPPORTS_ACPI : y ## .config: 420 :
+  CONFIG_ACPI : y ## .config: 421 :configs/v6.10/standard/tiny/cfg/x86_base.cfg (y) 
+  CONFIG_ACPI_LEGACY_TABLES_LOOKUP : y ## .config: 422 :
+  CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC : y ## .config: 423 :
+  CONFIG_ACPI_SYSTEM_POWER_STATES_SUPPORT : y ## .config: 424 :
+  CONFIG_ACPI_DEBUGGER : n ## .config: 425 :
+  CONFIG_ACPI_SPCR_TABLE : n ## .config: 426 :
+  CONFIG_ACPI_FPDT : n ## .config: 427 :
+  CONFIG_ACPI_LPIT : y ## .config: 428 :
+  CONFIG_ACPI_REV_OVERRIDE_POSSIBLE : n ## .config: 429 :
+  CONFIG_ACPI_EC_DEBUGFS : n ## .config: 430 :
+  CONFIG_ACPI_AC : n ## .config: 431 :
+  CONFIG_ACPI_BATTERY : n ## .config: 432 :
+  CONFIG_ACPI_BUTTON : y ## .config: 433 :
+  CONFIG_ACPI_VIDEO : y ## .config: 434 :
+  CONFIG_ACPI_FAN : n ## .config: 435 :
+  CONFIG_ACPI_DOCK : n ## .config: 436 :
+  CONFIG_ACPI_CPU_FREQ_PSS : y ## .config: 437 :
+  CONFIG_ACPI_PROCESSOR_CSTATE : y ## .config: 438 :
+  CONFIG_ACPI_PROCESSOR_IDLE : y ## .config: 439 :
+  CONFIG_ACPI_PROCESSOR : y ## .config: 440 :
+  CONFIG_ACPI_HOTPLUG_CPU : y ## .config: 441 :
+  CONFIG_ACPI_PROCESSOR_AGGREGATOR : n ## .config: 442 :
+  CONFIG_ACPI_THERMAL : n ## .config: 443 :
+  CONFIG_ARCH_HAS_ACPI_TABLE_UPGRADE : y ## .config: 444 :
+  CONFIG_ACPI_TABLE_UPGRADE : n ## .config: 445 :
+  CONFIG_ACPI_DEBUG : n ## .config: 446 :
+  CONFIG_ACPI_PCI_SLOT : n ## .config: 447 :
+  CONFIG_ACPI_CONTAINER : y ## .config: 448 :
+  CONFIG_ACPI_HOTPLUG_IOAPIC : y ## .config: 449 :
+  CONFIG_ACPI_SBS : n ## .config: 450 :
+  CONFIG_ACPI_HED : n ## .config: 451 :
+  CONFIG_ACPI_BGRT : n ## .config: 452 :
+  CONFIG_ACPI_REDUCED_HARDWARE_ONLY : n ## .config: 453 :
+  CONFIG_HAVE_ACPI_APEI : y ## .config: 454 :
+  CONFIG_HAVE_ACPI_APEI_NMI : y ## .config: 455 :
+  CONFIG_ACPI_APEI : n ## .config: 456 :
+  CONFIG_ACPI_DPTF : n ## .config: 457 :
+  CONFIG_ACPI_CONFIGFS : n ## .config: 458 :
+  CONFIG_ACPI_PFRUT : n ## .config: 459 :
+  CONFIG_ACPI_FFH : n ## .config: 460 :
+  CONFIG_PMIC_OPREGION : n ## .config: 461 :
+  CONFIG_ACPI_PRMT : n ## .config: 462 :
+  CONFIG_X86_PM_TIMER : n ## .config: 463 :
+  CONFIG_CPU_FREQ : y ## .config: 468 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_CPU_FREQ_GOV_ATTR_SET : y ## .config: 469 :
+  CONFIG_CPU_FREQ_GOV_COMMON : y ## .config: 470 :
+  CONFIG_CPU_FREQ_STAT : y ## .config: 471 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE : n ## .config: 472 :
+  CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE : n ## .config: 473 :
+  CONFIG_CPU_FREQ_DEFAULT_GOV_USERSPACE : n ## .config: 474 :
+  CONFIG_CPU_FREQ_DEFAULT_GOV_SCHEDUTIL : y ## .config: 475 :
+  CONFIG_CPU_FREQ_GOV_PERFORMANCE : y ## .config: 476 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_CPU_FREQ_GOV_POWERSAVE : n ## .config: 477 :
+  CONFIG_CPU_FREQ_GOV_USERSPACE : n ## .config: 478 :
+  CONFIG_CPU_FREQ_GOV_ONDEMAND : y ## .config: 479 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_CPU_FREQ_GOV_CONSERVATIVE : n ## .config: 480 :
+  CONFIG_CPU_FREQ_GOV_SCHEDUTIL : y ## .config: 481 :
+  CONFIG_X86_INTEL_PSTATE : y ## .config: 486 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_X86_PCC_CPUFREQ : n ## .config: 487 :
+  CONFIG_X86_AMD_PSTATE : n ## .config: 488 :
+  CONFIG_X86_AMD_PSTATE_UT : n ## .config: 489 :
+  CONFIG_X86_ACPI_CPUFREQ : y ## .config: 490 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_X86_ACPI_CPUFREQ_CPB : n ## .config: 491 :
+  CONFIG_X86_POWERNOW_K8 : n ## .config: 492 :
+  CONFIG_X86_AMD_FREQ_SENSITIVITY : n ## .config: 493 :
+  CONFIG_X86_SPEEDSTEP_CENTRINO : n ## .config: 494 :
+  CONFIG_X86_P4_CLOCKMOD : n ## .config: 495 :
+  CONFIG_CPU_IDLE : y ## .config: 505 :
+  CONFIG_CPU_IDLE_GOV_LADDER : n ## .config: 506 :
+  CONFIG_CPU_IDLE_GOV_MENU : y ## .config: 507 :
+  CONFIG_CPU_IDLE_GOV_TEO : n ## .config: 508 :
+  CONFIG_INTEL_IDLE : y ## .config: 511 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_PCI_DIRECT : y ## .config: 517 :
+  CONFIG_PCI_MMCONFIG : n ## .config: 518 :
+  CONFIG_PCI_CNB20LE_QUIRK : n ## .config: 519 :
+  CONFIG_ISA_BUS : n ## .config: 520 :
+  CONFIG_ISA_DMA_API : y ## .config: 521 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_QEMUX86 : n ## .config: 522 :
+  CONFIG_AMD_NB : y ## .config: 523 :
+  CONFIG_IA32_EMULATION : y ## .config: 529 :configs/v6.10/standard/tiny/bsp/common-pc-64/common-pc-64-cpu.cfg (y) configs/v6.10/standard/tiny/cfg/x86_64.cfg (y) 
+  CONFIG_IA32_EMULATION_DEFAULT_DISABLED : n ## .config: 530 :
+  CONFIG_X86_X32_ABI : n ## .config: 531 :
+  CONFIG_COMPAT_32 : y ## .config: 532 :
+  CONFIG_COMPAT : y ## .config: 533 :configs/v6.10/standard/tiny/cfg/x86_64.cfg (y) 
+  CONFIG_COMPAT_FOR_U64_ALIGNMENT : y ## .config: 534 :
+  CONFIG_VIRTUALIZATION : n ## .config: 537 :
+  CONFIG_AS_AVX512 : y ## .config: 538 :
+  CONFIG_AS_SHA1_NI : y ## .config: 539 :
+  CONFIG_AS_SHA256_NI : y ## .config: 540 :
+  CONFIG_AS_TPAUSE : y ## .config: 541 :
+  CONFIG_AS_GFNI : y ## .config: 542 :
+  CONFIG_AS_VAES : y ## .config: 543 :
+  CONFIG_AS_VPCLMULQDQ : y ## .config: 544 :
+  CONFIG_AS_WRUSS : y ## .config: 545 :
+  CONFIG_ARCH_CONFIGURES_CPU_MITIGATIONS : y ## .config: 546 :
+  CONFIG_HOTPLUG_SMT : y ## .config: 551 :
+  CONFIG_HOTPLUG_CORE_SYNC : y ## .config: 552 :
+  CONFIG_HOTPLUG_CORE_SYNC_DEAD : y ## .config: 553 :
+  CONFIG_HOTPLUG_CORE_SYNC_FULL : y ## .config: 554 :
+  CONFIG_HOTPLUG_SPLIT_STARTUP : y ## .config: 555 :
+  CONFIG_HOTPLUG_PARALLEL : y ## .config: 556 :
+  CONFIG_GENERIC_ENTRY : y ## .config: 557 :
+  CONFIG_KPROBES : n ## .config: 558 :
+  CONFIG_JUMP_LABEL : n ## .config: 559 :
+  CONFIG_STATIC_CALL_SELFTEST : n ## .config: 560 :
+  CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS : y ## .config: 561 :
+  CONFIG_ARCH_USE_BUILTIN_BSWAP : y ## .config: 562 :
+  CONFIG_HAVE_IOREMAP_PROT : y ## .config: 563 :
+  CONFIG_HAVE_KPROBES : y ## .config: 564 :
+  CONFIG_HAVE_KRETPROBES : y ## .config: 565 :
+  CONFIG_HAVE_OPTPROBES : y ## .config: 566 :
+  CONFIG_HAVE_KPROBES_ON_FTRACE : y ## .config: 567 :
+  CONFIG_ARCH_CORRECT_STACKTRACE_ON_KRETPROBE : y ## .config: 568 :
+  CONFIG_HAVE_FUNCTION_ERROR_INJECTION : y ## .config: 569 :
+  CONFIG_HAVE_NMI : y ## .config: 570 :
+  CONFIG_TRACE_IRQFLAGS_SUPPORT : y ## .config: 571 :
+  CONFIG_TRACE_IRQFLAGS_NMI_SUPPORT : y ## .config: 572 :
+  CONFIG_HAVE_ARCH_TRACEHOOK : y ## .config: 573 :
+  CONFIG_HAVE_DMA_CONTIGUOUS : y ## .config: 574 :
+  CONFIG_GENERIC_SMP_IDLE_THREAD : y ## .config: 575 :
+  CONFIG_ARCH_HAS_FORTIFY_SOURCE : y ## .config: 576 :
+  CONFIG_ARCH_HAS_SET_MEMORY : y ## .config: 577 :
+  CONFIG_ARCH_HAS_SET_DIRECT_MAP : y ## .config: 578 :
+  CONFIG_ARCH_HAS_CPU_FINALIZE_INIT : y ## .config: 579 :
+  CONFIG_HAVE_ARCH_THREAD_STRUCT_WHITELIST : y ## .config: 580 :
+  CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT : y ## .config: 581 :
+  CONFIG_ARCH_WANTS_NO_INSTR : y ## .config: 582 :
+  CONFIG_HAVE_ASM_MODVERSIONS : y ## .config: 583 :
+  CONFIG_HAVE_REGS_AND_STACK_ACCESS_API : y ## .config: 584 :
+  CONFIG_HAVE_RSEQ : y ## .config: 585 :
+  CONFIG_HAVE_RUST : y ## .config: 586 :
+  CONFIG_HAVE_FUNCTION_ARG_ACCESS_API : y ## .config: 587 :
+  CONFIG_HAVE_HW_BREAKPOINT : y ## .config: 588 :
+  CONFIG_HAVE_MIXED_BREAKPOINTS_REGS : y ## .config: 589 :
+  CONFIG_HAVE_USER_RETURN_NOTIFIER : y ## .config: 590 :
+  CONFIG_HAVE_PERF_EVENTS_NMI : y ## .config: 591 :
+  CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF : y ## .config: 592 :
+  CONFIG_HAVE_PERF_REGS : y ## .config: 593 :
+  CONFIG_HAVE_PERF_USER_STACK_DUMP : y ## .config: 594 :
+  CONFIG_HAVE_ARCH_JUMP_LABEL : y ## .config: 595 :
+  CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE : y ## .config: 596 :
+  CONFIG_MMU_GATHER_MERGE_VMAS : y ## .config: 597 :
+  CONFIG_MMU_LAZY_TLB_REFCOUNT : y ## .config: 598 :
+  CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG : y ## .config: 599 :
+  CONFIG_ARCH_HAS_NMI_SAFE_THIS_CPU_OPS : y ## .config: 600 :
+  CONFIG_HAVE_ALIGNED_STRUCT_PAGE : y ## .config: 601 :
+  CONFIG_HAVE_CMPXCHG_LOCAL : y ## .config: 602 :
+  CONFIG_HAVE_CMPXCHG_DOUBLE : y ## .config: 603 :
+  CONFIG_ARCH_WANT_COMPAT_IPC_PARSE_VERSION : y ## .config: 604 :
+  CONFIG_ARCH_WANT_OLD_COMPAT_IPC : y ## .config: 605 :
+  CONFIG_HAVE_ARCH_SECCOMP : y ## .config: 606 :
+  CONFIG_HAVE_ARCH_SECCOMP_FILTER : y ## .config: 607 :
+  CONFIG_SECCOMP : n ## .config: 608 :
+  CONFIG_HAVE_ARCH_STACKLEAK : y ## .config: 609 :
+  CONFIG_HAVE_STACKPROTECTOR : y ## .config: 610 :
+  CONFIG_STACKPROTECTOR : n ## .config: 611 :
+  CONFIG_ARCH_SUPPORTS_LTO_CLANG : y ## .config: 612 :
+  CONFIG_ARCH_SUPPORTS_LTO_CLANG_THIN : y ## .config: 613 :
+  CONFIG_LTO_NONE : y ## .config: 614 :
+  CONFIG_ARCH_SUPPORTS_CFI_CLANG : y ## .config: 615 :
+  CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES : y ## .config: 616 :
+  CONFIG_HAVE_CONTEXT_TRACKING_USER : y ## .config: 617 :
+  CONFIG_HAVE_CONTEXT_TRACKING_USER_OFFSTACK : y ## .config: 618 :
+  CONFIG_HAVE_VIRT_CPU_ACCOUNTING_GEN : y ## .config: 619 :
+  CONFIG_HAVE_IRQ_TIME_ACCOUNTING : y ## .config: 620 :
+  CONFIG_HAVE_MOVE_PUD : y ## .config: 621 :
+  CONFIG_HAVE_MOVE_PMD : y ## .config: 622 :
+  CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE : y ## .config: 623 :
+  CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD : y ## .config: 624 :
+  CONFIG_HAVE_ARCH_HUGE_VMAP : y ## .config: 625 :
+  CONFIG_HAVE_ARCH_HUGE_VMALLOC : y ## .config: 626 :
+  CONFIG_ARCH_WANT_HUGE_PMD_SHARE : y ## .config: 627 :
+  CONFIG_HAVE_ARCH_SOFT_DIRTY : y ## .config: 628 :
+  CONFIG_HAVE_MOD_ARCH_SPECIFIC : y ## .config: 629 :
+  CONFIG_MODULES_USE_ELF_RELA : y ## .config: 630 :
+  CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK : y ## .config: 631 :
+  CONFIG_HAVE_SOFTIRQ_ON_OWN_STACK : y ## .config: 632 :
+  CONFIG_SOFTIRQ_ON_OWN_STACK : y ## .config: 633 :
+  CONFIG_ARCH_HAS_ELF_RANDOMIZE : y ## .config: 634 :
+  CONFIG_HAVE_ARCH_MMAP_RND_BITS : y ## .config: 635 :
+  CONFIG_HAVE_EXIT_THREAD : y ## .config: 636 :
+  CONFIG_ARCH_MMAP_RND_BITS : 28 ## .config: 637 :
+  CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS : y ## .config: 638 :
+  CONFIG_ARCH_MMAP_RND_COMPAT_BITS : 8 ## .config: 639 :
+  CONFIG_HAVE_ARCH_COMPAT_MMAP_BASES : y ## .config: 640 :
+  CONFIG_HAVE_PAGE_SIZE_4KB : y ## .config: 641 :
+  CONFIG_PAGE_SIZE_4KB : y ## .config: 642 :
+  CONFIG_PAGE_SIZE_LESS_THAN_64KB : y ## .config: 643 :
+  CONFIG_PAGE_SIZE_LESS_THAN_256KB : y ## .config: 644 :
+  CONFIG_PAGE_SHIFT : 12 ## .config: 645 :
+  CONFIG_HAVE_OBJTOOL : y ## .config: 646 :
+  CONFIG_HAVE_JUMP_LABEL_HACK : y ## .config: 647 :
+  CONFIG_HAVE_NOINSTR_HACK : y ## .config: 648 :
+  CONFIG_HAVE_NOINSTR_VALIDATION : y ## .config: 649 :
+  CONFIG_HAVE_UACCESS_VALIDATION : y ## .config: 650 :
+  CONFIG_HAVE_STACK_VALIDATION : y ## .config: 651 :
+  CONFIG_OLD_SIGSUSPEND3 : y ## .config: 652 :
+  CONFIG_COMPAT_OLD_SIGACTION : y ## .config: 653 :
+  CONFIG_COMPAT_32BIT_TIME : n ## .config: 654 :
+  CONFIG_HAVE_ARCH_VMAP_STACK : y ## .config: 655 :
+  CONFIG_VMAP_STACK : n ## .config: 656 :
+  CONFIG_HAVE_ARCH_RANDOMIZE_KSTACK_OFFSET : y ## .config: 657 :
+  CONFIG_RANDOMIZE_KSTACK_OFFSET : n ## .config: 658 :
+  CONFIG_ARCH_HAS_STRICT_KERNEL_RWX : y ## .config: 659 :
+  CONFIG_STRICT_KERNEL_RWX : y ## .config: 660 :
+  CONFIG_ARCH_HAS_STRICT_MODULE_RWX : y ## .config: 661 :
+  CONFIG_HAVE_ARCH_PREL32_RELOCATIONS : y ## .config: 662 :
+  CONFIG_ARCH_USE_MEMREMAP_PROT : y ## .config: 663 :
+  CONFIG_ARCH_HAS_MEM_ENCRYPT : y ## .config: 664 :
+  CONFIG_HAVE_STATIC_CALL : y ## .config: 665 :
+  CONFIG_HAVE_STATIC_CALL_INLINE : y ## .config: 666 :
+  CONFIG_HAVE_PREEMPT_DYNAMIC : y ## .config: 667 :
+  CONFIG_HAVE_PREEMPT_DYNAMIC_CALL : y ## .config: 668 :
+  CONFIG_ARCH_WANT_LD_ORPHAN_WARN : y ## .config: 669 :
+  CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC : y ## .config: 670 :
+  CONFIG_ARCH_SUPPORTS_PAGE_TABLE_CHECK : y ## .config: 671 :
+  CONFIG_ARCH_HAS_ELFCORE_COMPAT : y ## .config: 672 :
+  CONFIG_ARCH_HAS_PARANOID_L1D_FLUSH : y ## .config: 673 :
+  CONFIG_DYNAMIC_SIGFRAME : y ## .config: 674 :
+  CONFIG_ARCH_HAS_HW_PTE_YOUNG : y ## .config: 675 :
+  CONFIG_ARCH_HAS_NONLEAF_PMD_YOUNG : y ## .config: 676 :
+  CONFIG_ARCH_HAS_KERNEL_FPU_SUPPORT : y ## .config: 677 :
+  CONFIG_ARCH_HAS_GCOV_PROFILE_ALL : y ## .config: 682 :
+  CONFIG_HAVE_GCC_PLUGINS : y ## .config: 685 :
+  CONFIG_GCC_PLUGINS : n ## .config: 686 :
+  CONFIG_FUNCTION_ALIGNMENT_4B : y ## .config: 687 :
+  CONFIG_FUNCTION_ALIGNMENT_16B : y ## .config: 688 :
+  CONFIG_FUNCTION_ALIGNMENT : 16 ## .config: 689 :
+  CONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT : y ## .config: 690 :
+  CONFIG_CC_HAS_SANE_FUNCTION_ALIGNMENT : y ## .config: 691 :
+  CONFIG_RT_MUTEXES : y ## .config: 694 :configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_MODULES : n ## .config: 695 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/./net.cfg (n) 
+  CONFIG_BLOCK : n ## .config: 696 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/cfg/efi-ext.cfg (y) configs/v6.10/standard/tiny/./net.cfg (n) 
+  CONFIG_UNINLINE_SPIN_UNLOCK : y ## .config: 697 :
+  CONFIG_ARCH_SUPPORTS_ATOMIC_RMW : y ## .config: 698 :
+  CONFIG_MUTEX_SPIN_ON_OWNER : y ## .config: 699 :
+  CONFIG_RWSEM_SPIN_ON_OWNER : y ## .config: 700 :
+  CONFIG_LOCK_SPIN_ON_OWNER : y ## .config: 701 :
+  CONFIG_ARCH_USE_QUEUED_SPINLOCKS : y ## .config: 702 :
+  CONFIG_QUEUED_SPINLOCKS : y ## .config: 703 :
+  CONFIG_ARCH_USE_QUEUED_RWLOCKS : y ## .config: 704 :
+  CONFIG_QUEUED_RWLOCKS : y ## .config: 705 :
+  CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE : y ## .config: 706 :
+  CONFIG_ARCH_HAS_SYNC_CORE_BEFORE_USERMODE : y ## .config: 707 :
+  CONFIG_ARCH_HAS_SYSCALL_WRAPPER : y ## .config: 708 :
+  CONFIG_BINFMT_ELF : y ## .config: 713 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_COMPAT_BINFMT_ELF : y ## .config: 714 :
+  CONFIG_ELFCORE : y ## .config: 715 :
+  CONFIG_BINFMT_SCRIPT : y ## .config: 716 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_BINFMT_MISC : n ## .config: 717 :
+  CONFIG_COREDUMP : n ## .config: 718 :
+  CONFIG_SLUB : y ## .config: 728 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_SLUB_TINY : n ## .config: 729 :
+  CONFIG_SLAB_MERGE_DEFAULT : n ## .config: 730 :
+  CONFIG_SLAB_FREELIST_RANDOM : n ## .config: 731 :
+  CONFIG_SLAB_FREELIST_HARDENED : n ## .config: 732 :
+  CONFIG_SLUB_STATS : n ## .config: 733 :
+  CONFIG_SLUB_CPU_PARTIAL : n ## .config: 734 :
+  CONFIG_RANDOM_KMALLOC_CACHES : n ## .config: 735 :
+  CONFIG_SHUFFLE_PAGE_ALLOCATOR : n ## .config: 738 :
+  CONFIG_COMPAT_BRK : n ## .config: 739 :
+  CONFIG_SPARSEMEM : y ## .config: 740 :
+  CONFIG_SPARSEMEM_EXTREME : y ## .config: 741 :
+  CONFIG_SPARSEMEM_VMEMMAP_ENABLE : y ## .config: 742 :
+  CONFIG_SPARSEMEM_VMEMMAP : n ## .config: 743 :
+  CONFIG_ARCH_WANT_OPTIMIZE_DAX_VMEMMAP : y ## .config: 744 :
+  CONFIG_ARCH_WANT_OPTIMIZE_HUGETLB_VMEMMAP : y ## .config: 745 :
+  CONFIG_HAVE_GUP_FAST : y ## .config: 746 :
+  CONFIG_EXCLUSIVE_SYSTEM_RAM : y ## .config: 747 :
+  CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG : y ## .config: 748 :
+  CONFIG_MEMORY_HOTPLUG : n ## .config: 749 :
+  CONFIG_ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE : y ## .config: 750 :
+  CONFIG_SPLIT_PTLOCK_CPUS : 4 ## .config: 751 :
+  CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK : y ## .config: 752 :
+  CONFIG_COMPACTION : n ## .config: 753 :
+  CONFIG_PAGE_REPORTING : n ## .config: 754 :
+  CONFIG_PCP_BATCH_SCALE_MAX : 5 ## .config: 755 :
+  CONFIG_PHYS_ADDR_T_64BIT : y ## .config: 756 :
+  CONFIG_KSM : n ## .config: 757 :
+  CONFIG_DEFAULT_MMAP_MIN_ADDR : 4096 ## .config: 758 :
+  CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE : y ## .config: 759 :
+  CONFIG_MEMORY_FAILURE : n ## .config: 760 :
+  CONFIG_ARCH_WANT_GENERAL_HUGETLB : y ## .config: 761 :
+  CONFIG_ARCH_WANTS_THP_SWAP : y ## .config: 762 :
+  CONFIG_TRANSPARENT_HUGEPAGE : n ## .config: 763 :
+  CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK : y ## .config: 764 :
+  CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK : y ## .config: 765 :
+  CONFIG_HAVE_SETUP_PER_CPU_AREA : y ## .config: 766 :
+  CONFIG_CMA : n ## .config: 767 :
+  CONFIG_GENERIC_EARLY_IOREMAP : y ## .config: 768 :
+  CONFIG_DEFERRED_STRUCT_PAGE_INIT : n ## .config: 769 :
+  CONFIG_IDLE_PAGE_TRACKING : n ## .config: 770 :
+  CONFIG_ARCH_HAS_CACHE_LINE_SIZE : y ## .config: 771 :
+  CONFIG_ARCH_HAS_CURRENT_STACK_POINTER : y ## .config: 772 :
+  CONFIG_ARCH_HAS_PTE_DEVMAP : y ## .config: 773 :
+  CONFIG_ARCH_HAS_ZONE_DMA_SET : y ## .config: 774 :
+  CONFIG_ZONE_DMA : n ## .config: 775 :
+  CONFIG_ZONE_DMA32 : y ## .config: 776 :
+  CONFIG_VMAP_PFN : y ## .config: 777 :
+  CONFIG_VM_EVENT_COUNTERS : n ## .config: 778 :
+  CONFIG_PERCPU_STATS : n ## .config: 779 :
+  CONFIG_DMAPOOL_TEST : n ## .config: 784 :
+  CONFIG_ARCH_HAS_PTE_SPECIAL : y ## .config: 785 :
+  CONFIG_MEMFD_CREATE : y ## .config: 786 :
+  CONFIG_SECRETMEM : n ## .config: 787 :
+  CONFIG_USERFAULTFD : n ## .config: 788 :
+  CONFIG_LRU_GEN : n ## .config: 789 :
+  CONFIG_ARCH_SUPPORTS_PER_VMA_LOCK : y ## .config: 790 :
+  CONFIG_PER_VMA_LOCK : y ## .config: 791 :
+  CONFIG_LOCK_MM_AND_FIND_VMA : y ## .config: 792 :
+  CONFIG_DAMON : n ## .config: 797 :
+  CONFIG_NET : n ## .config: 801 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (y) configs/v6.10/standard/tiny/features/usb-net/usb-net.cfg (y) configs/v6.10/standard/tiny/features/6lowpan/6lowpan.cfg (y) configs/v6.10/standard/tiny/./net.cfg (n) 
+  CONFIG_HAVE_EISA : y ## .config: 806 :
+  CONFIG_EISA : n ## .config: 807 :
+  CONFIG_HAVE_PCI : y ## .config: 808 :
+  CONFIG_GENERIC_PCI_IOMAP : y ## .config: 809 :
+  CONFIG_PCI : y ## .config: 810 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (y) configs/v6.10/standard/tiny/cfg/efi.cfg (y) configs/v6.10/standard/tiny/features/pci/pci.cfg (y) 
+  CONFIG_PCI_DOMAINS : y ## .config: 811 :
+  CONFIG_PCIEPORTBUS : y ## .config: 812 :configs/v6.10/standard/tiny/features/pci/pci.cfg (y) 
+  CONFIG_HOTPLUG_PCI_PCIE : n ## .config: 813 :configs/v6.10/standard/tiny/features/pci/pci.cfg (n) 
+  CONFIG_PCIEAER : n ## .config: 814 :
+  CONFIG_PCIEASPM : n ## .config: 815 :
+  CONFIG_PCIE_PME : y ## .config: 816 :
+  CONFIG_PCIE_PTM : n ## .config: 817 :
+  CONFIG_PCI_MSI : y ## .config: 818 :configs/v6.10/standard/tiny/features/pci/pci.cfg (y) 
+  CONFIG_PCI_QUIRKS : n ## .config: 819 :
+  CONFIG_PCI_DEBUG : n ## .config: 820 :
+  CONFIG_PCI_REALLOC_ENABLE_AUTO : n ## .config: 821 :
+  CONFIG_PCI_STUB : n ## .config: 822 :
+  CONFIG_PCI_PF_STUB : n ## .config: 823 :
+  CONFIG_PCI_ATS : y ## .config: 824 :
+  CONFIG_PCI_LOCKLESS_CONFIG : y ## .config: 825 :
+  CONFIG_PCI_IOV : y ## .config: 826 :configs/v6.10/standard/tiny/features/pci-iov/pci-iov.cfg (y) 
+  CONFIG_PCI_PRI : n ## .config: 827 :
+  CONFIG_PCI_PASID : n ## .config: 828 :
+  CONFIG_PCI_LABEL : y ## .config: 829 :
+  CONFIG_PCIE_BUS_TUNE_OFF : n ## .config: 830 :
+  CONFIG_PCIE_BUS_DEFAULT : y ## .config: 831 :
+  CONFIG_PCIE_BUS_SAFE : n ## .config: 832 :
+  CONFIG_PCIE_BUS_PERFORMANCE : n ## .config: 833 :
+  CONFIG_PCIE_BUS_PEER2PEER : n ## .config: 834 :
+  CONFIG_VGA_ARB : n ## .config: 835 :
+  CONFIG_HOTPLUG_PCI : y ## .config: 836 :configs/v6.10/standard/tiny/features/pci/pci.cfg (y) 
+  CONFIG_HOTPLUG_PCI_ACPI : n ## .config: 837 :
+  CONFIG_HOTPLUG_PCI_CPCI : n ## .config: 838 :
+  CONFIG_HOTPLUG_PCI_SHPC : n ## .config: 839 :
+  CONFIG_VMD : n ## .config: 844 :
+  CONFIG_PCI_MESON : n ## .config: 854 :
+  CONFIG_PCIE_DW_PLAT_HOST : n ## .config: 855 :
+  CONFIG_PCI_ENDPOINT : n ## .config: 867 :
+  CONFIG_PCI_SW_SWITCHTEC : n ## .config: 873 :
+  CONFIG_CXL_BUS : n ## .config: 876 :
+  CONFIG_PCCARD : n ## .config: 877 :
+  CONFIG_RAPIDIO : n ## .config: 878 :
+  CONFIG_AUXILIARY_BUS : y ## .config: 883 :
+  CONFIG_UEVENT_HELPER : n ## .config: 884 :
+  CONFIG_DEVTMPFS : y ## .config: 885 :configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_DEVTMPFS_MOUNT : y ## .config: 886 :configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_DEVTMPFS_SAFE : n ## .config: 887 :
+  CONFIG_STANDALONE : y ## .config: 888 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_PREVENT_FIRMWARE_BUILD : y ## .config: 889 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_FW_LOADER : y ## .config: 894 :configs/v6.10/ktypes/base/base.cfg (m) 
+    [NOTE]: 'CONFIG_FW_LOADER' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config FW_LOADER
+        	tristate "Firmware loading facility" if EXPERT
+        	default y
+        	select CRYPTO_HASH if FW_LOADER_DEBUG
+        	select CRYPTO_SHA256 if FW_LOADER_DEBUG
+        	help
+        	  This enables the firmware loading facility in the kernel. The kernel
+        	  will first look for built-in firmware, if it has any. Next, it will
+        	  look for the requested firmware in a series of filesystem paths:
+	  
+        	        o firmware_class path module parameter or kernel boot param
+        	        o /lib/firmware/updates/UTS_RELEASE
+        	        o /lib/firmware/updates
+        	        o /lib/firmware/UTS_RELEASE
+        	        o /lib/firmware
+	  
+        	  Enabling this feature only increases your kernel image by about
+        	  828 bytes, enable this option unless you are certain you don't
+        	  need firmware.
+	  
+        	  You typically want this built-in (=y) but you can also enable this
+        	  as a module, in which case the firmware_class module will be built.
+        	  You also want to be sure to enable this built-in if you are going to
+        	  enable built-in firmware (CONFIG_EXTRA_FIRMWARE).
+
+
+    [INFO]: selection details for 'CONFIG_FW_LOADER':
+        Symbols currently n-selecting this symbol (no effect):
+          - BT_BCM
+          - BT_RTL
+          - BT_QCA
+          - BT_MTK
+          - BT_HCIBCM203X
+          - BT_HCIBCM4377
+          - BT_HCIBFUSB
+          - BT_HCIBT3C
+          - BT_MRVL_SDIO
+          - BT_ATH3K
+          - BT_INTEL_PCIE
+          - CFG80211
+          - CXL_BUS
+          - PCMCIA_LOAD_CIS
+          - POLARFIRE_SOC_AUTO_UPDATE
+          - GEHC_ACHC
+          - LATTICE_ECP3_CONFIG
+          - TI_ST
+          - SCSI_AIC94XX
+          - SCSI_MVSAS
+          - SCSI_IPR
+          - SCSI_QLA_FC
+          - SCSI_CHELSIO_FCOE
+          - ATM_FORE200E
+          - ATM_SOLOS
+          - BNX2
+          - BNX2X
+          - BNXT
+          - LIQUIDIO
+          - CHELSIO_T3
+          - CHELSIO_T4
+          - MYRI10GE
+          - QLCNIC
+          - NETXEN_NIC
+          - R8169
+          - SPIDER_NET
+          - PSE_PD692X0
+          - CARL9170
+          - AR5523
+          - AT76C50X_USB
+          - B43
+          - B43LEGACY
+          - BRCMSMAC
+          - BRCMFMAC_SDIO
+          - BRCMFMAC_USB
+          - BRCMFMAC_PCIE
+          - IPW2100
+          - IPW2200
+          - IWLEGACY
+          - IWLWIFI
+          - P54_COMMON
+          - LIBERTAS
+          - LIBERTAS_THINFIRM
+          - MWIFIEX_SDIO
+          - MWIFIEX_PCIE
+          - MWIFIEX_USB
+          - RT2X00_LIB_FIRMWARE
+          - RTLWIFI
+          - WL1251
+          - WLCORE
+          - ZD1211RW
+          - QTNFMAC_PCIE
+          - TOUCHSCREEN_ATMEL_MXT
+          - RMI4_F34
+          - SERIAL_ICOM
+          - SERIAL_QE
+          - MOXA_INTELLIO
+          - DVB_AS102
+          - VIDEO_SAA7164
+          - RADIO_WL1273
+          - VIDEO_EXYNOS4_FIMC_IS
+          - DVB_C8SECTPFE
+          - VIDEO_THP7312
+          - DVB_LGS8GXX
+          - DRM_RADEON
+          - DRM_AMDGPU
+          - DRM_NOUVEAU
+          - DRM_STI
+          - DRM_POWERVR
+          - DRM_ACCEL_HABANALABS
+          - DRM_ACCEL_IVPU
+          - SND_VX_LIB
+          - SND_SB16_CSP
+          - SND_SSCAPE
+          - SND_WAVEFRONT
+          - SND_MSND_PINNACLE
+          - SND_MSND_CLASSIC
+          - SND_ASIHPI
+          - SND_CS46XX
+          - SND_DARLA20
+          - SND_GINA20
+          - SND_LAYLA20
+          - SND_DARLA24
+          - SND_GINA24
+          - SND_LAYLA24
+          - SND_MONA
+          - SND_MIA
+          - SND_ECHO3G
+          - SND_INDIGO
+          - SND_INDIGOIO
+          - SND_INDIGODJ
+          - SND_INDIGOIOX
+          - SND_INDIGODJX
+          - SND_EMU10K1
+          - SND_HDSP
+          - SND_MIXART
+          - SND_PCXHR
+          - SND_RIPTIDE
+          - SND_HDA_PATCH_LOADER
+          - SND_HDA_CODEC_CA0132_DSP
+          - SND_USB_6FIRE
+          - SND_SOC_SH4_SIU
+          - USB_XHCI_TEGRA
+          - USB_ISIGHTFW
+          - USB_SPEEDTOUCH
+          - USB_CXACRU
+          - USB_UEAGLEATM
+          - LEDS_LP55XX_COMMON
+          - RTL8192E
+          - R8712U
+          - VT6656
+          - KS7010
+          - DELL_RBU
+          - REMOTEPROC
+          - IXP4XX_NPE
+          - FPGA_M10_BMC_SEC_UPDATE
+          - CRYPTO_DEV_NITROX
+          - CRYPTO_DEV_QAT
+
+
+  CONFIG_EXTRA_FIRMWARE : "" ## .config: 895 :
+  CONFIG_FW_LOADER_USER_HELPER : n ## .config: 896 :
+  CONFIG_FW_LOADER_COMPRESS : n ## .config: 897 :
+  CONFIG_FW_UPLOAD : n ## .config: 898 :
+  CONFIG_ALLOW_DEV_COREDUMP : n ## .config: 901 :
+  CONFIG_DEBUG_DRIVER : n ## .config: 902 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_DEBUG_DEVRES : n ## .config: 903 :
+  CONFIG_DEBUG_TEST_DRIVER_REMOVE : n ## .config: 904 :
+  CONFIG_GENERIC_CPU_DEVICES : y ## .config: 905 :
+  CONFIG_GENERIC_CPU_AUTOPROBE : y ## .config: 906 :
+  CONFIG_GENERIC_CPU_VULNERABILITIES : y ## .config: 907 :
+  CONFIG_REGMAP : y ## .config: 908 :
+  CONFIG_REGMAP_I2C : y ## .config: 909 :
+  CONFIG_DMA_SHARED_BUFFER : y ## .config: 910 :
+  CONFIG_DMA_FENCE_TRACE : n ## .config: 911 :
+  CONFIG_FW_DEVLINK_SYNC_STATE_TIMEOUT : n ## .config: 912 :
+  CONFIG_MHI_BUS : n ## .config: 918 :
+  CONFIG_MHI_BUS_EP : n ## .config: 919 :
+  CONFIG_EDD : n ## .config: 936 :
+  CONFIG_FIRMWARE_MEMMAP : n ## .config: 937 :
+  CONFIG_FW_CFG_SYSFS : n ## .config: 938 :
+  CONFIG_SYSFB : y ## .config: 939 :
+  CONFIG_SYSFB_SIMPLEFB : n ## .config: 940 :
+  CONFIG_GOOGLE_FIRMWARE : n ## .config: 941 :
+  CONFIG_EFI_ESRT : y ## .config: 946 :
+  CONFIG_EFI_DXE_MEM_ATTRIBUTES : n ## .config: 947 :
+  CONFIG_EFI_RUNTIME_WRAPPERS : y ## .config: 948 :
+  CONFIG_EFI_BOOTLOADER_CONTROL : n ## .config: 949 :
+  CONFIG_EFI_CAPSULE_LOADER : n ## .config: 950 :
+  CONFIG_EFI_TEST : n ## .config: 951 :
+  CONFIG_APPLE_PROPERTIES : n ## .config: 952 :
+  CONFIG_RESET_ATTACK_MITIGATION : n ## .config: 953 :
+  CONFIG_EFI_RCI2_TABLE : n ## .config: 954 :
+  CONFIG_EFI_DISABLE_PCI_DMA : n ## .config: 955 :
+  CONFIG_EFI_EARLYCON : y ## .config: 956 :configs/v6.10/standard/tiny/features/debug/printk.cfg (y) 
+  CONFIG_EFI_CUSTOM_SSDT_OVERLAYS : n ## .config: 957 :
+  CONFIG_EFI_DISABLE_RUNTIME : n ## .config: 958 :
+  CONFIG_EFI_COCO_SECRET : n ## .config: 959 :
+  CONFIG_GNSS : n ## .config: 973 :
+  CONFIG_MTD : n ## .config: 974 :
+  CONFIG_OF : n ## .config: 975 :
+  CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT : y ## .config: 976 :
+  CONFIG_PARPORT : y ## .config: 977 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (m) 
+    [NOTE]: 'CONFIG_PARPORT' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        menuconfig PARPORT
+        	tristate "Parallel port support"
+        	depends on HAS_IOMEM
+        	help
+        	  If you want to use devices connected to your machine's parallel port
+        	  (the connector at the computer with 25 holes), e.g. printer, ZIP
+        	  drive, PLIP link (Parallel Line Internet Protocol is mainly used to
+        	  create a mini network by connecting the parallel ports of two local
+        	  machines) etc., then you need to say Y here; please read
+        	  <file:Documentation/admin-guide/parport.rst> and
+        	  <file:drivers/parport/BUGS-parport>.
+	  
+        	  For extensive information about drivers for many devices attaching
+        	  to the parallel port see <http://www.torque.net/linux-pp.html> on
+        	  the WWW.
+	  
+        	  It is possible to share a single parallel port among several devices
+        	  and it is safe to compile all the corresponding drivers into the
+        	  kernel. To compile parallel port support as a module, choose M here:
+        	  the module will be called parport.
+        	  If you have more than one parallel port and want to specify which
+        	  port and IRQ to be used by this driver at module load time, take a
+        	  look at <file:Documentation/admin-guide/parport.rst>.
+	  
+        	  If unsure, say Y.
+
+        Config 'PARPORT' has the following Direct dependencies (PARPORT=y):
+                HAS_IOMEM(=y)
+        Parent dependencies are:
+             HAS_IOMEM [y]
+  CONFIG_PARPORT_PC : y ## .config: 978 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (m) 
+    [NOTE]: 'CONFIG_PARPORT_PC' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config PARPORT_PC
+        	tristate "PC-style hardware"
+        	depends on (ARCH_MIGHT_HAVE_PC_PARPORT || PCI) && HAS_IOPORT && PARPORT
+        	help
+        	  You should say Y here if you have a PC-style parallel port. All
+        	  IBM PC compatible computers and some Alphas have PC-style
+        	  parallel ports.  PA-RISC owners should only say Y here if they
+        	  have a SuperIO parallel port.
+	  
+        	  To compile this driver as a module, choose M here: the
+        	  module will be called parport_pc.
+	  
+        	  If unsure, say Y.
+
+        Config 'PARPORT_PC' has the following Direct dependencies (PARPORT_PC=y):
+                ARCH_MIGHT_HAVE_PC_PARPORT(=y) || PCI(=y) (=y) && HAS_IOPORT(=y) && PARPORT(=y)
+        Parent dependencies are:
+             PCI [y] ARCH_MIGHT_HAVE_PC_PARPORT [y] HAS_IOPORT [y] PARPORT [y]
+  CONFIG_PARPORT_SERIAL : n ## .config: 979 :
+  CONFIG_PARPORT_PC_FIFO : n ## .config: 980 :
+  CONFIG_PARPORT_PC_SUPERIO : n ## .config: 981 :
+  CONFIG_PARPORT_1284 : n ## .config: 982 :
+  CONFIG_PNP : y ## .config: 983 :
+  CONFIG_PNP_DEBUG_MESSAGES : n ## .config: 984 :
+  CONFIG_PNPACPI : y ## .config: 989 :
+  CONFIG_AD525X_DPOT : n ## .config: 999 :
+  CONFIG_DUMMY_IRQ : n ## .config: 1000 :
+  CONFIG_IBM_ASM : n ## .config: 1001 :
+  CONFIG_PHANTOM : n ## .config: 1002 :
+  CONFIG_TIFM_CORE : n ## .config: 1003 :
+  CONFIG_ICS932S401 : n ## .config: 1004 :
+  CONFIG_ENCLOSURE_SERVICES : n ## .config: 1005 :
+  CONFIG_HP_ILO : n ## .config: 1006 :
+  CONFIG_APDS9802ALS : n ## .config: 1007 :
+  CONFIG_ISL29003 : n ## .config: 1008 :
+  CONFIG_ISL29020 : n ## .config: 1009 :
+  CONFIG_SENSORS_TSL2550 : n ## .config: 1010 :
+  CONFIG_SENSORS_BH1770 : n ## .config: 1011 :
+  CONFIG_SENSORS_APDS990X : n ## .config: 1012 :
+  CONFIG_HMC6352 : n ## .config: 1013 :
+  CONFIG_DS1682 : n ## .config: 1014 :
+  CONFIG_SRAM : n ## .config: 1015 :
+  CONFIG_DW_XDATA_PCIE : n ## .config: 1016 :
+  CONFIG_PCI_ENDPOINT_TEST : n ## .config: 1017 :
+  CONFIG_XILINX_SDFEC : n ## .config: 1018 :
+  CONFIG_C2PORT : n ## .config: 1019 :
+  CONFIG_EEPROM_AT24 : y ## .config: 1024 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (m) 
+    [NOTE]: 'CONFIG_EEPROM_AT24' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config EEPROM_AT24
+        	tristate "I2C EEPROMs / RAMs / ROMs from most vendors"
+        	select NVMEM
+        	select NVMEM_SYSFS
+        	select REGMAP
+        	select REGMAP_I2C
+        	depends on I2C && SYSFS
+        	help
+        	  Enable this driver to get read/write support to most I2C EEPROMs
+        	  and compatible devices like FRAMs, SRAMs, ROMs etc. After you
+        	  configure the driver to know about each chip on your target
+        	  board.  Use these generic chip names, instead of vendor-specific
+        	  ones like at24c64, 24lc02 or fm24c04:
+	  
+        	     24c00, 24c01, 24c02, spd (readonly 24c02), 24c04, 24c08,
+        	     24c16, 24c32, 24c64, 24c128, 24c256, 24c512, 24c1024, 24c2048
+	  
+        	  Unless you like data loss puzzles, always be sure that any chip
+        	  you configure as a 24c32 (32 kbit) or larger is NOT really a
+        	  24c16 (16 kbit) or smaller, and vice versa. Marking the chip
+        	  as read-only won't help recover from this. Also, if your chip
+        	  has any software write-protect mechanism you may want to review the
+        	  code to make sure this driver won't turn it on by accident.
+	  
+        	  If you use this with an SMBus adapter instead of an I2C adapter,
+        	  full functionality is not available.  Only smaller devices are
+        	  supported (24c16 and below, max 4 kByte).
+	  
+        	  This driver can also be built as a module.  If so, the module
+        	  will be called at24.
+
+        Config 'EEPROM_AT24' has the following Direct dependencies (EEPROM_AT24=y):
+                I2C(=y) && SYSFS(=y)
+        Parent dependencies are:
+             I2C [y] SYSFS [y]
+  CONFIG_EEPROM_MAX6875 : n ## .config: 1025 :
+  CONFIG_EEPROM_93CX6 : n ## .config: 1026 :
+  CONFIG_EEPROM_IDT_89HPESX : n ## .config: 1027 :
+  CONFIG_EEPROM_EE1004 : n ## .config: 1028 :
+  CONFIG_CB710_CORE : n ## .config: 1031 :
+  CONFIG_SENSORS_LIS3_I2C : n ## .config: 1038 :
+  CONFIG_ALTERA_STAPL : n ## .config: 1039 :
+  CONFIG_INTEL_MEI : n ## .config: 1040 :
+  CONFIG_VMWARE_VMCI : n ## .config: 1041 :
+  CONFIG_GENWQE : n ## .config: 1042 :
+  CONFIG_ECHO : n ## .config: 1043 :
+  CONFIG_BCM_VK : n ## .config: 1044 :
+  CONFIG_MISC_ALCOR_PCI : n ## .config: 1045 :
+  CONFIG_MISC_RTSX_PCI : n ## .config: 1046 :
+  CONFIG_MISC_RTSX_USB : n ## .config: 1047 :
+  CONFIG_UACCE : n ## .config: 1048 :
+  CONFIG_PVPANIC : n ## .config: 1049 :
+  CONFIG_FUSION : n ## .config: 1057 :
+  CONFIG_FIREWIRE : n ## .config: 1062 :
+  CONFIG_FIREWIRE_NOSY : n ## .config: 1063 :
+  CONFIG_MACINTOSH_DRIVERS : n ## .config: 1066 :
+  CONFIG_INPUT : y ## .config: 1071 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_INPUT_LEDS : n ## .config: 1072 :
+  CONFIG_INPUT_FF_MEMLESS : n ## .config: 1073 :
+  CONFIG_INPUT_SPARSEKMAP : n ## .config: 1074 :
+  CONFIG_INPUT_MATRIXKMAP : n ## .config: 1075 :
+  CONFIG_INPUT_VIVALDIFMAP : y ## .config: 1076 :
+  CONFIG_INPUT_MOUSEDEV : y ## .config: 1081 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_INPUT_MOUSEDEV_PSAUX : n ## .config: 1082 :
+  CONFIG_INPUT_MOUSEDEV_SCREEN_X : 1024 ## .config: 1083 :
+  CONFIG_INPUT_MOUSEDEV_SCREEN_Y : 768 ## .config: 1084 :
+  CONFIG_INPUT_JOYDEV : n ## .config: 1085 :
+  CONFIG_INPUT_EVDEV : y ## .config: 1086 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_INPUT_EVBUG : n ## .config: 1087 :
+  CONFIG_INPUT_KEYBOARD : y ## .config: 1092 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_KEYBOARD_ADP5588 : n ## .config: 1093 :
+  CONFIG_KEYBOARD_ADP5589 : n ## .config: 1094 :
+  CONFIG_KEYBOARD_ATKBD : y ## .config: 1095 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_KEYBOARD_QT1050 : n ## .config: 1096 :
+  CONFIG_KEYBOARD_QT1070 : n ## .config: 1097 :
+  CONFIG_KEYBOARD_QT2160 : n ## .config: 1098 :
+  CONFIG_KEYBOARD_DLINK_DIR685 : n ## .config: 1099 :
+  CONFIG_KEYBOARD_LKKBD : n ## .config: 1100 :
+  CONFIG_KEYBOARD_TCA6416 : n ## .config: 1101 :
+  CONFIG_KEYBOARD_TCA8418 : n ## .config: 1102 :
+  CONFIG_KEYBOARD_LM8323 : n ## .config: 1103 :
+  CONFIG_KEYBOARD_LM8333 : n ## .config: 1104 :
+  CONFIG_KEYBOARD_MAX7359 : n ## .config: 1105 :
+  CONFIG_KEYBOARD_MCS : n ## .config: 1106 :
+  CONFIG_KEYBOARD_MPR121 : n ## .config: 1107 :
+  CONFIG_KEYBOARD_NEWTON : n ## .config: 1108 :
+  CONFIG_KEYBOARD_OPENCORES : n ## .config: 1109 :
+  CONFIG_KEYBOARD_SAMSUNG : n ## .config: 1110 :
+  CONFIG_KEYBOARD_STOWAWAY : n ## .config: 1111 :
+  CONFIG_KEYBOARD_SUNKBD : n ## .config: 1112 :
+  CONFIG_KEYBOARD_TM2_TOUCHKEY : n ## .config: 1113 :
+  CONFIG_KEYBOARD_XTKBD : n ## .config: 1114 :
+  CONFIG_KEYBOARD_CYPRESS_SF : n ## .config: 1115 :
+  CONFIG_INPUT_MOUSE : y ## .config: 1116 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_MOUSE_PS2 : y ## .config: 1117 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_MOUSE_PS2_ALPS : n ## .config: 1118 :
+  CONFIG_MOUSE_PS2_BYD : n ## .config: 1119 :
+  CONFIG_MOUSE_PS2_LOGIPS2PP : n ## .config: 1120 :
+  CONFIG_MOUSE_PS2_SYNAPTICS : n ## .config: 1121 :
+  CONFIG_MOUSE_PS2_SYNAPTICS_SMBUS : n ## .config: 1122 :
+  CONFIG_MOUSE_PS2_CYPRESS : n ## .config: 1123 :
+  CONFIG_MOUSE_PS2_TRACKPOINT : n ## .config: 1124 :
+  CONFIG_MOUSE_PS2_ELANTECH : n ## .config: 1125 :
+  CONFIG_MOUSE_PS2_SENTELIC : n ## .config: 1126 :
+  CONFIG_MOUSE_PS2_TOUCHKIT : n ## .config: 1127 :
+  CONFIG_MOUSE_PS2_FOCALTECH : n ## .config: 1128 :
+  CONFIG_MOUSE_SERIAL : n ## .config: 1129 :
+  CONFIG_MOUSE_APPLETOUCH : n ## .config: 1130 :
+  CONFIG_MOUSE_BCM5974 : n ## .config: 1131 :
+  CONFIG_MOUSE_CYAPA : n ## .config: 1132 :
+  CONFIG_MOUSE_ELAN_I2C : n ## .config: 1133 :
+  CONFIG_MOUSE_VSXXXAA : n ## .config: 1134 :
+  CONFIG_MOUSE_SYNAPTICS_I2C : n ## .config: 1135 :
+  CONFIG_MOUSE_SYNAPTICS_USB : n ## .config: 1136 :
+  CONFIG_INPUT_JOYSTICK : n ## .config: 1137 :
+  CONFIG_INPUT_TABLET : y ## .config: 1138 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_TABLET_USB_ACECAD : n ## .config: 1139 :
+  CONFIG_TABLET_USB_AIPTEK : n ## .config: 1140 :
+  CONFIG_TABLET_USB_HANWANG : n ## .config: 1141 :
+  CONFIG_TABLET_USB_KBTAB : n ## .config: 1142 :
+  CONFIG_TABLET_USB_PEGASUS : n ## .config: 1143 :
+  CONFIG_TABLET_SERIAL_WACOM4 : n ## .config: 1144 :
+  CONFIG_INPUT_TOUCHSCREEN : y ## .config: 1145 :configs/v6.10/standard/tiny/features/input/touchscreen.cfg (y) 
+  CONFIG_TOUCHSCREEN_AD7879 : n ## .config: 1146 :
+  CONFIG_TOUCHSCREEN_ATMEL_MXT : n ## .config: 1147 :
+  CONFIG_TOUCHSCREEN_BU21013 : n ## .config: 1148 :
+  CONFIG_TOUCHSCREEN_BU21029 : n ## .config: 1149 :
+  CONFIG_TOUCHSCREEN_CHIPONE_ICN8505 : n ## .config: 1150 :
+  CONFIG_TOUCHSCREEN_CY8CTMA140 : n ## .config: 1151 :
+  CONFIG_TOUCHSCREEN_CYTTSP_CORE : n ## .config: 1152 :
+  CONFIG_TOUCHSCREEN_CYTTSP4_CORE : n ## .config: 1153 :
+  CONFIG_TOUCHSCREEN_CYTTSP5 : n ## .config: 1154 :
+  CONFIG_TOUCHSCREEN_DYNAPRO : n ## .config: 1155 :
+  CONFIG_TOUCHSCREEN_HAMPSHIRE : n ## .config: 1156 :
+  CONFIG_TOUCHSCREEN_EETI : n ## .config: 1157 :
+  CONFIG_TOUCHSCREEN_EGALAX_SERIAL : n ## .config: 1158 :
+  CONFIG_TOUCHSCREEN_EXC3000 : n ## .config: 1159 :
+  CONFIG_TOUCHSCREEN_FUJITSU : n ## .config: 1160 :
+  CONFIG_TOUCHSCREEN_GOODIX_BERLIN_I2C : n ## .config: 1161 :
+  CONFIG_TOUCHSCREEN_HIDEEP : n ## .config: 1162 :
+  CONFIG_TOUCHSCREEN_HYCON_HY46XX : n ## .config: 1163 :
+  CONFIG_TOUCHSCREEN_HYNITRON_CSTXXX : n ## .config: 1164 :
+  CONFIG_TOUCHSCREEN_ILI210X : n ## .config: 1165 :
+  CONFIG_TOUCHSCREEN_ILITEK : n ## .config: 1166 :
+  CONFIG_TOUCHSCREEN_S6SY761 : n ## .config: 1167 :
+  CONFIG_TOUCHSCREEN_GUNZE : n ## .config: 1168 :
+  CONFIG_TOUCHSCREEN_EKTF2127 : n ## .config: 1169 :
+  CONFIG_TOUCHSCREEN_ELAN : n ## .config: 1170 :
+  CONFIG_TOUCHSCREEN_ELO : n ## .config: 1171 :
+  CONFIG_TOUCHSCREEN_WACOM_W8001 : n ## .config: 1172 :
+  CONFIG_TOUCHSCREEN_WACOM_I2C : n ## .config: 1173 :
+  CONFIG_TOUCHSCREEN_MAX11801 : n ## .config: 1174 :
+  CONFIG_TOUCHSCREEN_MCS5000 : n ## .config: 1175 :
+  CONFIG_TOUCHSCREEN_MMS114 : n ## .config: 1176 :
+  CONFIG_TOUCHSCREEN_MELFAS_MIP4 : n ## .config: 1177 :
+  CONFIG_TOUCHSCREEN_MTOUCH : n ## .config: 1178 :
+  CONFIG_TOUCHSCREEN_NOVATEK_NVT_TS : n ## .config: 1179 :
+  CONFIG_TOUCHSCREEN_IMAGIS : n ## .config: 1180 :
+  CONFIG_TOUCHSCREEN_INEXIO : n ## .config: 1181 :
+  CONFIG_TOUCHSCREEN_PENMOUNT : n ## .config: 1182 :
+  CONFIG_TOUCHSCREEN_EDT_FT5X06 : n ## .config: 1183 :
+  CONFIG_TOUCHSCREEN_TOUCHRIGHT : n ## .config: 1184 :
+  CONFIG_TOUCHSCREEN_TOUCHWIN : n ## .config: 1185 :
+  CONFIG_TOUCHSCREEN_PIXCIR : n ## .config: 1186 :
+  CONFIG_TOUCHSCREEN_WDT87XX_I2C : n ## .config: 1187 :
+  CONFIG_TOUCHSCREEN_USB_COMPOSITE : y ## .config: 1188 :configs/v6.10/standard/tiny/features/usb/touchscreen-composite.cfg (m) 
+    [NOTE]: 'CONFIG_TOUCHSCREEN_USB_COMPOSITE' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config TOUCHSCREEN_USB_COMPOSITE
+        	tristate "USB Touchscreen Driver"
+        	select USB
+        	depends on USB_ARCH_HAS_HCD && INPUT_TOUCHSCREEN && INPUT
+        	help
+        	  USB Touchscreen driver for:
+        	  - eGalax Touchkit USB (also includes eTurboTouch CT-410/510/700)
+        	  - PanJit TouchSet USB
+        	  - 3M MicroTouch USB (EX II series)
+        	  - ITM
+        	  - some other eTurboTouch
+        	  - Gunze AHL61
+        	  - DMC TSC-10/25
+        	  - IRTOUCHSYSTEMS/UNITOP
+        	  - IdealTEK URTC1000
+        	  - GoTop Super_Q2/GogoPen/PenPower tablets
+        	  - JASTEC USB Touch Controller/DigiTech DTR-02U
+        	  - Zytronic controllers
+        	  - Elo TouchSystems 2700 IntelliTouch
+        	  - EasyTouch USB Touch Controller from Data Module
+        	  - e2i (Mimo monitors)
+	  
+        	  Have a look at <http://linux.chapter7.ch/touchkit/> for
+        	  a usage description and the required user-space stuff.
+	  
+        	  To compile this driver as a module, choose M here: the
+        	  module will be called usbtouchscreen.
+
+        Config 'TOUCHSCREEN_USB_COMPOSITE' has the following Direct dependencies (TOUCHSCREEN_USB_COMPOSITE=y):
+                USB_ARCH_HAS_HCD(=y) && INPUT_TOUCHSCREEN(=y) && INPUT(=y)
+        Parent dependencies are:
+             INPUT [y] USB_ARCH_HAS_HCD [y] INPUT_TOUCHSCREEN [y]
+  CONFIG_TOUCHSCREEN_USB_EGALAX : n ## .config: 1189 :
+  CONFIG_TOUCHSCREEN_USB_PANJIT : n ## .config: 1190 :
+  CONFIG_TOUCHSCREEN_USB_3M : n ## .config: 1191 :
+  CONFIG_TOUCHSCREEN_USB_ITM : n ## .config: 1192 :
+  CONFIG_TOUCHSCREEN_USB_ETURBO : n ## .config: 1193 :
+  CONFIG_TOUCHSCREEN_USB_GUNZE : n ## .config: 1194 :
+  CONFIG_TOUCHSCREEN_USB_DMC_TSC10 : n ## .config: 1195 :
+  CONFIG_TOUCHSCREEN_USB_IRTOUCH : n ## .config: 1196 :
+  CONFIG_TOUCHSCREEN_USB_IDEALTEK : n ## .config: 1197 :
+  CONFIG_TOUCHSCREEN_USB_GENERAL_TOUCH : n ## .config: 1198 :
+  CONFIG_TOUCHSCREEN_USB_GOTOP : n ## .config: 1199 :
+  CONFIG_TOUCHSCREEN_USB_JASTEC : n ## .config: 1200 :
+  CONFIG_TOUCHSCREEN_USB_ELO : n ## .config: 1201 :
+  CONFIG_TOUCHSCREEN_USB_E2I : n ## .config: 1202 :
+  CONFIG_TOUCHSCREEN_USB_ZYTRONIC : n ## .config: 1203 :
+  CONFIG_TOUCHSCREEN_USB_ETT_TC45USB : n ## .config: 1204 :
+  CONFIG_TOUCHSCREEN_USB_NEXIO : n ## .config: 1205 :
+  CONFIG_TOUCHSCREEN_USB_EASYTOUCH : n ## .config: 1206 :
+  CONFIG_TOUCHSCREEN_TOUCHIT213 : n ## .config: 1207 :
+  CONFIG_TOUCHSCREEN_TSC_SERIO : n ## .config: 1208 :
+  CONFIG_TOUCHSCREEN_TSC2004 : n ## .config: 1209 :
+  CONFIG_TOUCHSCREEN_TSC2007 : n ## .config: 1210 :
+  CONFIG_TOUCHSCREEN_SILEAD : n ## .config: 1211 :
+  CONFIG_TOUCHSCREEN_ST1232 : n ## .config: 1212 :
+  CONFIG_TOUCHSCREEN_STMFTS : n ## .config: 1213 :
+  CONFIG_TOUCHSCREEN_SX8654 : n ## .config: 1214 :
+  CONFIG_TOUCHSCREEN_TPS6507X : n ## .config: 1215 :
+  CONFIG_TOUCHSCREEN_ZET6223 : n ## .config: 1216 :
+  CONFIG_TOUCHSCREEN_ROHM_BU21023 : n ## .config: 1217 :
+  CONFIG_TOUCHSCREEN_IQS5XX : n ## .config: 1218 :
+  CONFIG_TOUCHSCREEN_IQS7211 : n ## .config: 1219 :
+  CONFIG_TOUCHSCREEN_ZINITIX : n ## .config: 1220 :
+  CONFIG_TOUCHSCREEN_HIMAX_HX83112B : n ## .config: 1221 :
+  CONFIG_INPUT_MISC : y ## .config: 1222 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_INPUT_AD714X : n ## .config: 1223 :
+  CONFIG_INPUT_BMA150 : n ## .config: 1224 :
+  CONFIG_INPUT_E3X0_BUTTON : n ## .config: 1225 :
+  CONFIG_INPUT_MMA8450 : n ## .config: 1226 :
+  CONFIG_INPUT_APANEL : n ## .config: 1227 :
+  CONFIG_INPUT_ATLAS_BTNS : n ## .config: 1228 :
+  CONFIG_INPUT_ATI_REMOTE2 : n ## .config: 1229 :
+  CONFIG_INPUT_KEYSPAN_REMOTE : n ## .config: 1230 :
+  CONFIG_INPUT_KXTJ9 : n ## .config: 1231 :
+  CONFIG_INPUT_POWERMATE : n ## .config: 1232 :
+  CONFIG_INPUT_YEALINK : n ## .config: 1233 :
+  CONFIG_INPUT_CM109 : n ## .config: 1234 :
+  CONFIG_INPUT_UINPUT : y ## .config: 1235 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_INPUT_PCF8574 : n ## .config: 1236 :
+  CONFIG_INPUT_DA7280_HAPTICS : n ## .config: 1237 :
+  CONFIG_INPUT_ADXL34X : n ## .config: 1238 :
+  CONFIG_INPUT_IMS_PCU : n ## .config: 1239 :
+  CONFIG_INPUT_IQS269A : n ## .config: 1240 :
+  CONFIG_INPUT_IQS626A : n ## .config: 1241 :
+  CONFIG_INPUT_IQS7222 : n ## .config: 1242 :
+  CONFIG_INPUT_CMA3000 : n ## .config: 1243 :
+  CONFIG_INPUT_IDEAPAD_SLIDEBAR : n ## .config: 1244 :
+  CONFIG_INPUT_DRV2665_HAPTICS : n ## .config: 1245 :
+  CONFIG_INPUT_DRV2667_HAPTICS : n ## .config: 1246 :
+  CONFIG_RMI4_CORE : n ## .config: 1247 :
+  CONFIG_SERIO : y ## .config: 1252 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_ARCH_MIGHT_HAVE_PC_SERIO : y ## .config: 1253 :
+  CONFIG_SERIO_I8042 : y ## .config: 1254 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_SERIO_SERPORT : y ## .config: 1255 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_SERIO_CT82C710 : n ## .config: 1256 :
+  CONFIG_SERIO_PARKBD : n ## .config: 1257 :
+  CONFIG_SERIO_PCIPS2 : n ## .config: 1258 :
+  CONFIG_SERIO_LIBPS2 : y ## .config: 1259 :
+  CONFIG_SERIO_RAW : n ## .config: 1260 :
+  CONFIG_SERIO_ALTERA_PS2 : n ## .config: 1261 :
+  CONFIG_SERIO_PS2MULT : n ## .config: 1262 :
+  CONFIG_SERIO_ARC_PS2 : n ## .config: 1263 :
+  CONFIG_USERIO : n ## .config: 1264 :
+  CONFIG_GAMEPORT : n ## .config: 1265 :
+  CONFIG_TTY : y ## .config: 1272 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) configs/v6.10/standard/tiny/cfg/8250.cfg (y) 
+  CONFIG_VT : y ## .config: 1273 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) configs/v6.10/standard/tiny/cfg/efi-ext.cfg (y) 
+  CONFIG_CONSOLE_TRANSLATIONS : n ## .config: 1274 :
+  CONFIG_VT_CONSOLE : n ## .config: 1275 :
+  CONFIG_VT_HW_CONSOLE_BINDING : y ## .config: 1276 :
+  CONFIG_UNIX98_PTYS : y ## .config: 1277 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_LEGACY_PTYS : n ## .config: 1278 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_LEGACY_TIOCSTI : n ## .config: 1279 :
+  CONFIG_LDISC_AUTOLOAD : n ## .config: 1280 :
+  CONFIG_SERIAL_EARLYCON : y ## .config: 1285 :
+  CONFIG_SERIAL_8250 : y ## .config: 1286 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) configs/v6.10/standard/tiny/cfg/8250.cfg (y) 
+  CONFIG_SERIAL_8250_DEPRECATED_OPTIONS : n ## .config: 1287 :
+  CONFIG_SERIAL_8250_PNP : y ## .config: 1288 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_SERIAL_8250_16550A_VARIANTS : n ## .config: 1289 :
+  CONFIG_SERIAL_8250_FINTEK : n ## .config: 1290 :
+  CONFIG_SERIAL_8250_CONSOLE : y ## .config: 1291 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) configs/v6.10/standard/tiny/cfg/8250.cfg (y) 
+  CONFIG_SERIAL_8250_PCILIB : y ## .config: 1292 :
+  CONFIG_SERIAL_8250_PCI : y ## .config: 1293 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) configs/v6.10/standard/tiny/cfg/8250.cfg (y) 
+  CONFIG_SERIAL_8250_EXAR : n ## .config: 1294 :
+  CONFIG_SERIAL_8250_NR_UARTS : 4 ## .config: 1295 :configs/v6.10/standard/tiny/cfg/8250.cfg (4) 
+  CONFIG_SERIAL_8250_RUNTIME_UARTS : 4 ## .config: 1296 :configs/v6.10/standard/tiny/cfg/8250.cfg (4) 
+  CONFIG_SERIAL_8250_EXTENDED : n ## .config: 1297 :
+  CONFIG_SERIAL_8250_PCI1XXXX : n ## .config: 1298 :
+  CONFIG_SERIAL_8250_DW : n ## .config: 1299 :
+  CONFIG_SERIAL_8250_RT288X : n ## .config: 1300 :
+  CONFIG_SERIAL_8250_LPSS : n ## .config: 1301 :
+  CONFIG_SERIAL_8250_MID : n ## .config: 1302 :
+  CONFIG_SERIAL_8250_PERICOM : n ## .config: 1303 :
+  CONFIG_SERIAL_UARTLITE : n ## .config: 1308 :
+  CONFIG_SERIAL_CORE : y ## .config: 1309 :configs/v6.10/standard/tiny/cfg/8250.cfg (y) 
+  CONFIG_SERIAL_CORE_CONSOLE : y ## .config: 1310 :configs/v6.10/standard/tiny/cfg/8250.cfg (y) 
+  CONFIG_SERIAL_JSM : n ## .config: 1311 :
+  CONFIG_SERIAL_LANTIQ : n ## .config: 1312 :
+  CONFIG_SERIAL_SCCNXP : n ## .config: 1313 :
+  CONFIG_SERIAL_SC16IS7XX : n ## .config: 1314 :
+  CONFIG_SERIAL_ALTERA_JTAGUART : n ## .config: 1315 :
+  CONFIG_SERIAL_ALTERA_UART : n ## .config: 1316 :
+  CONFIG_SERIAL_ARC : n ## .config: 1317 :
+  CONFIG_SERIAL_RP2 : n ## .config: 1318 :
+  CONFIG_SERIAL_FSL_LPUART : n ## .config: 1319 :
+  CONFIG_SERIAL_FSL_LINFLEXUART : n ## .config: 1320 :
+  CONFIG_SERIAL_SPRD : n ## .config: 1321 :
+  CONFIG_SERIAL_NONSTANDARD : n ## .config: 1324 :
+  CONFIG_NOZOMI : n ## .config: 1325 :
+  CONFIG_NULL_TTY : n ## .config: 1326 :
+  CONFIG_SERIAL_DEV_BUS : n ## .config: 1327 :
+  CONFIG_TTY_PRINTK : y ## .config: 1328 :configs/v6.10/standard/tiny/features/debug/printk.cfg (y) 
+  CONFIG_TTY_PRINTK_LEVEL : 6 ## .config: 1329 :
+  CONFIG_PRINTER : y ## .config: 1330 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (m) 
+    [NOTE]: 'CONFIG_PRINTER' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config PRINTER
+        	tristate "Parallel printer support"
+        	depends on PARPORT && (HAS_IOPORT || PARPORT_NOT_PC)
+        	help
+        	  If you intend to attach a printer to the parallel port of your Linux
+        	  box (as opposed to using a serial printer; if the connector at the
+        	  printer has 9 or 25 holes ["female"], then it's serial), say Y.
+        	  Also read the Printing-HOWTO, available from
+        	  <https://www.tldp.org/docs.html#howto>.
+	  
+        	  It is possible to share one parallel port among several devices
+        	  (e.g. printer and ZIP drive) and it is safe to compile the
+        	  corresponding drivers into the kernel.
+	  
+        	  To compile this driver as a module, choose M here and read
+        	  <file:Documentation/admin-guide/parport.rst>.  The module will be called lp.
+	  
+        	  If you have several parallel ports, you can specify which ports to
+        	  use with the "lp" kernel command line option.  (Try "man bootparam"
+        	  or see the documentation of your boot loader (lilo or loadlin) about
+        	  how to pass options to the kernel at boot time.)  The syntax of the
+        	  "lp" command line option can be found in <file:drivers/char/lp.c>.
+	  
+        	  If you have more than 8 printers, you need to increase the LP_NO
+        	  macro in lp.c and the PARPORT_MAX macro in parport.h.
+
+        Config 'PRINTER' has the following Direct dependencies (PRINTER=y):
+                PARPORT(=y) && HAS_IOPORT(=y) || PARPORT_NOT_PC(=n) (=y)
+        Parent dependencies are:
+             PARPORT_NOT_PC [n] HAS_IOPORT [y] PARPORT [y]
+  CONFIG_LP_CONSOLE : n ## .config: 1331 :
+  CONFIG_PPDEV : n ## .config: 1332 :
+  CONFIG_VIRTIO_CONSOLE : n ## .config: 1333 :
+  CONFIG_IPMI_HANDLER : n ## .config: 1334 :
+  CONFIG_HW_RANDOM : n ## .config: 1335 :
+  CONFIG_APPLICOM : n ## .config: 1336 :
+  CONFIG_MWAVE : n ## .config: 1337 :
+  CONFIG_DEVMEM : n ## .config: 1338 :
+  CONFIG_NVRAM : n ## .config: 1339 :
+  CONFIG_DEVPORT : n ## .config: 1340 :
+  CONFIG_HPET : y ## .config: 1341 :configs/v6.10/standard/tiny/cfg/timer/hpet.cfg (y) 
+  CONFIG_HPET_MMAP : y ## .config: 1342 :configs/v6.10/standard/tiny/cfg/timer/hpet.cfg (y) 
+  CONFIG_HPET_MMAP_DEFAULT : n ## .config: 1343 :
+  CONFIG_HANGCHECK_TIMER : n ## .config: 1344 :
+  CONFIG_TCG_TPM : n ## .config: 1345 :
+  CONFIG_TELCLOCK : n ## .config: 1346 :
+  CONFIG_XILLYBUS : n ## .config: 1347 :
+  CONFIG_XILLYUSB : n ## .config: 1348 :
+  CONFIG_I2C : y ## .config: 1354 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_ACPI_I2C_OPREGION : n ## .config: 1355 :
+  CONFIG_I2C_BOARDINFO : y ## .config: 1356 :configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_I2C_COMPAT : y ## .config: 1357 :configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_I2C_CHARDEV : n ## .config: 1358 :
+  CONFIG_I2C_MUX : n ## .config: 1359 :
+  CONFIG_I2C_HELPER_AUTO : y ## .config: 1360 :configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_I2C_SMBUS : y ## .config: 1361 :
+  CONFIG_I2C_ALGOBIT : y ## .config: 1362 :
+  CONFIG_I2C_ALI1535 : n ## .config: 1371 :
+  CONFIG_I2C_ALI1563 : n ## .config: 1372 :
+  CONFIG_I2C_ALI15X3 : n ## .config: 1373 :
+  CONFIG_I2C_AMD756 : n ## .config: 1374 :
+  CONFIG_I2C_AMD8111 : n ## .config: 1375 :
+  CONFIG_I2C_AMD_MP2 : n ## .config: 1376 :
+  CONFIG_I2C_I801 : y ## .config: 1377 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_I2C_ISCH : n ## .config: 1378 :
+  CONFIG_I2C_ISMT : n ## .config: 1379 :
+  CONFIG_I2C_PIIX4 : n ## .config: 1380 :
+  CONFIG_I2C_NFORCE2 : n ## .config: 1381 :
+  CONFIG_I2C_NVIDIA_GPU : n ## .config: 1382 :
+  CONFIG_I2C_SIS5595 : n ## .config: 1383 :
+  CONFIG_I2C_SIS630 : n ## .config: 1384 :
+  CONFIG_I2C_SIS96X : n ## .config: 1385 :
+  CONFIG_I2C_VIA : n ## .config: 1386 :
+  CONFIG_I2C_VIAPRO : n ## .config: 1387 :
+  CONFIG_I2C_ZHAOXIN : n ## .config: 1388 :
+  CONFIG_I2C_SCMI : n ## .config: 1393 :
+  CONFIG_I2C_DESIGNWARE_PLATFORM : n ## .config: 1398 :
+  CONFIG_I2C_DESIGNWARE_PCI : n ## .config: 1399 :
+  CONFIG_I2C_EMEV2 : n ## .config: 1400 :
+  CONFIG_I2C_OCORES : n ## .config: 1401 :
+  CONFIG_I2C_PCA_PLATFORM : n ## .config: 1402 :
+  CONFIG_I2C_SIMTEC : n ## .config: 1403 :
+  CONFIG_I2C_XILINX : n ## .config: 1404 :
+  CONFIG_I2C_DIOLAN_U2C : n ## .config: 1409 :
+  CONFIG_I2C_CP2615 : n ## .config: 1410 :
+  CONFIG_I2C_PARPORT : n ## .config: 1411 :
+  CONFIG_I2C_PCI1XXXX : n ## .config: 1412 :
+  CONFIG_I2C_ROBOTFUZZ_OSIF : n ## .config: 1413 :
+  CONFIG_I2C_TAOS_EVM : n ## .config: 1414 :
+  CONFIG_I2C_TINY_USB : n ## .config: 1415 :
+  CONFIG_I2C_MLXCPLD : n ## .config: 1420 :
+  CONFIG_I2C_VIRTIO : n ## .config: 1421 :
+  CONFIG_I2C_SLAVE : n ## .config: 1424 :
+  CONFIG_I2C_DEBUG_CORE : n ## .config: 1425 :
+  CONFIG_I2C_DEBUG_ALGO : n ## .config: 1426 :
+  CONFIG_I2C_DEBUG_BUS : n ## .config: 1427 :
+  CONFIG_I3C : n ## .config: 1430 :
+  CONFIG_SPI : n ## .config: 1431 :
+  CONFIG_SPMI : n ## .config: 1432 :
+  CONFIG_HSI : n ## .config: 1433 :
+  CONFIG_PPS : n ## .config: 1434 :
+  CONFIG_PTP_1588_CLOCK_OPTIONAL : y ## .config: 1439 :
+  CONFIG_PINCTRL : y ## .config: 1446 :
+  CONFIG_DEBUG_PINCTRL : n ## .config: 1447 :
+  CONFIG_PINCTRL_AMD : n ## .config: 1448 :
+  CONFIG_PINCTRL_CY8C95X0 : n ## .config: 1449 :
+  CONFIG_PINCTRL_MCP23S08 : n ## .config: 1450 :
+  CONFIG_PINCTRL_SX150X : n ## .config: 1451 :
+  CONFIG_PINCTRL_BAYTRAIL : n ## .config: 1456 :
+  CONFIG_PINCTRL_CHERRYVIEW : n ## .config: 1457 :
+  CONFIG_PINCTRL_LYNXPOINT : n ## .config: 1458 :
+  CONFIG_PINCTRL_INTEL_PLATFORM : n ## .config: 1459 :
+  CONFIG_PINCTRL_ALDERLAKE : n ## .config: 1460 :
+  CONFIG_PINCTRL_BROXTON : n ## .config: 1461 :
+  CONFIG_PINCTRL_CANNONLAKE : n ## .config: 1462 :
+  CONFIG_PINCTRL_CEDARFORK : n ## .config: 1463 :
+  CONFIG_PINCTRL_DENVERTON : n ## .config: 1464 :
+  CONFIG_PINCTRL_ELKHARTLAKE : n ## .config: 1465 :
+  CONFIG_PINCTRL_EMMITSBURG : n ## .config: 1466 :
+  CONFIG_PINCTRL_GEMINILAKE : n ## .config: 1467 :
+  CONFIG_PINCTRL_ICELAKE : n ## .config: 1468 :
+  CONFIG_PINCTRL_JASPERLAKE : n ## .config: 1469 :
+  CONFIG_PINCTRL_LAKEFIELD : n ## .config: 1470 :
+  CONFIG_PINCTRL_LEWISBURG : n ## .config: 1471 :
+  CONFIG_PINCTRL_METEORLAKE : n ## .config: 1472 :
+  CONFIG_PINCTRL_METEORPOINT : n ## .config: 1473 :
+  CONFIG_PINCTRL_SUNRISEPOINT : n ## .config: 1474 :
+  CONFIG_PINCTRL_TIGERLAKE : n ## .config: 1475 :
+  CONFIG_GPIOLIB : n ## .config: 1483 :
+  CONFIG_W1 : n ## .config: 1484 :
+  CONFIG_POWER_RESET : n ## .config: 1485 :
+  CONFIG_POWER_SUPPLY : y ## .config: 1486 :
+  CONFIG_POWER_SUPPLY_DEBUG : n ## .config: 1487 :
+  CONFIG_IP5XXX_POWER : n ## .config: 1488 :
+  CONFIG_TEST_POWER : n ## .config: 1489 :
+  CONFIG_CHARGER_ADP5061 : n ## .config: 1490 :
+  CONFIG_BATTERY_CW2015 : n ## .config: 1491 :
+  CONFIG_BATTERY_DS2780 : n ## .config: 1492 :
+  CONFIG_BATTERY_DS2781 : n ## .config: 1493 :
+  CONFIG_BATTERY_DS2782 : n ## .config: 1494 :
+  CONFIG_BATTERY_SAMSUNG_SDI : n ## .config: 1495 :
+  CONFIG_BATTERY_SBS : n ## .config: 1496 :
+  CONFIG_CHARGER_SBS : n ## .config: 1497 :
+  CONFIG_BATTERY_BQ27XXX : n ## .config: 1498 :
+  CONFIG_BATTERY_MAX17042 : n ## .config: 1499 :
+  CONFIG_CHARGER_MAX8903 : n ## .config: 1500 :
+  CONFIG_CHARGER_LP8727 : n ## .config: 1501 :
+  CONFIG_CHARGER_LTC4162L : n ## .config: 1502 :
+  CONFIG_CHARGER_MAX77976 : n ## .config: 1503 :
+  CONFIG_CHARGER_BQ2415X : n ## .config: 1504 :
+  CONFIG_BATTERY_GAUGE_LTC2941 : n ## .config: 1505 :
+  CONFIG_BATTERY_GOLDFISH : n ## .config: 1506 :
+  CONFIG_BATTERY_RT5033 : n ## .config: 1507 :
+  CONFIG_CHARGER_BD99954 : n ## .config: 1508 :
+  CONFIG_BATTERY_UG3105 : n ## .config: 1509 :
+  CONFIG_FUEL_GAUGE_MM8013 : n ## .config: 1510 :
+  CONFIG_HWMON : n ## .config: 1511 :
+  CONFIG_THERMAL : y ## .config: 1512 :
+  CONFIG_THERMAL_STATISTICS : n ## .config: 1513 :
+  CONFIG_THERMAL_EMERGENCY_POWEROFF_DELAY_MS : 0 ## .config: 1514 :
+  CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE : y ## .config: 1515 :
+  CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE : n ## .config: 1516 :
+  CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE : n ## .config: 1517 :
+  CONFIG_THERMAL_GOV_FAIR_SHARE : n ## .config: 1518 :
+  CONFIG_THERMAL_GOV_STEP_WISE : y ## .config: 1519 :
+  CONFIG_THERMAL_GOV_BANG_BANG : n ## .config: 1520 :
+  CONFIG_THERMAL_GOV_USER_SPACE : n ## .config: 1521 :
+  CONFIG_THERMAL_EMULATION : n ## .config: 1522 :
+  CONFIG_INTEL_POWERCLAMP : n ## .config: 1527 :
+  CONFIG_X86_THERMAL_VECTOR : y ## .config: 1528 :
+  CONFIG_X86_PKG_TEMP_THERMAL : n ## .config: 1529 :
+  CONFIG_INTEL_SOC_DTS_THERMAL : n ## .config: 1530 :
+  CONFIG_INT340X_THERMAL : n ## .config: 1535 :
+  CONFIG_INTEL_PCH_THERMAL : n ## .config: 1538 :
+  CONFIG_INTEL_TCC_COOLING : n ## .config: 1539 :
+  CONFIG_WATCHDOG : y ## .config: 1542 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_WATCHDOG_CORE : n ## .config: 1543 :
+  CONFIG_WATCHDOG_NOWAYOUT : n ## .config: 1544 :
+  CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED : n ## .config: 1545 :
+  CONFIG_WATCHDOG_OPEN_TIMEOUT : 0 ## .config: 1546 :
+  CONFIG_WATCHDOG_SYSFS : n ## .config: 1547 :
+  CONFIG_WATCHDOG_HRTIMER_PRETIMEOUT : n ## .config: 1548 :
+  CONFIG_SOFT_WATCHDOG : n ## .config: 1557 :
+  CONFIG_WDAT_WDT : n ## .config: 1558 :
+  CONFIG_XILINX_WATCHDOG : n ## .config: 1559 :
+  CONFIG_ZIIRAVE_WATCHDOG : n ## .config: 1560 :
+  CONFIG_CADENCE_WATCHDOG : n ## .config: 1561 :
+  CONFIG_DW_WATCHDOG : n ## .config: 1562 :
+  CONFIG_MAX63XX_WATCHDOG : n ## .config: 1563 :
+  CONFIG_ACQUIRE_WDT : n ## .config: 1564 :
+  CONFIG_ADVANTECH_WDT : n ## .config: 1565 :
+  CONFIG_ADVANTECH_EC_WDT : n ## .config: 1566 :
+  CONFIG_ALIM1535_WDT : n ## .config: 1567 :
+  CONFIG_ALIM7101_WDT : n ## .config: 1568 :
+  CONFIG_EBC_C384_WDT : n ## .config: 1569 :
+  CONFIG_EXAR_WDT : n ## .config: 1570 :
+  CONFIG_F71808E_WDT : n ## .config: 1571 :
+  CONFIG_SP5100_TCO : n ## .config: 1572 :
+  CONFIG_SBC_FITPC2_WATCHDOG : n ## .config: 1573 :
+  CONFIG_EUROTECH_WDT : n ## .config: 1574 :
+  CONFIG_IB700_WDT : n ## .config: 1575 :
+  CONFIG_IBMASR : n ## .config: 1576 :
+  CONFIG_WAFER_WDT : n ## .config: 1577 :
+  CONFIG_I6300ESB_WDT : n ## .config: 1578 :
+  CONFIG_IE6XX_WDT : n ## .config: 1579 :
+  CONFIG_ITCO_WDT : n ## .config: 1580 :
+  CONFIG_IT8712F_WDT : n ## .config: 1581 :
+  CONFIG_IT87_WDT : n ## .config: 1582 :
+  CONFIG_HP_WATCHDOG : n ## .config: 1583 :
+  CONFIG_SC1200_WDT : n ## .config: 1584 :
+  CONFIG_PC87413_WDT : n ## .config: 1585 :
+  CONFIG_NV_TCO : n ## .config: 1586 :
+  CONFIG_60XX_WDT : n ## .config: 1587 :
+  CONFIG_CPU5_WDT : n ## .config: 1588 :
+  CONFIG_SMSC_SCH311X_WDT : n ## .config: 1589 :
+  CONFIG_SMSC37B787_WDT : n ## .config: 1590 :
+  CONFIG_TQMX86_WDT : n ## .config: 1591 :
+  CONFIG_VIA_WDT : n ## .config: 1592 :
+  CONFIG_W83627HF_WDT : n ## .config: 1593 :
+  CONFIG_W83877F_WDT : n ## .config: 1594 :
+  CONFIG_W83977F_WDT : n ## .config: 1595 :
+  CONFIG_MACHZ_WDT : n ## .config: 1596 :
+  CONFIG_SBC_EPX_C3_WATCHDOG : n ## .config: 1597 :
+  CONFIG_NI903X_WDT : n ## .config: 1598 :
+  CONFIG_NIC7018_WDT : n ## .config: 1599 :
+  CONFIG_PCIPCWATCHDOG : n ## .config: 1604 :
+  CONFIG_WDTPCI : n ## .config: 1605 :
+  CONFIG_USBPCWATCHDOG : n ## .config: 1610 :
+  CONFIG_SSB_POSSIBLE : y ## .config: 1611 :
+  CONFIG_SSB : n ## .config: 1612 :
+  CONFIG_BCMA_POSSIBLE : y ## .config: 1613 :
+  CONFIG_BCMA : y ## .config: 1614 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (m) 
+    [NOTE]: 'CONFIG_BCMA' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        menuconfig BCMA
+        	tristate "Broadcom specific AMBA"
+        	depends on BCMA_POSSIBLE
+        	help
+        	  Bus driver for Broadcom specific Advanced Microcontroller Bus
+        	  Architecture.
+
+        Config 'BCMA' has the following Direct dependencies (BCMA=y):
+                BCMA_POSSIBLE(=y)
+        Parent dependencies are:
+             BCMA_POSSIBLE [y]
+
+    [INFO]: selection details for 'CONFIG_BCMA':
+        Symbols currently n-selecting this symbol (no effect):
+          - PCIE_IPROC_BCMA
+          - B43
+          - BRCMSMAC
+
+
+  CONFIG_BCMA_HOST_PCI_POSSIBLE : y ## .config: 1615 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (y) 
+  CONFIG_BCMA_HOST_PCI : y ## .config: 1616 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (y) 
+  CONFIG_BCMA_HOST_SOC : n ## .config: 1617 :
+  CONFIG_BCMA_DRIVER_PCI : y ## .config: 1618 :
+  CONFIG_BCMA_DRIVER_GMAC_CMN : y ## .config: 1619 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (y) 
+  CONFIG_BCMA_DEBUG : n ## .config: 1620 :
+  CONFIG_MFD_AS3711 : n ## .config: 1625 :
+  CONFIG_MFD_SMPRO : n ## .config: 1626 :
+  CONFIG_PMIC_ADP5520 : n ## .config: 1627 :
+  CONFIG_MFD_BCM590XX : n ## .config: 1628 :
+  CONFIG_MFD_BD9571MWV : n ## .config: 1629 :
+  CONFIG_MFD_AXP20X_I2C : n ## .config: 1630 :
+  CONFIG_MFD_CS42L43_I2C : n ## .config: 1631 :
+  CONFIG_MFD_MADERA : n ## .config: 1632 :
+  CONFIG_PMIC_DA903X : n ## .config: 1633 :
+  CONFIG_MFD_DA9052_I2C : n ## .config: 1634 :
+  CONFIG_MFD_DA9055 : n ## .config: 1635 :
+  CONFIG_MFD_DA9062 : n ## .config: 1636 :
+  CONFIG_MFD_DA9063 : n ## .config: 1637 :
+  CONFIG_MFD_DA9150 : n ## .config: 1638 :
+  CONFIG_MFD_DLN2 : n ## .config: 1639 :
+  CONFIG_MFD_MC13XXX_I2C : n ## .config: 1640 :
+  CONFIG_MFD_MP2629 : n ## .config: 1641 :
+  CONFIG_MFD_INTEL_QUARK_I2C_GPIO : n ## .config: 1642 :
+  CONFIG_LPC_ICH : n ## .config: 1643 :
+  CONFIG_LPC_SCH : n ## .config: 1644 :
+  CONFIG_MFD_INTEL_LPSS_ACPI : n ## .config: 1645 :
+  CONFIG_MFD_INTEL_LPSS_PCI : n ## .config: 1646 :
+  CONFIG_MFD_INTEL_PMC_BXT : n ## .config: 1647 :
+  CONFIG_MFD_IQS62X : n ## .config: 1648 :
+  CONFIG_MFD_JANZ_CMODIO : n ## .config: 1649 :
+  CONFIG_MFD_KEMPLD : n ## .config: 1650 :
+  CONFIG_MFD_88PM800 : n ## .config: 1651 :
+  CONFIG_MFD_88PM805 : n ## .config: 1652 :
+  CONFIG_MFD_88PM860X : n ## .config: 1653 :
+  CONFIG_MFD_MAX14577 : n ## .config: 1654 :
+  CONFIG_MFD_MAX77541 : n ## .config: 1655 :
+  CONFIG_MFD_MAX77693 : n ## .config: 1656 :
+  CONFIG_MFD_MAX77843 : n ## .config: 1657 :
+  CONFIG_MFD_MAX8907 : n ## .config: 1658 :
+  CONFIG_MFD_MAX8925 : n ## .config: 1659 :
+  CONFIG_MFD_MAX8997 : n ## .config: 1660 :
+  CONFIG_MFD_MAX8998 : n ## .config: 1661 :
+  CONFIG_MFD_MT6360 : n ## .config: 1662 :
+  CONFIG_MFD_MT6370 : n ## .config: 1663 :
+  CONFIG_MFD_MT6397 : n ## .config: 1664 :
+  CONFIG_MFD_MENF21BMC : n ## .config: 1665 :
+  CONFIG_MFD_VIPERBOARD : n ## .config: 1666 :
+  CONFIG_MFD_RETU : n ## .config: 1667 :
+  CONFIG_MFD_PCF50633 : n ## .config: 1668 :
+  CONFIG_MFD_SY7636A : n ## .config: 1669 :
+  CONFIG_MFD_RDC321X : n ## .config: 1670 :
+  CONFIG_MFD_RT4831 : n ## .config: 1671 :
+  CONFIG_MFD_RT5033 : n ## .config: 1672 :
+  CONFIG_MFD_RT5120 : n ## .config: 1673 :
+  CONFIG_MFD_RC5T583 : n ## .config: 1674 :
+  CONFIG_MFD_SI476X_CORE : n ## .config: 1675 :
+  CONFIG_MFD_SM501 : n ## .config: 1676 :
+  CONFIG_MFD_SKY81452 : n ## .config: 1677 :
+  CONFIG_MFD_SYSCON : n ## .config: 1678 :
+  CONFIG_MFD_LP3943 : n ## .config: 1679 :
+  CONFIG_MFD_LP8788 : n ## .config: 1680 :
+  CONFIG_MFD_TI_LMU : n ## .config: 1681 :
+  CONFIG_MFD_PALMAS : n ## .config: 1682 :
+  CONFIG_TPS6105X : n ## .config: 1683 :
+  CONFIG_TPS6507X : n ## .config: 1684 :
+  CONFIG_MFD_TPS65086 : n ## .config: 1685 :
+  CONFIG_MFD_TPS65090 : n ## .config: 1686 :
+  CONFIG_MFD_TI_LP873X : n ## .config: 1687 :
+  CONFIG_MFD_TPS6586X : n ## .config: 1688 :
+  CONFIG_MFD_TPS65912_I2C : n ## .config: 1689 :
+  CONFIG_MFD_TPS6594_I2C : n ## .config: 1690 :
+  CONFIG_TWL4030_CORE : n ## .config: 1691 :
+  CONFIG_TWL6040_CORE : n ## .config: 1692 :
+  CONFIG_MFD_WL1273_CORE : n ## .config: 1693 :
+  CONFIG_MFD_LM3533 : n ## .config: 1694 :
+  CONFIG_MFD_TQMX86 : n ## .config: 1695 :
+  CONFIG_MFD_VX855 : n ## .config: 1696 :
+  CONFIG_MFD_ARIZONA_I2C : n ## .config: 1697 :
+  CONFIG_MFD_WM8400 : n ## .config: 1698 :
+  CONFIG_MFD_WM831X_I2C : n ## .config: 1699 :
+  CONFIG_MFD_WM8350_I2C : n ## .config: 1700 :
+  CONFIG_MFD_WM8994 : n ## .config: 1701 :
+  CONFIG_MFD_ATC260X_I2C : n ## .config: 1702 :
+  CONFIG_REGULATOR : n ## .config: 1705 :
+  CONFIG_RC_CORE : n ## .config: 1706 :
+  CONFIG_MEDIA_CEC_SUPPORT : n ## .config: 1711 :
+  CONFIG_MEDIA_SUPPORT : n ## .config: 1714 :
+  CONFIG_APERTURE_HELPERS : y ## .config: 1719 :
+  CONFIG_SCREEN_INFO : y ## .config: 1720 :
+  CONFIG_VIDEO : y ## .config: 1721 :
+  CONFIG_AUXDISPLAY : n ## .config: 1722 :
+  CONFIG_PANEL : n ## .config: 1723 :
+  CONFIG_AGP : y ## .config: 1724 :configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_AGP_AMD64 : n ## .config: 1725 :
+  CONFIG_AGP_INTEL : y ## .config: 1726 :configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_AGP_SIS : n ## .config: 1727 :
+  CONFIG_AGP_VIA : n ## .config: 1728 :
+  CONFIG_INTEL_GTT : y ## .config: 1729 :
+  CONFIG_VGA_SWITCHEROO : n ## .config: 1730 :
+  CONFIG_DRM : y ## .config: 1731 :configs/v6.10/standard/tiny/features/i915/i915.cfg (y) 
+  CONFIG_DRM_MIPI_DSI : y ## .config: 1732 :
+  CONFIG_DRM_DEBUG_MM : n ## .config: 1733 :
+  CONFIG_DRM_KMS_HELPER : y ## .config: 1734 :configs/v6.10/standard/tiny/features/i915/i915.cfg (m) 
+    [NOTE]: 'CONFIG_DRM_KMS_HELPER' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config DRM_KMS_HELPER
+        	tristate
+        	depends on DRM && DRM && HAS_IOMEM
+        	help
+        	  CRTC helpers for KMS drivers.
+
+        Config 'DRM_KMS_HELPER' has the following Direct dependencies (DRM_KMS_HELPER=y):
+                DRM(=y) && HAS_IOMEM(=y)
+        Parent dependencies are:
+             DRM [y] HAS_IOMEM [y]
+    [INFO]: config 'CONFIG_DRM_KMS_HELPER' was set, but it wasn't assignable, check (parent) dependencies
+
+    [INFO]: selection details for 'CONFIG_DRM_KMS_HELPER':
+        Symbols currently y-selecting this symbol:
+          - DRM_I915
+          - DRM_CIRRUS_QEMU
+
+        Symbols currently n-selecting this symbol (no effect):
+          - DRM
+          - DRM_MIPI_DBI
+          - DRM_KUNIT_TEST_HELPERS
+          - DRM_HDLCD
+          - DRM_MALI_DISPLAY
+          - DRM_KOMEDA
+          - DRM_RADEON
+          - DRM_AMDGPU
+          - DRM_NOUVEAU
+          - DRM_XE
+          - DRM_KMB_DISPLAY
+          - DRM_VKMS
+          - DRM_EXYNOS
+          - DRM_ROCKCHIP
+          - DRM_VMWGFX
+          - DRM_GMA500
+          - DRM_UDL
+          - DRM_AST
+          - DRM_MGAG200
+          - DRM_ARMADA
+          - DRM_ATMEL_HLCDC
+          - DRM_RCAR_DU
+          - DRM_RCAR_LVDS
+          - DRM_RZG2L_DU
+          - DRM_SHMOBILE
+          - DRM_SUN4I
+          - DRM_OMAP
+          - DRM_TILCDC
+          - DRM_QXL
+          - DRM_VIRTIO_GPU
+          - DRM_MSM
+          - DRM_FSL_DCU
+          - DRM_TEGRA
+          - DRM_STM
+          - DRM_PANEL_HIMAX_HX83112A
+          - DRM_PANEL_ILITEK_ILI9341
+          - DRM_PANEL_EDP
+          - DRM_CHIPONE_ICN6211
+          - DRM_CHRONTEL_CH7033
+          - DRM_CROS_EC_ANX7688
+          - DRM_FSL_LDB
+          - DRM_ITE_IT6505
+          - DRM_LONTIUM_LT8912B
+          - DRM_LONTIUM_LT9211
+          - DRM_LONTIUM_LT9611
+          - DRM_LONTIUM_LT9611UXC
+          - DRM_ITE_IT66121
+          - DRM_LVDS_CODEC
+          - DRM_MEGACHIPS_STDPXXXX_GE_B850V3_FW
+          - DRM_NWL_MIPI_DSI
+          - DRM_NXP_PTN3460
+          - DRM_PARADE_PS8622
+          - DRM_PARADE_PS8640
+          - DRM_SAMSUNG_DSIM
+          - DRM_SIL_SII8620
+          - DRM_SII902X
+          - DRM_SIMPLE_BRIDGE
+          - DRM_TOSHIBA_TC358762
+          - DRM_TOSHIBA_TC358764
+          - DRM_TOSHIBA_TC358767
+          - DRM_TOSHIBA_TC358768
+          - DRM_TOSHIBA_TC358775
+          - DRM_TI_TFP410
+          - DRM_TI_SN65DSI83
+          - DRM_TI_SN65DSI86
+          - DRM_TI_TPD12S015
+          - DRM_ANALOGIX_ANX6345
+          - DRM_ANALOGIX_ANX78XX
+          - DRM_I2C_ADV7511
+          - DRM_CDNS_DSI
+          - DRM_CDNS_MHDP8546
+          - DRM_IMX8QM_LDB
+          - DRM_IMX8QXP_LDB
+          - DRM_IMX8QXP_PIXEL_COMBINER
+          - DRM_IMX8QXP_PIXEL_LINK
+          - DRM_IMX8QXP_PIXEL_LINK_TO_DPI
+          - DRM_DW_HDMI
+          - DRM_DW_MIPI_DSI
+          - DRM_STI
+          - DRM_IMX_DCSS
+          - DRM_IMX
+          - DRM_IMX_LCDC
+          - DRM_INGENIC
+          - DRM_VC4
+          - DRM_LOONGSON
+          - DRM_HISI_HIBMC
+          - DRM_HISI_KIRIN
+          - DRM_LOGICVC
+          - DRM_MEDIATEK
+          - DRM_MXSFB
+          - DRM_IMX_LCDIF
+          - DRM_MESON
+          - DRM_ARCPGU
+          - DRM_BOCHS
+          - DRM_GM12U320
+          - DRM_OFDRM
+          - DRM_PANEL_MIPI_DBI
+          - DRM_SIMPLEDRM
+          - TINYDRM_HX8357D
+          - TINYDRM_ILI9163
+          - TINYDRM_ILI9225
+          - TINYDRM_ILI9341
+          - TINYDRM_ILI9486
+          - TINYDRM_MI0283QT
+          - TINYDRM_REPAPER
+          - TINYDRM_ST7586
+          - TINYDRM_ST7735R
+          - DRM_PL111
+          - DRM_TVE200
+          - DRM_XEN_FRONTEND
+          - DRM_VBOXVIDEO
+          - DRM_ASPEED_GFX
+          - DRM_MCDE
+          - DRM_TIDSS
+          - DRM_ZYNQMP_DPSUB
+          - DRM_GUD
+          - DRM_SSD130X
+          - DRM_SPRD
+          - DRM_HYPERV
+
+
+  CONFIG_DRM_PANIC : n ## .config: 1735 :
+  CONFIG_DRM_DEBUG_DP_MST_TOPOLOGY_REFS : n ## .config: 1736 :
+  CONFIG_DRM_DEBUG_MODESET_LOCK : n ## .config: 1737 :
+  CONFIG_DRM_FBDEV_EMULATION : n ## .config: 1738 :
+  CONFIG_DRM_LOAD_EDID_FIRMWARE : n ## .config: 1739 :
+  CONFIG_DRM_DISPLAY_HELPER : y ## .config: 1740 :
+  CONFIG_DRM_DISPLAY_DP_AUX_CEC : n ## .config: 1741 :
+  CONFIG_DRM_DISPLAY_DP_AUX_CHARDEV : n ## .config: 1742 :
+  CONFIG_DRM_DISPLAY_DP_HELPER : y ## .config: 1743 :
+  CONFIG_DRM_DISPLAY_HDCP_HELPER : y ## .config: 1744 :
+  CONFIG_DRM_DISPLAY_HDMI_HELPER : y ## .config: 1745 :
+  CONFIG_DRM_TTM : y ## .config: 1746 :
+  CONFIG_DRM_BUDDY : y ## .config: 1747 :
+  CONFIG_DRM_GEM_SHMEM_HELPER : y ## .config: 1748 :
+  CONFIG_DRM_I2C_CH7006 : n ## .config: 1753 :
+  CONFIG_DRM_I2C_SIL164 : n ## .config: 1754 :
+  CONFIG_DRM_I2C_NXP_TDA998X : n ## .config: 1755 :
+  CONFIG_DRM_I2C_NXP_TDA9950 : n ## .config: 1756 :
+  CONFIG_DRM_RADEON : n ## .config: 1764 :
+  CONFIG_DRM_AMDGPU : n ## .config: 1765 :
+  CONFIG_DRM_NOUVEAU : n ## .config: 1766 :
+  CONFIG_DRM_I915 : y ## .config: 1767 :configs/v6.10/standard/tiny/features/i915/i915.cfg (m) 
+    [NOTE]: 'CONFIG_DRM_I915' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config DRM_I915
+        	tristate "Intel 8xx/9xx/G3x/G4x/HD Graphics"
+        	select INTEL_GTT if X86
+        	select INTERVAL_TREE
+        	select SHMEM
+        	select TMPFS
+        	select DRM_DISPLAY_DP_HELPER
+        	select DRM_DISPLAY_HDCP_HELPER
+        	select DRM_DISPLAY_HDMI_HELPER
+        	select DRM_DISPLAY_HELPER
+        	select DRM_KMS_HELPER
+        	select DRM_PANEL
+        	select DRM_MIPI_DSI
+        	select FB_IOMEM_HELPERS if DRM_FBDEV_EMULATION
+        	select RELAY
+        	select I2C
+        	select I2C_ALGOBIT
+        	select IRQ_WORK
+        	select BACKLIGHT_CLASS_DEVICE if ACPI
+        	select INPUT if ACPI
+        	select X86_PLATFORM_DEVICES if ACPI
+        	select ACPI_WMI if ACPI
+        	select ACPI_VIDEO if ACPI
+        	select ACPI_BUTTON if ACPI
+        	select SYNC_FILE
+        	select IOSF_MBI if X86
+        	select CRC32
+        	select SND_HDA_I915 if SND_HDA_CORE
+        	select CEC_CORE if CEC_NOTIFIER
+        	select VMAP_PFN
+        	select DRM_TTM
+        	select DRM_BUDDY
+        	select AUXILIARY_BUS
+        	depends on DRM && X86 && PCI && !PREEMPT_RT && DRM && HAS_IOMEM
+        	help
+        	  Choose this option if you have a system that has "Intel Graphics
+        	  Media Accelerator" or "HD Graphics" integrated graphics,
+        	  including 830M, 845G, 852GM, 855GM, 865G, 915G, 945G, 965G,
+        	  G35, G41, G43, G45 chipsets and Celeron, Pentium, Core i3,
+        	  Core i5, Core i7 as well as Atom CPUs with integrated graphics.
+	  
+        	  This driver is used by the Intel driver in X.org 6.8 and
+        	  XFree86 4.4 and above. It replaces the older i830 module that
+        	  supported a subset of the hardware in older X.org releases.
+	  
+        	  Note that the older i810/i815 chipsets require the use of the
+        	  i810 driver instead, and the Atom z5xx series has an entirely
+        	  different implementation.
+	  
+        	  If "M" is selected, the module will be called i915.
+
+        Config 'DRM_I915' has the following Direct dependencies (DRM_I915=y):
+                DRM(=y) && X86(=y) && PCI(=y) && !PREEMPT_RT(=n) (=y) && HAS_IOMEM(=y)
+        Parent dependencies are:
+             PCI [y] PREEMPT_RT [n] CEC_NOTIFIER [n] SND_HDA_CORE [n] HAS_IOMEM [y] DRM_FBDEV_EMULATION [n] X86 [y] ACPI [y] DRM [y]
+  CONFIG_DRM_I915_FORCE_PROBE : "" ## .config: 1768 :
+  CONFIG_DRM_I915_CAPTURE_ERROR : n ## .config: 1769 :
+  CONFIG_DRM_I915_USERPTR : n ## .config: 1770 :
+  CONFIG_DRM_I915_WERROR : n ## .config: 1775 :
+  CONFIG_DRM_I915_DEBUG : n ## .config: 1776 :
+  CONFIG_DRM_I915_DEBUG_MMIO : n ## .config: 1777 :
+  CONFIG_DRM_I915_SW_FENCE_DEBUG_OBJECTS : n ## .config: 1778 :
+  CONFIG_DRM_I915_SW_FENCE_CHECK_DAG : n ## .config: 1779 :
+  CONFIG_DRM_I915_DEBUG_GUC : n ## .config: 1780 :
+  CONFIG_DRM_I915_SELFTEST : n ## .config: 1781 :
+  CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS : n ## .config: 1782 :
+  CONFIG_DRM_I915_DEBUG_VBLANK_EVADE : n ## .config: 1783 :
+  CONFIG_DRM_I915_DEBUG_RUNTIME_PM : n ## .config: 1784 :
+  CONFIG_DRM_I915_DEBUG_WAKEREF : n ## .config: 1785 :
+  CONFIG_DRM_I915_REQUEST_TIMEOUT : 20000 ## .config: 1791 :
+  CONFIG_DRM_I915_FENCE_TIMEOUT : 10000 ## .config: 1792 :
+  CONFIG_DRM_I915_USERFAULT_AUTOSUSPEND : 250 ## .config: 1793 :
+  CONFIG_DRM_I915_HEARTBEAT_INTERVAL : 2500 ## .config: 1794 :
+  CONFIG_DRM_I915_PREEMPT_TIMEOUT : 640 ## .config: 1795 :
+  CONFIG_DRM_I915_PREEMPT_TIMEOUT_COMPUTE : 7500 ## .config: 1796 :
+  CONFIG_DRM_I915_MAX_REQUEST_BUSYWAIT : 8000 ## .config: 1797 :
+  CONFIG_DRM_I915_STOP_TIMEOUT : 100 ## .config: 1798 :
+  CONFIG_DRM_I915_TIMESLICE_DURATION : 1 ## .config: 1799 :
+  CONFIG_DRM_VGEM : n ## .config: 1802 :
+  CONFIG_DRM_VKMS : n ## .config: 1803 :
+  CONFIG_DRM_GMA500 : n ## .config: 1804 :
+  CONFIG_DRM_UDL : n ## .config: 1805 :
+  CONFIG_DRM_AST : n ## .config: 1806 :
+  CONFIG_DRM_MGAG200 : n ## .config: 1807 :
+  CONFIG_DRM_QXL : n ## .config: 1808 :
+  CONFIG_DRM_PANEL : y ## .config: 1809 :
+  CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN : n ## .config: 1814 :
+  CONFIG_DRM_BRIDGE : y ## .config: 1817 :
+  CONFIG_DRM_PANEL_BRIDGE : y ## .config: 1818 :
+  CONFIG_DRM_ANALOGIX_ANX78XX : n ## .config: 1823 :
+  CONFIG_DRM_ETNAVIV : n ## .config: 1826 :
+  CONFIG_DRM_BOCHS : n ## .config: 1827 :
+  CONFIG_DRM_CIRRUS_QEMU : y ## .config: 1828 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-gfx.cfg (m) 
+    [NOTE]: 'CONFIG_DRM_CIRRUS_QEMU' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config DRM_CIRRUS_QEMU
+        	tristate "Cirrus driver for QEMU emulated device"
+        	select DRM_KMS_HELPER
+        	select DRM_GEM_SHMEM_HELPER
+        	depends on DRM && PCI && MMU && DRM && HAS_IOMEM
+        	help
+        	  This is a KMS driver for emulated cirrus device in qemu.
+        	  It is *NOT* intended for real cirrus devices. This requires
+        	  the modesetting userspace X.org driver.
+	  
+        	  Cirrus is obsolete, the hardware was designed in the 90ies
+        	  and can't keep up with todays needs.  More background:
+        	  https://www.kraxel.org/blog/2014/10/qemu-using-cirrus-considered-harmful/
+	  
+        	  Better alternatives are:
+        	    - stdvga (DRM_BOCHS, qemu -vga std, default in qemu 2.2+)
+        	    - qxl (DRM_QXL, qemu -vga qxl, works best with spice)
+        	    - virtio (DRM_VIRTIO_GPU), qemu -vga virtio)
+
+        Config 'DRM_CIRRUS_QEMU' has the following Direct dependencies (DRM_CIRRUS_QEMU=y):
+                DRM(=y) && PCI(=y) && MMU(=y) && HAS_IOMEM(=y)
+        Parent dependencies are:
+             HAS_IOMEM [y] MMU [y] PCI [y] DRM [y]
+  CONFIG_DRM_GM12U320 : n ## .config: 1829 :
+  CONFIG_DRM_SIMPLEDRM : n ## .config: 1830 :
+  CONFIG_DRM_VBOXVIDEO : n ## .config: 1831 :
+  CONFIG_DRM_GUD : n ## .config: 1832 :
+  CONFIG_DRM_SSD130X : n ## .config: 1833 :
+  CONFIG_DRM_WERROR : n ## .config: 1834 :
+  CONFIG_DRM_PANEL_ORIENTATION_QUIRKS : y ## .config: 1835 :
+  CONFIG_FB : y ## .config: 1840 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-gfx.cfg (y) configs/v6.10/standard/tiny/cfg/efi-ext.cfg (y) 
+  CONFIG_FB_CIRRUS : n ## .config: 1841 :
+  CONFIG_FB_PM2 : n ## .config: 1842 :
+  CONFIG_FB_CYBER2000 : n ## .config: 1843 :
+  CONFIG_FB_ARC : n ## .config: 1844 :
+  CONFIG_FB_ASILIANT : n ## .config: 1845 :
+  CONFIG_FB_IMSTT : n ## .config: 1846 :
+  CONFIG_FB_VGA16 : n ## .config: 1847 :
+  CONFIG_FB_VESA : n ## .config: 1848 :
+  CONFIG_FB_EFI : y ## .config: 1849 :configs/v6.10/standard/tiny/cfg/efi-ext.cfg (y) 
+  CONFIG_FB_N411 : n ## .config: 1850 :
+  CONFIG_FB_HGA : n ## .config: 1851 :
+  CONFIG_FB_OPENCORES : n ## .config: 1852 :
+  CONFIG_FB_S1D13XXX : n ## .config: 1853 :
+  CONFIG_FB_NVIDIA : n ## .config: 1854 :
+  CONFIG_FB_RIVA : n ## .config: 1855 :
+  CONFIG_FB_I740 : n ## .config: 1856 :
+  CONFIG_FB_MATROX : n ## .config: 1857 :
+  CONFIG_FB_RADEON : n ## .config: 1858 :
+  CONFIG_FB_ATY128 : n ## .config: 1859 :
+  CONFIG_FB_ATY : n ## .config: 1860 :
+  CONFIG_FB_S3 : n ## .config: 1861 :
+  CONFIG_FB_SAVAGE : n ## .config: 1862 :
+  CONFIG_FB_SIS : n ## .config: 1863 :
+  CONFIG_FB_NEOMAGIC : n ## .config: 1864 :
+  CONFIG_FB_KYRO : n ## .config: 1865 :
+  CONFIG_FB_3DFX : n ## .config: 1866 :
+  CONFIG_FB_VT8623 : n ## .config: 1867 :
+  CONFIG_FB_TRIDENT : n ## .config: 1868 :
+  CONFIG_FB_ARK : n ## .config: 1869 :
+  CONFIG_FB_PM3 : n ## .config: 1870 :
+  CONFIG_FB_CARMINE : n ## .config: 1871 :
+  CONFIG_FB_SMSCUFX : n ## .config: 1872 :
+  CONFIG_FB_IBM_GXT4500 : n ## .config: 1873 :
+  CONFIG_FB_VIRTUAL : n ## .config: 1874 :
+  CONFIG_FB_METRONOME : n ## .config: 1875 :
+  CONFIG_FB_MB862XX : n ## .config: 1876 :
+  CONFIG_FB_SIMPLE : n ## .config: 1877 :
+  CONFIG_FB_SM712 : n ## .config: 1878 :
+  CONFIG_FB_CORE : y ## .config: 1879 :
+  CONFIG_FB_NOTIFY : y ## .config: 1880 :
+  CONFIG_FIRMWARE_EDID : n ## .config: 1881 :
+  CONFIG_FB_DEVICE : n ## .config: 1882 :
+  CONFIG_FB_CFB_FILLRECT : y ## .config: 1883 :
+  CONFIG_FB_CFB_COPYAREA : y ## .config: 1884 :
+  CONFIG_FB_CFB_IMAGEBLIT : y ## .config: 1885 :
+  CONFIG_FB_FOREIGN_ENDIAN : n ## .config: 1886 :
+  CONFIG_FB_IOMEM_FOPS : y ## .config: 1887 :
+  CONFIG_FB_IOMEM_HELPERS : y ## .config: 1888 :
+  CONFIG_FB_MODE_HELPERS : y ## .config: 1889 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-gfx.cfg (y) 
+  CONFIG_FB_TILEBLITTING : n ## .config: 1890 :
+  CONFIG_LCD_CLASS_DEVICE : n ## .config: 1896 :
+  CONFIG_BACKLIGHT_CLASS_DEVICE : y ## .config: 1897 :
+  CONFIG_BACKLIGHT_KTD2801 : n ## .config: 1898 :
+  CONFIG_BACKLIGHT_KTZ8866 : n ## .config: 1899 :
+  CONFIG_BACKLIGHT_APPLE : n ## .config: 1900 :
+  CONFIG_BACKLIGHT_QCOM_WLED : n ## .config: 1901 :
+  CONFIG_BACKLIGHT_SAHARA : n ## .config: 1902 :
+  CONFIG_BACKLIGHT_ADP8860 : n ## .config: 1903 :
+  CONFIG_BACKLIGHT_ADP8870 : n ## .config: 1904 :
+  CONFIG_BACKLIGHT_LM3639 : n ## .config: 1905 :
+  CONFIG_BACKLIGHT_LV5207LP : n ## .config: 1906 :
+  CONFIG_BACKLIGHT_BD6107 : n ## .config: 1907 :
+  CONFIG_BACKLIGHT_ARCXCNN : n ## .config: 1908 :
+  CONFIG_HDMI : y ## .config: 1911 :
+  CONFIG_VGA_CONSOLE : y ## .config: 1916 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_DUMMY_CONSOLE : y ## .config: 1917 :
+  CONFIG_DUMMY_CONSOLE_COLUMNS : 80 ## .config: 1918 :
+  CONFIG_DUMMY_CONSOLE_ROWS : 25 ## .config: 1919 :
+  CONFIG_FRAMEBUFFER_CONSOLE : y ## .config: 1920 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-gfx.cfg (y) configs/v6.10/standard/tiny/cfg/efi-ext.cfg (y) 
+  CONFIG_FRAMEBUFFER_CONSOLE_LEGACY_ACCELERATION : n ## .config: 1921 :
+  CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY : n ## .config: 1922 :
+  CONFIG_FRAMEBUFFER_CONSOLE_ROTATION : n ## .config: 1923 :
+  CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER : n ## .config: 1924 :
+  CONFIG_LOGO : n ## .config: 1927 :
+  CONFIG_DRM_ACCEL : n ## .config: 1930 :
+  CONFIG_SOUND : n ## .config: 1931 :
+  CONFIG_HID_SUPPORT : y ## .config: 1932 :configs/v6.10/standard/tiny/features/hid/hid.cfg (y) 
+  CONFIG_HID : y ## .config: 1933 :configs/v6.10/standard/tiny/features/hid/hid.cfg (y) 
+  CONFIG_HID_BATTERY_STRENGTH : n ## .config: 1934 :
+  CONFIG_HIDRAW : n ## .config: 1935 :
+  CONFIG_UHID : n ## .config: 1936 :
+  CONFIG_HID_GENERIC : n ## .config: 1937 :
+  CONFIG_HID_A4TECH : n ## .config: 1942 :
+  CONFIG_HID_ACCUTOUCH : n ## .config: 1943 :
+  CONFIG_HID_ACRUX : n ## .config: 1944 :
+  CONFIG_HID_APPLE : n ## .config: 1945 :
+  CONFIG_HID_APPLEIR : n ## .config: 1946 :
+  CONFIG_HID_ASUS : n ## .config: 1947 :
+  CONFIG_HID_AUREAL : n ## .config: 1948 :
+  CONFIG_HID_BELKIN : n ## .config: 1949 :
+  CONFIG_HID_BETOP_FF : n ## .config: 1950 :
+  CONFIG_HID_BIGBEN_FF : n ## .config: 1951 :
+  CONFIG_HID_CHERRY : n ## .config: 1952 :
+  CONFIG_HID_CHICONY : n ## .config: 1953 :
+  CONFIG_HID_CORSAIR : n ## .config: 1954 :
+  CONFIG_HID_COUGAR : n ## .config: 1955 :
+  CONFIG_HID_MACALLY : n ## .config: 1956 :
+  CONFIG_HID_CMEDIA : n ## .config: 1957 :
+  CONFIG_HID_CREATIVE_SB0540 : n ## .config: 1958 :
+  CONFIG_HID_CYPRESS : n ## .config: 1959 :
+  CONFIG_HID_DRAGONRISE : n ## .config: 1960 :
+  CONFIG_HID_EMS_FF : n ## .config: 1961 :
+  CONFIG_HID_ELAN : n ## .config: 1962 :
+  CONFIG_HID_ELECOM : n ## .config: 1963 :
+  CONFIG_HID_ELO : n ## .config: 1964 :
+  CONFIG_HID_EVISION : n ## .config: 1965 :
+  CONFIG_HID_EZKEY : n ## .config: 1966 :
+  CONFIG_HID_GEMBIRD : n ## .config: 1967 :
+  CONFIG_HID_GFRM : n ## .config: 1968 :
+  CONFIG_HID_GLORIOUS : n ## .config: 1969 :
+  CONFIG_HID_HOLTEK : n ## .config: 1970 :
+  CONFIG_HID_GOOGLE_STADIA_FF : n ## .config: 1971 :
+  CONFIG_HID_VIVALDI : n ## .config: 1972 :
+  CONFIG_HID_GT683R : n ## .config: 1973 :
+  CONFIG_HID_KEYTOUCH : n ## .config: 1974 :
+  CONFIG_HID_KYE : n ## .config: 1975 :
+  CONFIG_HID_UCLOGIC : n ## .config: 1976 :
+  CONFIG_HID_WALTOP : n ## .config: 1977 :
+  CONFIG_HID_VIEWSONIC : n ## .config: 1978 :
+  CONFIG_HID_VRC2 : n ## .config: 1979 :
+  CONFIG_HID_XIAOMI : n ## .config: 1980 :
+  CONFIG_HID_GYRATION : n ## .config: 1981 :
+  CONFIG_HID_ICADE : n ## .config: 1982 :
+  CONFIG_HID_ITE : n ## .config: 1983 :
+  CONFIG_HID_JABRA : n ## .config: 1984 :
+  CONFIG_HID_TWINHAN : n ## .config: 1985 :
+  CONFIG_HID_KENSINGTON : n ## .config: 1986 :
+  CONFIG_HID_LCPOWER : n ## .config: 1987 :
+  CONFIG_HID_LED : n ## .config: 1988 :
+  CONFIG_HID_LENOVO : n ## .config: 1989 :
+  CONFIG_HID_LETSKETCH : n ## .config: 1990 :
+  CONFIG_HID_LOGITECH : n ## .config: 1991 :
+  CONFIG_HID_MAGICMOUSE : n ## .config: 1992 :
+  CONFIG_HID_MALTRON : n ## .config: 1993 :
+  CONFIG_HID_MAYFLASH : n ## .config: 1994 :
+  CONFIG_HID_MEGAWORLD_FF : n ## .config: 1995 :
+  CONFIG_HID_REDRAGON : n ## .config: 1996 :
+  CONFIG_HID_MICROSOFT : n ## .config: 1997 :
+  CONFIG_HID_MONTEREY : n ## .config: 1998 :
+  CONFIG_HID_MULTITOUCH : n ## .config: 1999 :
+  CONFIG_HID_NINTENDO : n ## .config: 2000 :
+  CONFIG_HID_NTI : n ## .config: 2001 :
+  CONFIG_HID_NTRIG : n ## .config: 2002 :
+  CONFIG_HID_ORTEK : n ## .config: 2003 :
+  CONFIG_HID_PANTHERLORD : n ## .config: 2004 :
+  CONFIG_HID_PENMOUNT : n ## .config: 2005 :
+  CONFIG_HID_PETALYNX : n ## .config: 2006 :
+  CONFIG_HID_PICOLCD : n ## .config: 2007 :
+  CONFIG_HID_PLANTRONICS : n ## .config: 2008 :
+  CONFIG_HID_PXRC : n ## .config: 2009 :
+  CONFIG_HID_RAZER : n ## .config: 2010 :
+  CONFIG_HID_PRIMAX : n ## .config: 2011 :
+  CONFIG_HID_RETRODE : n ## .config: 2012 :
+  CONFIG_HID_ROCCAT : n ## .config: 2013 :
+  CONFIG_HID_SAITEK : n ## .config: 2014 :
+  CONFIG_HID_SAMSUNG : n ## .config: 2015 :
+  CONFIG_HID_SEMITEK : n ## .config: 2016 :
+  CONFIG_HID_SIGMAMICRO : n ## .config: 2017 :
+  CONFIG_HID_SONY : n ## .config: 2018 :
+  CONFIG_HID_SPEEDLINK : n ## .config: 2019 :
+  CONFIG_HID_STEAM : n ## .config: 2020 :
+  CONFIG_HID_STEELSERIES : n ## .config: 2021 :
+  CONFIG_HID_SUNPLUS : n ## .config: 2022 :
+  CONFIG_HID_RMI : n ## .config: 2023 :
+  CONFIG_HID_GREENASIA : n ## .config: 2024 :
+  CONFIG_HID_SMARTJOYPLUS : n ## .config: 2025 :
+  CONFIG_HID_TIVO : n ## .config: 2026 :
+  CONFIG_HID_TOPSEED : n ## .config: 2027 :
+  CONFIG_HID_TOPRE : n ## .config: 2028 :
+  CONFIG_HID_THINGM : n ## .config: 2029 :
+  CONFIG_HID_THRUSTMASTER : n ## .config: 2030 :
+  CONFIG_HID_UDRAW_PS3 : n ## .config: 2031 :
+  CONFIG_HID_WACOM : y ## .config: 2032 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_HID_WIIMOTE : n ## .config: 2033 :
+  CONFIG_HID_WINWING : n ## .config: 2034 :
+  CONFIG_HID_XINMO : n ## .config: 2035 :
+  CONFIG_HID_ZEROPLUS : n ## .config: 2036 :
+  CONFIG_HID_ZYDACRON : n ## .config: 2037 :
+  CONFIG_HID_SENSOR_HUB : n ## .config: 2038 :
+  CONFIG_HID_ALPS : n ## .config: 2039 :
+  CONFIG_HID_MCP2221 : n ## .config: 2040 :
+  CONFIG_USB_HID : y ## .config: 2051 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_HID_PID : n ## .config: 2052 :
+  CONFIG_USB_HIDDEV : y ## .config: 2053 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_I2C_HID : n ## .config: 2056 :
+  CONFIG_INTEL_ISH_HID : n ## .config: 2061 :
+  CONFIG_AMD_SFH_HID : n ## .config: 2067 :
+  CONFIG_USB_OHCI_LITTLE_ENDIAN : y ## .config: 2070 :
+  CONFIG_USB_SUPPORT : y ## .config: 2071 :configs/v6.10/standard/tiny/features/usb/usb-base.cfg (y) 
+  CONFIG_USB_COMMON : y ## .config: 2072 :
+  CONFIG_USB_LED_TRIG : n ## .config: 2073 :
+  CONFIG_USB_ULPI_BUS : n ## .config: 2074 :
+  CONFIG_USB_ARCH_HAS_HCD : y ## .config: 2075 :
+  CONFIG_USB : y ## .config: 2076 :configs/v6.10/standard/tiny/features/usb/usb-base.cfg (y) configs/v6.10/standard/tiny/features/usb-net/usb-net.cfg (y) 
+  CONFIG_USB_PCI : n ## .config: 2077 :
+  CONFIG_USB_ANNOUNCE_NEW_DEVICES : n ## .config: 2078 :
+  CONFIG_USB_DEFAULT_PERSIST : n ## .config: 2083 :
+  CONFIG_USB_FEW_INIT_RETRIES : n ## .config: 2084 :
+  CONFIG_USB_DYNAMIC_MINORS : n ## .config: 2085 :
+  CONFIG_USB_OTG : n ## .config: 2086 :
+  CONFIG_USB_OTG_PRODUCTLIST : n ## .config: 2087 :
+  CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB : n ## .config: 2088 :
+  CONFIG_USB_LEDS_TRIGGER_USBPORT : n ## .config: 2089 :
+  CONFIG_USB_AUTOSUSPEND_DELAY : 2 ## .config: 2090 :
+  CONFIG_USB_DEFAULT_AUTHORIZATION_MODE : 1 ## .config: 2091 :
+  CONFIG_USB_MON : n ## .config: 2092 :
+  CONFIG_USB_C67X00_HCD : n ## .config: 2097 :
+  CONFIG_USB_XHCI_HCD : y ## .config: 2098 :configs/v6.10/standard/tiny/features/usb/xhci-hcd.cfg (y) 
+  CONFIG_USB_XHCI_DBGCAP : n ## .config: 2099 :
+  CONFIG_USB_XHCI_PCI_RENESAS : n ## .config: 2100 :
+  CONFIG_USB_XHCI_PLATFORM : n ## .config: 2101 :
+  CONFIG_USB_EHCI_HCD : y ## .config: 2102 :configs/v6.10/standard/tiny/features/usb/ehci-hcd.cfg (y) 
+  CONFIG_USB_EHCI_ROOT_HUB_TT : y ## .config: 2103 :configs/v6.10/standard/tiny/features/usb/ehci-hcd.cfg (y) 
+  CONFIG_USB_EHCI_TT_NEWSCHED : n ## .config: 2104 :
+  CONFIG_USB_EHCI_FSL : n ## .config: 2105 :
+  CONFIG_USB_EHCI_HCD_PLATFORM : n ## .config: 2106 :
+  CONFIG_USB_OXU210HP_HCD : n ## .config: 2107 :
+  CONFIG_USB_ISP116X_HCD : n ## .config: 2108 :
+  CONFIG_USB_OHCI_HCD : y ## .config: 2109 :configs/v6.10/standard/tiny/features/usb/ohci-hcd.cfg (y) 
+  CONFIG_USB_OHCI_HCD_PLATFORM : n ## .config: 2110 :
+  CONFIG_USB_SL811_HCD : n ## .config: 2111 :
+  CONFIG_USB_R8A66597_HCD : n ## .config: 2112 :
+  CONFIG_USB_HCD_BCMA : n ## .config: 2113 :
+  CONFIG_USB_HCD_TEST_MODE : n ## .config: 2114 :
+  CONFIG_USB_ACM : n ## .config: 2119 :
+  CONFIG_USB_PRINTER : n ## .config: 2120 :
+  CONFIG_USB_WDM : n ## .config: 2121 :
+  CONFIG_USB_TMC : n ## .config: 2122 :
+  CONFIG_USB_MDC800 : n ## .config: 2135 :
+  CONFIG_USB_CDNS_SUPPORT : n ## .config: 2140 :
+  CONFIG_USB_MUSB_HDRC : n ## .config: 2141 :
+  CONFIG_USB_DWC3 : n ## .config: 2142 :
+  CONFIG_USB_DWC2 : n ## .config: 2143 :
+  CONFIG_USB_CHIPIDEA : n ## .config: 2144 :
+  CONFIG_USB_ISP1760 : n ## .config: 2145 :
+  CONFIG_USB_SERIAL : y ## .config: 2150 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_USB_SERIAL_CONSOLE : y ## .config: 2151 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_USB_SERIAL_GENERIC : y ## .config: 2152 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_USB_SERIAL_SIMPLE : n ## .config: 2153 :
+  CONFIG_USB_SERIAL_AIRCABLE : n ## .config: 2154 :
+  CONFIG_USB_SERIAL_ARK3116 : n ## .config: 2155 :
+  CONFIG_USB_SERIAL_BELKIN : n ## .config: 2156 :
+  CONFIG_USB_SERIAL_CH341 : n ## .config: 2157 :
+  CONFIG_USB_SERIAL_WHITEHEAT : n ## .config: 2158 :
+  CONFIG_USB_SERIAL_DIGI_ACCELEPORT : n ## .config: 2159 :
+  CONFIG_USB_SERIAL_CP210X : n ## .config: 2160 :
+  CONFIG_USB_SERIAL_CYPRESS_M8 : n ## .config: 2161 :
+  CONFIG_USB_SERIAL_EMPEG : n ## .config: 2162 :
+  CONFIG_USB_SERIAL_FTDI_SIO : y ## .config: 2163 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_USB_SERIAL_VISOR : n ## .config: 2164 :
+  CONFIG_USB_SERIAL_IPAQ : n ## .config: 2165 :
+  CONFIG_USB_SERIAL_IR : n ## .config: 2166 :
+  CONFIG_USB_SERIAL_EDGEPORT : n ## .config: 2167 :
+  CONFIG_USB_SERIAL_EDGEPORT_TI : n ## .config: 2168 :
+  CONFIG_USB_SERIAL_F81232 : n ## .config: 2169 :
+  CONFIG_USB_SERIAL_F8153X : n ## .config: 2170 :
+  CONFIG_USB_SERIAL_GARMIN : n ## .config: 2171 :
+  CONFIG_USB_SERIAL_IPW : n ## .config: 2172 :
+  CONFIG_USB_SERIAL_IUU : n ## .config: 2173 :
+  CONFIG_USB_SERIAL_KEYSPAN_PDA : n ## .config: 2174 :
+  CONFIG_USB_SERIAL_KEYSPAN : n ## .config: 2175 :
+  CONFIG_USB_SERIAL_KLSI : n ## .config: 2176 :
+  CONFIG_USB_SERIAL_KOBIL_SCT : n ## .config: 2177 :
+  CONFIG_USB_SERIAL_MCT_U232 : n ## .config: 2178 :
+  CONFIG_USB_SERIAL_METRO : n ## .config: 2179 :
+  CONFIG_USB_SERIAL_MOS7720 : n ## .config: 2180 :
+  CONFIG_USB_SERIAL_MOS7840 : n ## .config: 2181 :
+  CONFIG_USB_SERIAL_MXUPORT : n ## .config: 2182 :
+  CONFIG_USB_SERIAL_NAVMAN : n ## .config: 2183 :
+  CONFIG_USB_SERIAL_PL2303 : y ## .config: 2184 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_USB_SERIAL_OTI6858 : n ## .config: 2185 :
+  CONFIG_USB_SERIAL_QCAUX : n ## .config: 2186 :
+  CONFIG_USB_SERIAL_QUALCOMM : n ## .config: 2187 :
+  CONFIG_USB_SERIAL_SPCP8X5 : n ## .config: 2188 :
+  CONFIG_USB_SERIAL_SAFE : n ## .config: 2189 :
+  CONFIG_USB_SERIAL_SIERRAWIRELESS : n ## .config: 2190 :
+  CONFIG_USB_SERIAL_SYMBOL : n ## .config: 2191 :
+  CONFIG_USB_SERIAL_TI : n ## .config: 2192 :
+  CONFIG_USB_SERIAL_CYBERJACK : n ## .config: 2193 :
+  CONFIG_USB_SERIAL_OPTION : n ## .config: 2194 :
+  CONFIG_USB_SERIAL_OMNINET : n ## .config: 2195 :
+  CONFIG_USB_SERIAL_OPTICON : n ## .config: 2196 :
+  CONFIG_USB_SERIAL_XSENS_MT : n ## .config: 2197 :
+  CONFIG_USB_SERIAL_WISHBONE : n ## .config: 2198 :
+  CONFIG_USB_SERIAL_SSU100 : n ## .config: 2199 :
+  CONFIG_USB_SERIAL_QT2 : n ## .config: 2200 :
+  CONFIG_USB_SERIAL_UPD78F0730 : n ## .config: 2201 :
+  CONFIG_USB_SERIAL_XR : n ## .config: 2202 :
+  CONFIG_USB_SERIAL_DEBUG : n ## .config: 2203 :
+  CONFIG_USB_USS720 : n ## .config: 2208 :
+  CONFIG_USB_EMI62 : n ## .config: 2209 :
+  CONFIG_USB_EMI26 : n ## .config: 2210 :
+  CONFIG_USB_ADUTUX : n ## .config: 2211 :
+  CONFIG_USB_SEVSEG : n ## .config: 2212 :
+  CONFIG_USB_LEGOTOWER : n ## .config: 2213 :
+  CONFIG_USB_LCD : n ## .config: 2214 :
+  CONFIG_USB_CYPRESS_CY7C63 : n ## .config: 2215 :
+  CONFIG_USB_CYTHERM : n ## .config: 2216 :
+  CONFIG_USB_IDMOUSE : n ## .config: 2217 :
+  CONFIG_USB_APPLEDISPLAY : n ## .config: 2218 :
+  CONFIG_APPLE_MFI_FASTCHARGE : n ## .config: 2219 :
+  CONFIG_USB_LJCA : n ## .config: 2220 :
+  CONFIG_USB_SISUSBVGA : n ## .config: 2221 :
+  CONFIG_USB_LD : n ## .config: 2222 :
+  CONFIG_USB_TRANCEVIBRATOR : n ## .config: 2223 :
+  CONFIG_USB_IOWARRIOR : n ## .config: 2224 :
+  CONFIG_USB_TEST : n ## .config: 2225 :
+  CONFIG_USB_EHSET_TEST_FIXTURE : n ## .config: 2226 :
+  CONFIG_USB_ISIGHTFW : n ## .config: 2227 :
+  CONFIG_USB_YUREX : n ## .config: 2228 :
+  CONFIG_USB_EZUSB_FX2 : y ## .config: 2229 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_USB_HUB_USB251XB : n ## .config: 2230 :
+  CONFIG_USB_HSIC_USB3503 : n ## .config: 2231 :
+  CONFIG_USB_HSIC_USB4604 : n ## .config: 2232 :
+  CONFIG_USB_LINK_LAYER_TEST : n ## .config: 2233 :
+  CONFIG_NOP_USB_XCEIV : n ## .config: 2238 :
+  CONFIG_USB_ISP1301 : n ## .config: 2239 :
+  CONFIG_USB_GADGET : n ## .config: 2242 :
+  CONFIG_TYPEC : n ## .config: 2243 :
+  CONFIG_USB_ROLE_SWITCH : n ## .config: 2244 :
+  CONFIG_MMC : y ## .config: 2245 :configs/v6.10/standard/tiny/features/mmc/mmc-base.cfg (y) configs/v6.10/standard/tiny/features/mmc/mmc-sdhci.cfg (y) 
+  CONFIG_SDIO_UART : n ## .config: 2246 :
+  CONFIG_MMC_TEST : n ## .config: 2247 :
+  CONFIG_MMC_DEBUG : n ## .config: 2252 :
+  CONFIG_MMC_SDHCI : y ## .config: 2253 :configs/v6.10/standard/tiny/features/mmc/mmc-sdhci.cfg (y) 
+  CONFIG_MMC_SDHCI_IO_ACCESSORS : y ## .config: 2254 :
+  CONFIG_MMC_SDHCI_PCI : y ## .config: 2255 :configs/v6.10/standard/tiny/features/mmc/mmc-sdhci.cfg (y) 
+  CONFIG_MMC_RICOH_MMC : y ## .config: 2256 :configs/v6.10/standard/tiny/features/mmc/mmc-sdhci.cfg (y) 
+  CONFIG_MMC_SDHCI_ACPI : y ## .config: 2257 :configs/v6.10/standard/tiny/features/mmc/mmc-sdhci.cfg (y) 
+  CONFIG_MMC_SDHCI_PLTFM : y ## .config: 2258 :configs/v6.10/standard/tiny/features/mmc/mmc-sdhci.cfg (y) 
+  CONFIG_MMC_SDHCI_F_SDH30 : n ## .config: 2259 :
+  CONFIG_MMC_WBSD : n ## .config: 2260 :
+  CONFIG_MMC_TIFM_SD : n ## .config: 2261 :
+  CONFIG_MMC_CB710 : n ## .config: 2262 :
+  CONFIG_MMC_VIA_SDMMC : n ## .config: 2263 :
+  CONFIG_MMC_VUB300 : n ## .config: 2264 :
+  CONFIG_MMC_USHC : n ## .config: 2265 :
+  CONFIG_MMC_USDHI6ROL0 : n ## .config: 2266 :
+  CONFIG_MMC_CQHCI : y ## .config: 2267 :
+  CONFIG_MMC_HSQ : n ## .config: 2268 :
+  CONFIG_MMC_TOSHIBA_PCI : n ## .config: 2269 :
+  CONFIG_MMC_MTK : n ## .config: 2270 :
+  CONFIG_MMC_SDHCI_XENON : n ## .config: 2271 :
+  CONFIG_MEMSTICK : n ## .config: 2272 :
+  CONFIG_NEW_LEDS : y ## .config: 2273 :
+  CONFIG_LEDS_CLASS : y ## .config: 2274 :
+  CONFIG_LEDS_CLASS_FLASH : n ## .config: 2275 :
+  CONFIG_LEDS_CLASS_MULTICOLOR : n ## .config: 2276 :
+  CONFIG_LEDS_BRIGHTNESS_HW_CHANGED : n ## .config: 2277 :
+  CONFIG_LEDS_AW200XX : n ## .config: 2282 :
+  CONFIG_LEDS_LM3530 : n ## .config: 2283 :
+  CONFIG_LEDS_LM3532 : n ## .config: 2284 :
+  CONFIG_LEDS_LM3642 : n ## .config: 2285 :
+  CONFIG_LEDS_PCA9532 : n ## .config: 2286 :
+  CONFIG_LEDS_LP3944 : n ## .config: 2287 :
+  CONFIG_LEDS_PCA955X : n ## .config: 2288 :
+  CONFIG_LEDS_PCA963X : n ## .config: 2289 :
+  CONFIG_LEDS_PCA995X : n ## .config: 2290 :
+  CONFIG_LEDS_BD2606MVV : n ## .config: 2291 :
+  CONFIG_LEDS_BD2802 : n ## .config: 2292 :
+  CONFIG_LEDS_TCA6507 : n ## .config: 2293 :
+  CONFIG_LEDS_TLC591XX : n ## .config: 2294 :
+  CONFIG_LEDS_LM355x : n ## .config: 2295 :
+  CONFIG_LEDS_IS31FL319X : n ## .config: 2296 :
+  CONFIG_LEDS_BLINKM : n ## .config: 2301 :
+  CONFIG_LEDS_MLXREG : n ## .config: 2302 :
+  CONFIG_LEDS_USER : n ## .config: 2303 :
+  CONFIG_LEDS_NIC78BX : n ## .config: 2304 :
+  CONFIG_LEDS_TRIGGERS : y ## .config: 2317 :
+  CONFIG_LEDS_TRIGGER_TIMER : n ## .config: 2318 :
+  CONFIG_LEDS_TRIGGER_ONESHOT : n ## .config: 2319 :
+  CONFIG_LEDS_TRIGGER_HEARTBEAT : n ## .config: 2320 :
+  CONFIG_LEDS_TRIGGER_BACKLIGHT : n ## .config: 2321 :
+  CONFIG_LEDS_TRIGGER_CPU : n ## .config: 2322 :
+  CONFIG_LEDS_TRIGGER_ACTIVITY : n ## .config: 2323 :
+  CONFIG_LEDS_TRIGGER_DEFAULT_ON : n ## .config: 2324 :
+  CONFIG_LEDS_TRIGGER_TRANSIENT : n ## .config: 2329 :
+  CONFIG_LEDS_TRIGGER_CAMERA : n ## .config: 2330 :
+  CONFIG_LEDS_TRIGGER_PANIC : n ## .config: 2331 :
+  CONFIG_LEDS_TRIGGER_PATTERN : n ## .config: 2332 :
+  CONFIG_LEDS_TRIGGER_TTY : n ## .config: 2333 :
+  CONFIG_ACCESSIBILITY : n ## .config: 2338 :
+  CONFIG_EDAC_ATOMIC_SCRUB : y ## .config: 2339 :
+  CONFIG_EDAC_SUPPORT : y ## .config: 2340 :
+  CONFIG_RTC_LIB : y ## .config: 2341 :
+  CONFIG_RTC_MC146818_LIB : y ## .config: 2342 :
+  CONFIG_RTC_CLASS : y ## .config: 2343 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_RTC_HCTOSYS : n ## .config: 2344 :
+  CONFIG_RTC_SYSTOHC : n ## .config: 2345 :
+  CONFIG_RTC_DEBUG : n ## .config: 2346 :
+  CONFIG_RTC_NVMEM : n ## .config: 2347 :
+  CONFIG_RTC_INTF_SYSFS : n ## .config: 2352 :
+  CONFIG_RTC_INTF_PROC : n ## .config: 2353 :
+  CONFIG_RTC_INTF_DEV : n ## .config: 2354 :
+  CONFIG_RTC_DRV_TEST : n ## .config: 2355 :
+  CONFIG_RTC_DRV_ABB5ZES3 : n ## .config: 2360 :
+  CONFIG_RTC_DRV_ABEOZ9 : n ## .config: 2361 :
+  CONFIG_RTC_DRV_ABX80X : n ## .config: 2362 :
+  CONFIG_RTC_DRV_DS1307 : n ## .config: 2363 :
+  CONFIG_RTC_DRV_DS1374 : n ## .config: 2364 :
+  CONFIG_RTC_DRV_DS1672 : n ## .config: 2365 :
+  CONFIG_RTC_DRV_MAX6900 : n ## .config: 2366 :
+  CONFIG_RTC_DRV_MAX31335 : n ## .config: 2367 :
+  CONFIG_RTC_DRV_RS5C372 : n ## .config: 2368 :
+  CONFIG_RTC_DRV_ISL1208 : n ## .config: 2369 :
+  CONFIG_RTC_DRV_ISL12022 : n ## .config: 2370 :
+  CONFIG_RTC_DRV_X1205 : n ## .config: 2371 :
+  CONFIG_RTC_DRV_PCF8523 : n ## .config: 2372 :
+  CONFIG_RTC_DRV_PCF85063 : n ## .config: 2373 :
+  CONFIG_RTC_DRV_PCF85363 : n ## .config: 2374 :
+  CONFIG_RTC_DRV_PCF8563 : n ## .config: 2375 :
+  CONFIG_RTC_DRV_PCF8583 : n ## .config: 2376 :
+  CONFIG_RTC_DRV_M41T80 : n ## .config: 2377 :
+  CONFIG_RTC_DRV_BQ32K : n ## .config: 2378 :
+  CONFIG_RTC_DRV_S35390A : n ## .config: 2379 :
+  CONFIG_RTC_DRV_FM3130 : n ## .config: 2380 :
+  CONFIG_RTC_DRV_RX8010 : n ## .config: 2381 :
+  CONFIG_RTC_DRV_RX8111 : n ## .config: 2382 :
+  CONFIG_RTC_DRV_RX8581 : n ## .config: 2383 :
+  CONFIG_RTC_DRV_RX8025 : n ## .config: 2384 :
+  CONFIG_RTC_DRV_EM3027 : n ## .config: 2385 :
+  CONFIG_RTC_DRV_RV3028 : n ## .config: 2386 :
+  CONFIG_RTC_DRV_RV3032 : n ## .config: 2387 :
+  CONFIG_RTC_DRV_RV8803 : n ## .config: 2388 :
+  CONFIG_RTC_DRV_SD3078 : n ## .config: 2389 :
+  CONFIG_RTC_I2C_AND_SPI : y ## .config: 2394 :
+  CONFIG_RTC_DRV_DS3232 : n ## .config: 2399 :
+  CONFIG_RTC_DRV_PCF2127 : n ## .config: 2400 :
+  CONFIG_RTC_DRV_RV3029C2 : n ## .config: 2401 :
+  CONFIG_RTC_DRV_RX6110 : n ## .config: 2402 :
+  CONFIG_RTC_DRV_CMOS : y ## .config: 2407 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-drivers.cfg (y) 
+  CONFIG_RTC_DRV_DS1286 : n ## .config: 2408 :
+  CONFIG_RTC_DRV_DS1511 : n ## .config: 2409 :
+  CONFIG_RTC_DRV_DS1553 : n ## .config: 2410 :
+  CONFIG_RTC_DRV_DS1685_FAMILY : n ## .config: 2411 :
+  CONFIG_RTC_DRV_DS1742 : n ## .config: 2412 :
+  CONFIG_RTC_DRV_DS2404 : n ## .config: 2413 :
+  CONFIG_RTC_DRV_STK17TA8 : n ## .config: 2414 :
+  CONFIG_RTC_DRV_M48T86 : n ## .config: 2415 :
+  CONFIG_RTC_DRV_M48T35 : n ## .config: 2416 :
+  CONFIG_RTC_DRV_M48T59 : n ## .config: 2417 :
+  CONFIG_RTC_DRV_MSM6242 : n ## .config: 2418 :
+  CONFIG_RTC_DRV_RP5C01 : n ## .config: 2419 :
+  CONFIG_RTC_DRV_FTRTC010 : n ## .config: 2424 :
+  CONFIG_RTC_DRV_GOLDFISH : n ## .config: 2429 :
+  CONFIG_DMADEVICES : n ## .config: 2430 :
+  CONFIG_SYNC_FILE : y ## .config: 2435 :
+  CONFIG_UDMABUF : n ## .config: 2436 :
+  CONFIG_DMABUF_MOVE_NOTIFY : n ## .config: 2437 :
+  CONFIG_DMABUF_DEBUG : n ## .config: 2438 :
+  CONFIG_DMABUF_SELFTESTS : n ## .config: 2439 :
+  CONFIG_DMABUF_HEAPS : n ## .config: 2440 :
+  CONFIG_DMABUF_SYSFS_STATS : n ## .config: 2441 :
+  CONFIG_UIO : n ## .config: 2444 :
+  CONFIG_VFIO : n ## .config: 2445 :
+  CONFIG_VIRT_DRIVERS : n ## .config: 2446 :
+  CONFIG_VIRTIO_MENU : n ## .config: 2447 :
+  CONFIG_VHOST_MENU : n ## .config: 2448 :
+  CONFIG_GREYBUS : n ## .config: 2455 :
+  CONFIG_COMEDI : n ## .config: 2456 :
+  CONFIG_STAGING : n ## .config: 2457 :
+  CONFIG_GOLDFISH : n ## .config: 2458 :
+  CONFIG_CHROME_PLATFORMS : n ## .config: 2459 :
+  CONFIG_MELLANOX_PLATFORM : n ## .config: 2460 :
+  CONFIG_SURFACE_PLATFORMS : n ## .config: 2461 :
+  CONFIG_X86_PLATFORM_DEVICES : y ## .config: 2462 :configs/v6.10/standard/tiny/cfg/intel.cfg (y) 
+  CONFIG_ACPI_WMI : y ## .config: 2463 :
+  CONFIG_WMI_BMOF : n ## .config: 2464 :
+  CONFIG_MXM_WMI : n ## .config: 2465 :
+  CONFIG_NVIDIA_WMI_EC_BACKLIGHT : n ## .config: 2466 :
+  CONFIG_XIAOMI_WMI : n ## .config: 2467 :
+  CONFIG_YOGABOOK : n ## .config: 2468 :
+  CONFIG_ACERHDF : n ## .config: 2469 :
+  CONFIG_ACER_WIRELESS : n ## .config: 2470 :
+  CONFIG_AMD_HSMP : n ## .config: 2471 :
+  CONFIG_AMD_WBRF : n ## .config: 2472 :
+  CONFIG_ADV_SWBUTTON : n ## .config: 2473 :
+  CONFIG_APPLE_GMUX : n ## .config: 2474 :
+  CONFIG_ASUS_LAPTOP : n ## .config: 2475 :
+  CONFIG_ASUS_WIRELESS : n ## .config: 2476 :
+  CONFIG_EEEPC_LAPTOP : n ## .config: 2477 :
+  CONFIG_X86_PLATFORM_DRIVERS_DELL : n ## .config: 2478 :
+  CONFIG_FUJITSU_TABLET : n ## .config: 2479 :
+  CONFIG_GPD_POCKET_FAN : n ## .config: 2480 :
+  CONFIG_X86_PLATFORM_DRIVERS_HP : n ## .config: 2481 :
+  CONFIG_WIRELESS_HOTKEY : n ## .config: 2482 :
+  CONFIG_IBM_RTL : n ## .config: 2483 :
+  CONFIG_SENSORS_HDAPS : n ## .config: 2484 :
+  CONFIG_THINKPAD_LMI : n ## .config: 2485 :
+  CONFIG_INTEL_ATOMISP2_PM : n ## .config: 2486 :
+  CONFIG_INTEL_IFS : n ## .config: 2487 :
+  CONFIG_INTEL_SAR_INT1092 : n ## .config: 2488 :
+  CONFIG_INTEL_SPEED_SELECT_INTERFACE : n ## .config: 2493 :
+  CONFIG_INTEL_WMI_SBL_FW_UPDATE : n ## .config: 2496 :
+  CONFIG_INTEL_WMI_THUNDERBOLT : n ## .config: 2497 :
+  CONFIG_INTEL_UNCORE_FREQ_CONTROL : n ## .config: 2502 :
+  CONFIG_INTEL_HID_EVENT : n ## .config: 2505 :
+  CONFIG_INTEL_VBTN : n ## .config: 2506 :
+  CONFIG_INTEL_PUNIT_IPC : n ## .config: 2507 :
+  CONFIG_INTEL_RST : n ## .config: 2508 :
+  CONFIG_INTEL_SMARTCONNECT : n ## .config: 2509 :
+  CONFIG_INTEL_VSEC : n ## .config: 2510 :
+  CONFIG_ACPI_QUICKSTART : n ## .config: 2511 :
+  CONFIG_MSI_WMI : n ## .config: 2512 :
+  CONFIG_SAMSUNG_LAPTOP : n ## .config: 2513 :
+  CONFIG_SAMSUNG_Q10 : n ## .config: 2514 :
+  CONFIG_TOSHIBA_BT_RFKILL : n ## .config: 2515 :
+  CONFIG_TOSHIBA_HAPS : n ## .config: 2516 :
+  CONFIG_TOSHIBA_WMI : n ## .config: 2517 :
+  CONFIG_ACPI_CMPC : n ## .config: 2518 :
+  CONFIG_PANASONIC_LAPTOP : n ## .config: 2519 :
+  CONFIG_TOPSTAR_LAPTOP : n ## .config: 2520 :
+  CONFIG_MLX_PLATFORM : n ## .config: 2521 :
+  CONFIG_INSPUR_PLATFORM_PROFILE : n ## .config: 2522 :
+  CONFIG_LENOVO_WMI_CAMERA : n ## .config: 2523 :
+  CONFIG_INTEL_IPS : n ## .config: 2524 :
+  CONFIG_INTEL_SCU_PCI : n ## .config: 2525 :
+  CONFIG_INTEL_SCU_PLATFORM : n ## .config: 2526 :
+  CONFIG_SIEMENS_SIMATIC_IPC : n ## .config: 2527 :
+  CONFIG_WINMATE_FM07_KEYS : n ## .config: 2528 :
+  CONFIG_P2SB : y ## .config: 2529 :
+  CONFIG_HAVE_CLK : y ## .config: 2530 :
+  CONFIG_HAVE_CLK_PREPARE : y ## .config: 2531 :
+  CONFIG_COMMON_CLK : y ## .config: 2532 :
+  CONFIG_COMMON_CLK_MAX9485 : n ## .config: 2533 :
+  CONFIG_COMMON_CLK_SI5341 : n ## .config: 2534 :
+  CONFIG_COMMON_CLK_SI5351 : n ## .config: 2535 :
+  CONFIG_COMMON_CLK_SI544 : n ## .config: 2536 :
+  CONFIG_COMMON_CLK_CDCE706 : n ## .config: 2537 :
+  CONFIG_COMMON_CLK_CS2000_CP : n ## .config: 2538 :
+  CONFIG_XILINX_VCU : n ## .config: 2539 :
+  CONFIG_HWSPINLOCK : n ## .config: 2540 :
+  CONFIG_CLKEVT_I8253 : y ## .config: 2545 :
+  CONFIG_CLKBLD_I8253 : y ## .config: 2546 :
+  CONFIG_MAILBOX : n ## .config: 2549 :
+  CONFIG_IOMMU_IOVA : y ## .config: 2550 :
+  CONFIG_IOMMU_API : y ## .config: 2551 :
+  CONFIG_IOMMU_SUPPORT : y ## .config: 2552 :configs/v6.10/standard/tiny/features/x2apic/x2apic.cfg (y) 
+  CONFIG_IOMMU_DEFAULT_DMA_STRICT : n ## .config: 2559 :
+  CONFIG_IOMMU_DEFAULT_DMA_LAZY : y ## .config: 2560 :
+  CONFIG_IOMMU_DEFAULT_PASSTHROUGH : n ## .config: 2561 :
+  CONFIG_IOMMU_DMA : y ## .config: 2562 :
+  CONFIG_AMD_IOMMU : n ## .config: 2563 :
+  CONFIG_INTEL_IOMMU : n ## .config: 2564 :
+  CONFIG_IOMMUFD : n ## .config: 2565 :
+  CONFIG_IRQ_REMAP : y ## .config: 2566 :configs/v6.10/standard/tiny/features/x2apic/x2apic.cfg (y) 
+  CONFIG_REMOTEPROC : n ## .config: 2571 :
+  CONFIG_RPMSG_VIRTIO : n ## .config: 2577 :
+  CONFIG_SOUNDWIRE : n ## .config: 2580 :
+  CONFIG_WPCM450_SOC : n ## .config: 2616 :
+  CONFIG_SOC_TI : n ## .config: 2623 :
+  CONFIG_PM_DEVFREQ : n ## .config: 2656 :
+  CONFIG_EXTCON : n ## .config: 2657 :
+  CONFIG_MEMORY : n ## .config: 2658 :
+  CONFIG_IIO : n ## .config: 2659 :
+  CONFIG_NTB : n ## .config: 2660 :
+  CONFIG_PWM : n ## .config: 2661 :
+  CONFIG_IPACK_BUS : n ## .config: 2668 :
+  CONFIG_RESET_CONTROLLER : n ## .config: 2669 :
+  CONFIG_GENERIC_PHY : n ## .config: 2674 :
+  CONFIG_USB_LGM_PHY : n ## .config: 2675 :
+  CONFIG_PHY_CAN_TRANSCEIVER : n ## .config: 2676 :
+  CONFIG_BCM_KONA_USB2_PHY : n ## .config: 2681 :
+  CONFIG_PHY_PXA_28NM_HSIC : n ## .config: 2684 :
+  CONFIG_PHY_PXA_28NM_USB2 : n ## .config: 2685 :
+  CONFIG_PHY_INTEL_LGM_EMMC : n ## .config: 2686 :
+  CONFIG_POWERCAP : n ## .config: 2689 :
+  CONFIG_MCB : n ## .config: 2690 :
+  CONFIG_DWC_PCIE_PMU : n ## .config: 2695 :
+  CONFIG_RAS : n ## .config: 2698 :
+  CONFIG_USB4 : n ## .config: 2699 :
+  CONFIG_ANDROID_BINDER_IPC : n ## .config: 2704 :
+  CONFIG_DAX : n ## .config: 2707 :
+  CONFIG_NVMEM : y ## .config: 2708 :
+  CONFIG_NVMEM_SYSFS : y ## .config: 2709 :
+  CONFIG_NVMEM_LAYOUTS : n ## .config: 2710 :
+  CONFIG_NVMEM_RMEM : n ## .config: 2711 :
+  CONFIG_STM : n ## .config: 2716 :
+  CONFIG_INTEL_TH : n ## .config: 2717 :
+  CONFIG_FPGA : n ## .config: 2720 :
+  CONFIG_TEE : n ## .config: 2721 :
+  CONFIG_SIOX : n ## .config: 2722 :
+  CONFIG_SLIMBUS : n ## .config: 2723 :
+  CONFIG_INTERCONNECT : n ## .config: 2724 :
+  CONFIG_COUNTER : n ## .config: 2725 :
+  CONFIG_PECI : n ## .config: 2726 :
+  CONFIG_HTE : n ## .config: 2727 :
+  CONFIG_DCACHE_WORD_ACCESS : y ## .config: 2733 :
+  CONFIG_VALIDATE_FS_PARSER : n ## .config: 2734 :
+  CONFIG_EXPORTFS_BLOCK_OPS : n ## .config: 2735 :
+  CONFIG_FILE_LOCKING : n ## .config: 2736 :
+  CONFIG_FS_ENCRYPTION : n ## .config: 2737 :
+  CONFIG_FS_VERITY : n ## .config: 2738 :
+  CONFIG_FSNOTIFY : y ## .config: 2739 :
+  CONFIG_DNOTIFY : y ## .config: 2740 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_INOTIFY_USER : y ## .config: 2741 :configs/v6.10/standard/tiny/features/power/intel.cfg (y) 
+  CONFIG_FANOTIFY : n ## .config: 2742 :
+  CONFIG_QUOTA : n ## .config: 2743 :
+  CONFIG_AUTOFS_FS : n ## .config: 2744 :
+  CONFIG_FUSE_FS : n ## .config: 2745 :
+  CONFIG_OVERLAY_FS : n ## .config: 2746 :
+  CONFIG_PROC_FS : y ## .config: 2756 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_PROC_KCORE : y ## .config: 2757 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_PROC_SYSCTL : y ## .config: 2758 :configs/v6.10/standard/tiny/ktypes/tiny/tiny.cfg (y) 
+  CONFIG_PROC_PAGE_MONITOR : n ## .config: 2759 :
+  CONFIG_PROC_CHILDREN : n ## .config: 2760 :
+  CONFIG_PROC_PID_ARCH_STATUS : y ## .config: 2761 :
+  CONFIG_KERNFS : y ## .config: 2762 :
+  CONFIG_SYSFS : y ## .config: 2763 :configs/v6.10/ktypes/base/base.cfg (y) configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) 
+  CONFIG_TMPFS : y ## .config: 2764 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_TMPFS_POSIX_ACL : n ## .config: 2765 :
+  CONFIG_TMPFS_XATTR : n ## .config: 2766 :
+  CONFIG_TMPFS_INODE64 : n ## .config: 2767 :
+  CONFIG_TMPFS_QUOTA : n ## .config: 2768 :
+  CONFIG_HUGETLBFS : n ## .config: 2769 :
+  CONFIG_ARCH_HAS_GIGANTIC_PAGE : y ## .config: 2770 :
+  CONFIG_CONFIGFS_FS : n ## .config: 2771 :
+  CONFIG_EFIVAR_FS : y ## .config: 2772 :configs/v6.10/standard/tiny/cfg/efi.cfg (y) 
+  CONFIG_MISC_FILESYSTEMS : n ## .config: 2775 :
+  CONFIG_NLS : y ## .config: 2776 :
+  CONFIG_NLS_DEFAULT : "iso8859-1" ## .config: 2777 :configs/v6.10/ktypes/base/base.cfg ("iso8859-1") 
+  CONFIG_NLS_CODEPAGE_437 : y ## .config: 2778 :configs/v6.10/standard/tiny/cfg/fs/vfat.cfg (y) 
+  CONFIG_NLS_CODEPAGE_737 : n ## .config: 2779 :
+  CONFIG_NLS_CODEPAGE_775 : n ## .config: 2780 :
+  CONFIG_NLS_CODEPAGE_850 : n ## .config: 2781 :
+  CONFIG_NLS_CODEPAGE_852 : n ## .config: 2782 :
+  CONFIG_NLS_CODEPAGE_855 : n ## .config: 2783 :
+  CONFIG_NLS_CODEPAGE_857 : n ## .config: 2784 :
+  CONFIG_NLS_CODEPAGE_860 : n ## .config: 2785 :
+  CONFIG_NLS_CODEPAGE_861 : n ## .config: 2786 :
+  CONFIG_NLS_CODEPAGE_862 : n ## .config: 2787 :
+  CONFIG_NLS_CODEPAGE_863 : n ## .config: 2788 :
+  CONFIG_NLS_CODEPAGE_864 : n ## .config: 2789 :
+  CONFIG_NLS_CODEPAGE_865 : n ## .config: 2790 :
+  CONFIG_NLS_CODEPAGE_866 : n ## .config: 2791 :
+  CONFIG_NLS_CODEPAGE_869 : n ## .config: 2792 :
+  CONFIG_NLS_CODEPAGE_936 : n ## .config: 2793 :
+  CONFIG_NLS_CODEPAGE_950 : n ## .config: 2794 :
+  CONFIG_NLS_CODEPAGE_932 : n ## .config: 2795 :
+  CONFIG_NLS_CODEPAGE_949 : n ## .config: 2796 :
+  CONFIG_NLS_CODEPAGE_874 : n ## .config: 2797 :
+  CONFIG_NLS_ISO8859_8 : n ## .config: 2798 :
+  CONFIG_NLS_CODEPAGE_1250 : n ## .config: 2799 :
+  CONFIG_NLS_CODEPAGE_1251 : n ## .config: 2800 :
+  CONFIG_NLS_ASCII : n ## .config: 2801 :
+  CONFIG_NLS_ISO8859_1 : y ## .config: 2802 :configs/v6.10/standard/tiny/cfg/fs/vfat.cfg (y) 
+  CONFIG_NLS_ISO8859_2 : n ## .config: 2803 :
+  CONFIG_NLS_ISO8859_3 : n ## .config: 2804 :
+  CONFIG_NLS_ISO8859_4 : n ## .config: 2805 :
+  CONFIG_NLS_ISO8859_5 : n ## .config: 2806 :
+  CONFIG_NLS_ISO8859_6 : n ## .config: 2807 :
+  CONFIG_NLS_ISO8859_7 : n ## .config: 2808 :
+  CONFIG_NLS_ISO8859_9 : n ## .config: 2809 :
+  CONFIG_NLS_ISO8859_13 : n ## .config: 2810 :
+  CONFIG_NLS_ISO8859_14 : n ## .config: 2811 :
+  CONFIG_NLS_ISO8859_15 : n ## .config: 2812 :
+  CONFIG_NLS_KOI8_R : n ## .config: 2813 :
+  CONFIG_NLS_KOI8_U : n ## .config: 2814 :
+  CONFIG_NLS_MAC_ROMAN : n ## .config: 2815 :
+  CONFIG_NLS_MAC_CELTIC : n ## .config: 2816 :
+  CONFIG_NLS_MAC_CENTEURO : n ## .config: 2817 :
+  CONFIG_NLS_MAC_CROATIAN : n ## .config: 2818 :
+  CONFIG_NLS_MAC_CYRILLIC : n ## .config: 2819 :
+  CONFIG_NLS_MAC_GAELIC : n ## .config: 2820 :
+  CONFIG_NLS_MAC_GREEK : n ## .config: 2821 :
+  CONFIG_NLS_MAC_ICELAND : n ## .config: 2822 :
+  CONFIG_NLS_MAC_INUIT : n ## .config: 2823 :
+  CONFIG_NLS_MAC_ROMANIAN : n ## .config: 2824 :
+  CONFIG_NLS_MAC_TURKISH : n ## .config: 2825 :
+  CONFIG_NLS_UTF8 : n ## .config: 2826 :
+  CONFIG_UNICODE : n ## .config: 2827 :
+  CONFIG_KEYS : n ## .config: 2833 :
+  CONFIG_SECURITY_DMESG_RESTRICT : n ## .config: 2834 :
+  CONFIG_SECURITYFS : n ## .config: 2835 :
+  CONFIG_HARDENED_USERCOPY : n ## .config: 2836 :
+  CONFIG_FORTIFY_SOURCE : n ## .config: 2837 :
+  CONFIG_STATIC_USERMODEHELPER : n ## .config: 2838 :
+  CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT : n ## .config: 2839 :
+  CONFIG_DEFAULT_SECURITY_DAC : y ## .config: 2840 :
+  CONFIG_LSM : "landlock,lockdown,yama,loadpin,safesetid,bpf" ## .config: 2841 :
+  CONFIG_CC_HAS_AUTO_VAR_INIT_PATTERN : y ## .config: 2850 :
+  CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_BARE : y ## .config: 2851 :
+  CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO : y ## .config: 2852 :
+  CONFIG_INIT_STACK_NONE : n ## .config: 2853 :
+  CONFIG_INIT_STACK_ALL_PATTERN : n ## .config: 2854 :
+  CONFIG_INIT_STACK_ALL_ZERO : y ## .config: 2855 :
+  CONFIG_INIT_ON_ALLOC_DEFAULT_ON : n ## .config: 2856 :
+  CONFIG_INIT_ON_FREE_DEFAULT_ON : n ## .config: 2857 :
+  CONFIG_CC_HAS_ZERO_CALL_USED_REGS : y ## .config: 2858 :
+  CONFIG_ZERO_CALL_USED_REGS : n ## .config: 2859 :
+  CONFIG_LIST_HARDENED : n ## .config: 2865 :
+  CONFIG_BUG_ON_DATA_CORRUPTION : n ## .config: 2866 :
+  CONFIG_RANDSTRUCT_NONE : y ## .config: 2869 :
+  CONFIG_CRYPTO : y ## .config: 2873 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_CRYPTO_ALGAPI : y ## .config: 2878 :
+  CONFIG_CRYPTO_ALGAPI2 : y ## .config: 2879 :
+  CONFIG_CRYPTO_AEAD2 : y ## .config: 2880 :
+  CONFIG_CRYPTO_SIG2 : y ## .config: 2881 :
+  CONFIG_CRYPTO_SKCIPHER : y ## .config: 2882 :
+  CONFIG_CRYPTO_SKCIPHER2 : y ## .config: 2883 :
+  CONFIG_CRYPTO_HASH2 : y ## .config: 2884 :
+  CONFIG_CRYPTO_RNG2 : y ## .config: 2885 :
+  CONFIG_CRYPTO_AKCIPHER2 : y ## .config: 2886 :
+  CONFIG_CRYPTO_KPP2 : y ## .config: 2887 :
+  CONFIG_CRYPTO_ACOMP2 : y ## .config: 2888 :
+  CONFIG_CRYPTO_MANAGER : y ## .config: 2889 :
+  CONFIG_CRYPTO_MANAGER2 : y ## .config: 2890 :
+  CONFIG_CRYPTO_MANAGER_DISABLE_TESTS : n ## .config: 2891 :
+  CONFIG_CRYPTO_MANAGER_EXTRA_TESTS : n ## .config: 2892 :
+  CONFIG_CRYPTO_NULL : n ## .config: 2893 :
+  CONFIG_CRYPTO_PCRYPT : n ## .config: 2894 :
+  CONFIG_CRYPTO_CRYPTD : n ## .config: 2895 :
+  CONFIG_CRYPTO_AUTHENC : n ## .config: 2896 :
+  CONFIG_CRYPTO_TEST : n ## .config: 2897 :
+  CONFIG_CRYPTO_RSA : n ## .config: 2903 :
+  CONFIG_CRYPTO_DH : n ## .config: 2904 :
+  CONFIG_CRYPTO_ECDH : n ## .config: 2905 :
+  CONFIG_CRYPTO_ECDSA : n ## .config: 2906 :
+  CONFIG_CRYPTO_ECRDSA : n ## .config: 2907 :
+  CONFIG_CRYPTO_SM2 : n ## .config: 2908 :
+  CONFIG_CRYPTO_CURVE25519 : n ## .config: 2909 :
+  CONFIG_CRYPTO_AES : n ## .config: 2915 :
+  CONFIG_CRYPTO_AES_TI : n ## .config: 2916 :
+  CONFIG_CRYPTO_ARIA : n ## .config: 2917 :
+  CONFIG_CRYPTO_BLOWFISH : n ## .config: 2918 :
+  CONFIG_CRYPTO_CAMELLIA : n ## .config: 2919 :
+  CONFIG_CRYPTO_CAST5 : n ## .config: 2920 :
+  CONFIG_CRYPTO_CAST6 : n ## .config: 2921 :
+  CONFIG_CRYPTO_DES : y ## .config: 2922 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_CRYPTO_FCRYPT : n ## .config: 2923 :
+  CONFIG_CRYPTO_SERPENT : n ## .config: 2924 :
+  CONFIG_CRYPTO_SM4_GENERIC : n ## .config: 2925 :
+  CONFIG_CRYPTO_TWOFISH : n ## .config: 2926 :
+  CONFIG_CRYPTO_ADIANTUM : n ## .config: 2932 :
+  CONFIG_CRYPTO_CHACHA20 : n ## .config: 2933 :
+  CONFIG_CRYPTO_CBC : n ## .config: 2934 :
+  CONFIG_CRYPTO_CTR : n ## .config: 2935 :
+  CONFIG_CRYPTO_CTS : y ## .config: 2936 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_CRYPTO_ECB : y ## .config: 2937 :
+  CONFIG_CRYPTO_HCTR2 : n ## .config: 2938 :
+  CONFIG_CRYPTO_KEYWRAP : n ## .config: 2939 :
+  CONFIG_CRYPTO_LRW : n ## .config: 2940 :
+  CONFIG_CRYPTO_PCBC : n ## .config: 2941 :
+  CONFIG_CRYPTO_XTS : n ## .config: 2942 :
+  CONFIG_CRYPTO_AEGIS128 : n ## .config: 2948 :
+  CONFIG_CRYPTO_CHACHA20POLY1305 : n ## .config: 2949 :
+  CONFIG_CRYPTO_CCM : n ## .config: 2950 :
+  CONFIG_CRYPTO_GCM : n ## .config: 2951 :
+  CONFIG_CRYPTO_SEQIV : n ## .config: 2952 :
+  CONFIG_CRYPTO_ECHAINIV : n ## .config: 2953 :
+  CONFIG_CRYPTO_ESSIV : n ## .config: 2954 :
+  CONFIG_CRYPTO_BLAKE2B : n ## .config: 2960 :
+  CONFIG_CRYPTO_CMAC : n ## .config: 2961 :
+  CONFIG_CRYPTO_GHASH : n ## .config: 2962 :
+  CONFIG_CRYPTO_HMAC : n ## .config: 2963 :
+  CONFIG_CRYPTO_MD4 : n ## .config: 2964 :
+  CONFIG_CRYPTO_MD5 : n ## .config: 2965 :
+  CONFIG_CRYPTO_MICHAEL_MIC : n ## .config: 2966 :
+  CONFIG_CRYPTO_POLY1305 : n ## .config: 2967 :
+  CONFIG_CRYPTO_RMD160 : n ## .config: 2968 :
+  CONFIG_CRYPTO_SHA1 : n ## .config: 2969 :
+  CONFIG_CRYPTO_SHA256 : n ## .config: 2970 :
+  CONFIG_CRYPTO_SHA512 : n ## .config: 2971 :
+  CONFIG_CRYPTO_SHA3 : n ## .config: 2972 :
+  CONFIG_CRYPTO_SM3_GENERIC : n ## .config: 2973 :
+  CONFIG_CRYPTO_STREEBOG : n ## .config: 2974 :
+  CONFIG_CRYPTO_VMAC : n ## .config: 2975 :
+  CONFIG_CRYPTO_WP512 : n ## .config: 2976 :
+  CONFIG_CRYPTO_XCBC : n ## .config: 2977 :
+  CONFIG_CRYPTO_XXHASH : n ## .config: 2978 :
+  CONFIG_CRYPTO_CRC32C : n ## .config: 2984 :
+  CONFIG_CRYPTO_CRC32 : n ## .config: 2985 :
+  CONFIG_CRYPTO_CRCT10DIF : n ## .config: 2986 :
+  CONFIG_CRYPTO_DEFLATE : n ## .config: 2992 :
+  CONFIG_CRYPTO_LZO : n ## .config: 2993 :
+  CONFIG_CRYPTO_842 : n ## .config: 2994 :
+  CONFIG_CRYPTO_LZ4 : n ## .config: 2995 :
+  CONFIG_CRYPTO_LZ4HC : n ## .config: 2996 :
+  CONFIG_CRYPTO_ZSTD : n ## .config: 2997 :
+  CONFIG_CRYPTO_ANSI_CPRNG : n ## .config: 3003 :
+  CONFIG_CRYPTO_DRBG_MENU : n ## .config: 3004 :
+  CONFIG_CRYPTO_JITTERENTROPY : n ## .config: 3005 :
+  CONFIG_CRYPTO_CURVE25519_X86 : n ## .config: 3016 :
+  CONFIG_CRYPTO_AES_NI_INTEL : n ## .config: 3017 :
+  CONFIG_CRYPTO_BLOWFISH_X86_64 : n ## .config: 3018 :
+  CONFIG_CRYPTO_CAMELLIA_X86_64 : n ## .config: 3019 :
+  CONFIG_CRYPTO_CAMELLIA_AESNI_AVX_X86_64 : n ## .config: 3020 :
+  CONFIG_CRYPTO_CAMELLIA_AESNI_AVX2_X86_64 : n ## .config: 3021 :
+  CONFIG_CRYPTO_CAST5_AVX_X86_64 : n ## .config: 3022 :
+  CONFIG_CRYPTO_CAST6_AVX_X86_64 : n ## .config: 3023 :
+  CONFIG_CRYPTO_DES3_EDE_X86_64 : n ## .config: 3024 :
+  CONFIG_CRYPTO_SERPENT_SSE2_X86_64 : n ## .config: 3025 :
+  CONFIG_CRYPTO_SERPENT_AVX_X86_64 : n ## .config: 3026 :
+  CONFIG_CRYPTO_SERPENT_AVX2_X86_64 : n ## .config: 3027 :
+  CONFIG_CRYPTO_SM4_AESNI_AVX_X86_64 : n ## .config: 3028 :
+  CONFIG_CRYPTO_SM4_AESNI_AVX2_X86_64 : n ## .config: 3029 :
+  CONFIG_CRYPTO_TWOFISH_X86_64 : n ## .config: 3030 :
+  CONFIG_CRYPTO_TWOFISH_X86_64_3WAY : n ## .config: 3031 :
+  CONFIG_CRYPTO_TWOFISH_AVX_X86_64 : n ## .config: 3032 :
+  CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 : n ## .config: 3033 :
+  CONFIG_CRYPTO_ARIA_AESNI_AVX2_X86_64 : n ## .config: 3034 :
+  CONFIG_CRYPTO_ARIA_GFNI_AVX512_X86_64 : n ## .config: 3035 :
+  CONFIG_CRYPTO_CHACHA20_X86_64 : n ## .config: 3036 :
+  CONFIG_CRYPTO_AEGIS128_AESNI_SSE2 : n ## .config: 3037 :
+  CONFIG_CRYPTO_NHPOLY1305_SSE2 : n ## .config: 3038 :
+  CONFIG_CRYPTO_NHPOLY1305_AVX2 : n ## .config: 3039 :
+  CONFIG_CRYPTO_BLAKE2S_X86 : n ## .config: 3040 :
+  CONFIG_CRYPTO_POLYVAL_CLMUL_NI : n ## .config: 3041 :
+  CONFIG_CRYPTO_POLY1305_X86_64 : n ## .config: 3042 :
+  CONFIG_CRYPTO_SHA1_SSSE3 : n ## .config: 3043 :
+  CONFIG_CRYPTO_SHA256_SSSE3 : n ## .config: 3044 :
+  CONFIG_CRYPTO_SHA512_SSSE3 : n ## .config: 3045 :
+  CONFIG_CRYPTO_SM3_AVX_X86_64 : n ## .config: 3046 :
+  CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL : n ## .config: 3047 :
+  CONFIG_CRYPTO_CRC32C_INTEL : n ## .config: 3048 :
+  CONFIG_CRYPTO_CRC32_PCLMUL : n ## .config: 3049 :
+  CONFIG_CRYPTO_HW : n ## .config: 3052 :
+  CONFIG_PACKING : n ## .config: 3062 :
+  CONFIG_BITREVERSE : y ## .config: 3063 :
+  CONFIG_GENERIC_STRNCPY_FROM_USER : y ## .config: 3064 :
+  CONFIG_GENERIC_STRNLEN_USER : y ## .config: 3065 :
+  CONFIG_CORDIC : y ## .config: 3066 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (m) 
+    [NOTE]: 'CONFIG_CORDIC' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config CORDIC
+        	tristate "CORDIC algorithm"
+        	help
+        	  This option provides an implementation of the CORDIC algorithm;
+        	  calculations are in fixed point. Module will be called cordic.
+
+
+    [INFO]: selection details for 'CONFIG_CORDIC':
+        Symbols currently n-selecting this symbol (no effect):
+          - B43
+          - BRCMSMAC
+
+
+  CONFIG_PRIME_NUMBERS : n ## .config: 3067 :
+  CONFIG_RATIONAL : y ## .config: 3068 :
+  CONFIG_GENERIC_IOMAP : y ## .config: 3069 :
+  CONFIG_ARCH_USE_CMPXCHG_LOCKREF : y ## .config: 3070 :
+  CONFIG_ARCH_HAS_FAST_MULTIPLIER : y ## .config: 3071 :
+  CONFIG_ARCH_USE_SYM_ANNOTATIONS : y ## .config: 3072 :
+  CONFIG_CRYPTO_LIB_UTILS : y ## .config: 3077 :
+  CONFIG_CRYPTO_LIB_BLAKE2S_GENERIC : y ## .config: 3078 :
+  CONFIG_CRYPTO_LIB_CHACHA : n ## .config: 3079 :
+  CONFIG_CRYPTO_LIB_CURVE25519 : n ## .config: 3080 :
+  CONFIG_CRYPTO_LIB_DES : y ## .config: 3081 :
+  CONFIG_CRYPTO_LIB_POLY1305_RSIZE : 11 ## .config: 3082 :
+  CONFIG_CRYPTO_LIB_POLY1305 : n ## .config: 3083 :
+  CONFIG_CRYPTO_LIB_CHACHA20POLY1305 : n ## .config: 3084 :
+  CONFIG_CRC_CCITT : n ## .config: 3087 :
+  CONFIG_CRC16 : n ## .config: 3088 :
+  CONFIG_CRC_T10DIF : n ## .config: 3089 :
+  CONFIG_CRC64_ROCKSOFT : n ## .config: 3090 :
+  CONFIG_CRC_ITU_T : n ## .config: 3091 :
+  CONFIG_CRC32 : y ## .config: 3092 :
+  CONFIG_CRC32_SELFTEST : n ## .config: 3093 :
+  CONFIG_CRC32_SLICEBY8 : y ## .config: 3094 :
+  CONFIG_CRC32_SLICEBY4 : n ## .config: 3095 :
+  CONFIG_CRC32_SARWATE : n ## .config: 3096 :
+  CONFIG_CRC32_BIT : n ## .config: 3097 :
+  CONFIG_CRC64 : n ## .config: 3098 :
+  CONFIG_CRC4 : n ## .config: 3099 :
+  CONFIG_CRC7 : n ## .config: 3100 :
+  CONFIG_LIBCRC32C : n ## .config: 3101 :
+  CONFIG_CRC8 : y ## .config: 3102 :configs/v6.10/standard/tiny/bsp/common-pc/common-pc-wifi.cfg (m) 
+    [NOTE]: 'CONFIG_CRC8' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config CRC8
+        	tristate "CRC8 function"
+        	help
+        	  This option provides CRC8 function. Drivers may select this
+        	  when they need to do cyclic redundancy check according CRC8
+        	  algorithm. Module will be called crc8.
+
+
+    [INFO]: selection details for 'CONFIG_CRC8':
+        Symbols currently n-selecting this symbol (no effect):
+          - BT_NXPUART
+          - PCIE_QCOM
+          - ADIN1110
+          - QED
+          - KEYBOARD_PINEPHONE
+          - GPIO_MAX3191X
+          - SENSORS_AHT10
+          - SENSORS_ADM1266
+          - SENSORS_SHT3x
+          - SENSORS_SHT4x
+          - MFD_MT6360
+          - MFD_TPS6594_I2C
+          - MFD_TPS6594_SPI
+          - SND_SOC_AW88395_LIB
+          - SND_SOC_AW88399
+          - SND_SOC_TAS2781_COMLIB
+          - SCA3300
+          - AD7280
+          - AD74115
+          - AD74413R
+          - AOSONG_AGS02MA
+          - SCD30_I2C
+          - SCD4X
+          - SENSIRION_SGP30
+          - SENSIRION_SGP40
+          - SPS30_I2C
+          - HDC3020
+          - ICP10100
+          - NVMEM_LAYOUT_SL28_VPD
+          - CRYPTO_DEV_QAT
+
+
+  CONFIG_RANDOM32_SELFTEST : n ## .config: 3103 :
+  CONFIG_ZLIB_INFLATE : y ## .config: 3104 :
+  CONFIG_XZ_DEC : n ## .config: 3105 :
+  CONFIG_DECOMPRESS_GZIP : y ## .config: 3106 :
+  CONFIG_GENERIC_ALLOCATOR : y ## .config: 3107 :
+  CONFIG_INTERVAL_TREE : y ## .config: 3108 :
+  CONFIG_HAS_IOMEM : y ## .config: 3109 :
+  CONFIG_HAS_IOPORT : y ## .config: 3110 :
+  CONFIG_HAS_IOPORT_MAP : y ## .config: 3111 :
+  CONFIG_HAS_DMA : y ## .config: 3112 :
+  CONFIG_DMA_OPS : y ## .config: 3113 :
+  CONFIG_NEED_SG_DMA_FLAGS : y ## .config: 3114 :
+  CONFIG_NEED_SG_DMA_LENGTH : y ## .config: 3115 :
+  CONFIG_NEED_DMA_MAP_STATE : y ## .config: 3116 :
+  CONFIG_ARCH_DMA_ADDR_T_64BIT : y ## .config: 3117 :
+  CONFIG_SWIOTLB : y ## .config: 3118 :
+  CONFIG_SWIOTLB_DYNAMIC : n ## .config: 3119 :
+  CONFIG_DMA_NEED_SYNC : y ## .config: 3120 :
+  CONFIG_DMA_API_DEBUG : n ## .config: 3121 :
+  CONFIG_SGL_ALLOC : y ## .config: 3122 :
+  CONFIG_IRQ_POLL : n ## .config: 3123 :
+  CONFIG_UCS2_STRING : y ## .config: 3124 :
+  CONFIG_HAVE_GENERIC_VDSO : y ## .config: 3125 :
+  CONFIG_GENERIC_GETTIMEOFDAY : y ## .config: 3126 :
+  CONFIG_GENERIC_VDSO_TIME_NS : y ## .config: 3127 :
+  CONFIG_GENERIC_VDSO_OVERFLOW_PROTECT : y ## .config: 3128 :
+  CONFIG_FONT_SUPPORT : y ## .config: 3129 :
+  CONFIG_FONTS : n ## .config: 3130 :
+  CONFIG_FONT_8x8 : y ## .config: 3131 :
+  CONFIG_FONT_8x16 : y ## .config: 3132 :
+  CONFIG_ARCH_HAS_PMEM_API : y ## .config: 3133 :
+  CONFIG_ARCH_HAS_CPU_CACHE_INVALIDATE_MEMREGION : y ## .config: 3134 :
+  CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE : y ## .config: 3135 :
+  CONFIG_ARCH_HAS_COPY_MC : y ## .config: 3136 :
+  CONFIG_ARCH_STACKWALK : y ## .config: 3137 :
+  CONFIG_LWQ_TEST : n ## .config: 3138 :
+  CONFIG_FIRMWARE_TABLE : y ## .config: 3141 :
+  CONFIG_PRINTK_TIME : y ## .config: 3150 :configs/v6.10/standard/tiny/ktypes/tiny/yocto.cfg (y) configs/v6.10/standard/tiny/features/debug/printk.cfg (y) 
+  CONFIG_PRINTK_CALLER : n ## .config: 3151 :
+  CONFIG_STACKTRACE_BUILD_ID : n ## .config: 3152 :
+  CONFIG_CONSOLE_LOGLEVEL_DEFAULT : 7 ## .config: 3153 :
+  CONFIG_CONSOLE_LOGLEVEL_QUIET : 4 ## .config: 3154 :
+  CONFIG_MESSAGE_LOGLEVEL_DEFAULT : 4 ## .config: 3155 :
+  CONFIG_BOOT_PRINTK_DELAY : n ## .config: 3156 :
+  CONFIG_DYNAMIC_DEBUG : n ## .config: 3157 :
+  CONFIG_DYNAMIC_DEBUG_CORE : n ## .config: 3158 :
+  CONFIG_SYMBOLIC_ERRNAME : n ## .config: 3159 :
+  CONFIG_DEBUG_KERNEL : y ## .config: 3162 :configs/v6.10/ktypes/base/base.cfg (n) 
+    [NOTE]: 'CONFIG_DEBUG_KERNEL' last val (n) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config DEBUG_KERNEL
+        	bool "Kernel debugging"
+        	help
+        	  Say Y here if you are developing drivers or trying to debug and
+        	  identify kernel problems.
+
+
+    [INFO]: selection details for 'CONFIG_DEBUG_KERNEL':
+        Symbols currently y-selecting this symbol:
+          - EXPERT
+
+
+  CONFIG_DEBUG_MISC : n ## .config: 3163 :
+  CONFIG_AS_HAS_NON_CONST_ULEB128 : y ## .config: 3168 :
+  CONFIG_DEBUG_INFO_NONE : y ## .config: 3169 :
+  CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT : n ## .config: 3170 :
+  CONFIG_DEBUG_INFO_DWARF4 : n ## .config: 3171 :
+  CONFIG_DEBUG_INFO_DWARF5 : n ## .config: 3172 :
+  CONFIG_FRAME_WARN : 2048 ## .config: 3173 :
+  CONFIG_STRIP_ASM_SYMS : n ## .config: 3174 :
+  CONFIG_READABLE_ASM : n ## .config: 3175 :
+  CONFIG_HEADERS_INSTALL : n ## .config: 3176 :
+  CONFIG_DEBUG_SECTION_MISMATCH : n ## .config: 3177 :
+  CONFIG_SECTION_MISMATCH_WARN_ONLY : n ## .config: 3178 :
+  CONFIG_DEBUG_FORCE_FUNCTION_ALIGN_64B : n ## .config: 3179 :
+  CONFIG_ARCH_WANT_FRAME_POINTERS : y ## .config: 3180 :
+  CONFIG_FRAME_POINTER : y ## .config: 3181 :
+  CONFIG_OBJTOOL : y ## .config: 3182 :
+  CONFIG_STACK_VALIDATION : n ## .config: 3183 :
+  CONFIG_VMLINUX_MAP : n ## .config: 3184 :
+  CONFIG_DEBUG_FORCE_WEAK_PER_CPU : n ## .config: 3185 :
+  CONFIG_MAGIC_SYSRQ : y ## .config: 3191 :configs/v6.10/ktypes/base/base.cfg (y) 
+  CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE : 0x1 ## .config: 3192 :
+  CONFIG_MAGIC_SYSRQ_SERIAL : n ## .config: 3193 :
+  CONFIG_DEBUG_FS : n ## .config: 3194 :
+  CONFIG_HAVE_ARCH_KGDB : y ## .config: 3195 :
+  CONFIG_KGDB : n ## .config: 3196 :
+  CONFIG_ARCH_HAS_UBSAN : y ## .config: 3197 :
+  CONFIG_UBSAN : n ## .config: 3198 :
+  CONFIG_HAVE_ARCH_KCSAN : y ## .config: 3199 :
+  CONFIG_HAVE_KCSAN_COMPILER : y ## .config: 3200 :
+  CONFIG_KCSAN : n ## .config: 3201 :
+  CONFIG_PAGE_EXTENSION : n ## .config: 3212 :
+  CONFIG_DEBUG_PAGEALLOC : n ## .config: 3213 :
+  CONFIG_SLUB_DEBUG : n ## .config: 3214 :
+  CONFIG_PAGE_OWNER : n ## .config: 3215 :
+  CONFIG_PAGE_TABLE_CHECK : n ## .config: 3216 :
+  CONFIG_PAGE_POISONING : n ## .config: 3217 :
+  CONFIG_DEBUG_RODATA_TEST : n ## .config: 3218 :
+  CONFIG_ARCH_HAS_DEBUG_WX : y ## .config: 3219 :
+  CONFIG_DEBUG_WX : n ## .config: 3220 :
+  CONFIG_GENERIC_PTDUMP : y ## .config: 3221 :
+  CONFIG_HAVE_DEBUG_KMEMLEAK : y ## .config: 3222 :
+  CONFIG_DEBUG_KMEMLEAK : n ## .config: 3223 :
+  CONFIG_PER_VMA_LOCK_STATS : n ## .config: 3224 :
+  CONFIG_DEBUG_OBJECTS : n ## .config: 3225 :
+  CONFIG_DEBUG_STACK_USAGE : n ## .config: 3226 :
+  CONFIG_SCHED_STACK_END_CHECK : n ## .config: 3227 :
+  CONFIG_ARCH_HAS_DEBUG_VM_PGTABLE : y ## .config: 3228 :
+  CONFIG_DEBUG_VM : n ## .config: 3229 :
+  CONFIG_DEBUG_VM_PGTABLE : n ## .config: 3230 :
+  CONFIG_ARCH_HAS_DEBUG_VIRTUAL : y ## .config: 3231 :
+  CONFIG_DEBUG_VIRTUAL : n ## .config: 3232 :
+  CONFIG_DEBUG_MEMORY_INIT : n ## .config: 3233 :
+  CONFIG_DEBUG_PER_CPU_MAPS : n ## .config: 3234 :
+  CONFIG_ARCH_SUPPORTS_KMAP_LOCAL_FORCE_MAP : y ## .config: 3235 :
+  CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP : n ## .config: 3236 :
+  CONFIG_MEM_ALLOC_PROFILING : n ## .config: 3237 :
+  CONFIG_HAVE_ARCH_KASAN : y ## .config: 3238 :
+  CONFIG_HAVE_ARCH_KASAN_VMALLOC : y ## .config: 3239 :
+  CONFIG_CC_HAS_KASAN_GENERIC : y ## .config: 3240 :
+  CONFIG_CC_HAS_KASAN_SW_TAGS : y ## .config: 3241 :
+  CONFIG_CC_HAS_WORKING_NOSANITIZE_ADDRESS : y ## .config: 3242 :
+  CONFIG_KASAN : n ## .config: 3243 :
+  CONFIG_HAVE_ARCH_KFENCE : y ## .config: 3244 :
+  CONFIG_KFENCE : n ## .config: 3245 :
+  CONFIG_HAVE_ARCH_KMSAN : y ## .config: 3246 :
+  CONFIG_DEBUG_SHIRQ : n ## .config: 3249 :
+  CONFIG_PANIC_ON_OOPS : n ## .config: 3254 :
+  CONFIG_PANIC_ON_OOPS_VALUE : 0 ## .config: 3255 :
+  CONFIG_PANIC_TIMEOUT : 0 ## .config: 3256 :
+  CONFIG_SOFTLOCKUP_DETECTOR : n ## .config: 3257 :
+  CONFIG_HAVE_HARDLOCKUP_DETECTOR_BUDDY : y ## .config: 3258 :
+  CONFIG_HARDLOCKUP_DETECTOR : n ## .config: 3259 :
+  CONFIG_HARDLOCKUP_CHECK_TIMESTAMP : y ## .config: 3260 :
+  CONFIG_DETECT_HUNG_TASK : n ## .config: 3261 :
+  CONFIG_WQ_WATCHDOG : n ## .config: 3262 :
+  CONFIG_WQ_CPU_INTENSIVE_REPORT : n ## .config: 3263 :
+  CONFIG_SCHEDSTATS : n ## .config: 3269 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_DEBUG_TIMEKEEPING : n ## .config: 3272 :
+  CONFIG_DEBUG_PREEMPT : n ## .config: 3273 :
+  CONFIG_LOCK_DEBUGGING_SUPPORT : y ## .config: 3278 :
+  CONFIG_PROVE_LOCKING : n ## .config: 3279 :
+  CONFIG_LOCK_STAT : n ## .config: 3280 :
+  CONFIG_DEBUG_RT_MUTEXES : n ## .config: 3281 :
+  CONFIG_DEBUG_SPINLOCK : n ## .config: 3282 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_DEBUG_MUTEXES : n ## .config: 3283 :
+  CONFIG_DEBUG_WW_MUTEX_SLOWPATH : n ## .config: 3284 :
+  CONFIG_DEBUG_RWSEMS : n ## .config: 3285 :
+  CONFIG_DEBUG_LOCK_ALLOC : n ## .config: 3286 :
+  CONFIG_DEBUG_ATOMIC_SLEEP : n ## .config: 3287 :
+  CONFIG_DEBUG_LOCKING_API_SELFTESTS : n ## .config: 3288 :
+  CONFIG_LOCK_TORTURE_TEST : n ## .config: 3289 :
+  CONFIG_WW_MUTEX_SELFTEST : n ## .config: 3290 :
+  CONFIG_SCF_TORTURE_TEST : n ## .config: 3291 :
+  CONFIG_CSD_LOCK_WAIT_DEBUG : n ## .config: 3292 :
+  CONFIG_NMI_CHECK_CPU : n ## .config: 3295 :
+  CONFIG_DEBUG_IRQFLAGS : n ## .config: 3296 :
+  CONFIG_STACKTRACE : n ## .config: 3297 :
+  CONFIG_WARN_ALL_UNSEEDED_RANDOM : n ## .config: 3298 :
+  CONFIG_DEBUG_KOBJECT : n ## .config: 3299 :configs/v6.10/ktypes/base/base.cfg (n) 
+  CONFIG_DEBUG_LIST : n ## .config: 3304 :
+  CONFIG_DEBUG_PLIST : n ## .config: 3305 :
+  CONFIG_DEBUG_SG : n ## .config: 3306 :
+  CONFIG_DEBUG_NOTIFIERS : n ## .config: 3307 :
+  CONFIG_DEBUG_MAPLE_TREE : n ## .config: 3308 :
+  CONFIG_RCU_SCALE_TEST : n ## .config: 3314 :
+  CONFIG_RCU_TORTURE_TEST : n ## .config: 3315 :
+  CONFIG_RCU_REF_SCALE_TEST : n ## .config: 3316 :
+  CONFIG_RCU_CPU_STALL_TIMEOUT : 21 ## .config: 3317 :
+  CONFIG_RCU_EXP_CPU_STALL_TIMEOUT : 0 ## .config: 3318 :
+  CONFIG_RCU_CPU_STALL_CPUTIME : n ## .config: 3319 :
+  CONFIG_RCU_TRACE : n ## .config: 3320 :
+  CONFIG_RCU_EQS_DEBUG : n ## .config: 3321 :
+  CONFIG_DEBUG_WQ_FORCE_RR_CPU : n ## .config: 3324 :
+  CONFIG_CPU_HOTPLUG_STATE_CONTROL : n ## .config: 3325 :
+  CONFIG_LATENCYTOP : n ## .config: 3326 :
+  CONFIG_USER_STACKTRACE_SUPPORT : y ## .config: 3327 :
+  CONFIG_HAVE_RETHOOK : y ## .config: 3328 :
+  CONFIG_HAVE_FUNCTION_TRACER : y ## .config: 3329 :
+  CONFIG_HAVE_DYNAMIC_FTRACE : y ## .config: 3330 :
+  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS : y ## .config: 3331 :
+  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_DIRECT_CALLS : y ## .config: 3332 :
+  CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS : y ## .config: 3333 :
+  CONFIG_HAVE_DYNAMIC_FTRACE_NO_PATCHABLE : y ## .config: 3334 :
+  CONFIG_HAVE_FTRACE_MCOUNT_RECORD : y ## .config: 3335 :
+  CONFIG_HAVE_SYSCALL_TRACEPOINTS : y ## .config: 3336 :
+  CONFIG_HAVE_FENTRY : y ## .config: 3337 :
+  CONFIG_HAVE_OBJTOOL_MCOUNT : y ## .config: 3338 :
+  CONFIG_HAVE_OBJTOOL_NOP_MCOUNT : y ## .config: 3339 :
+  CONFIG_HAVE_C_RECORDMCOUNT : y ## .config: 3340 :
+  CONFIG_HAVE_BUILDTIME_MCOUNT_SORT : y ## .config: 3341 :
+  CONFIG_TRACING_SUPPORT : y ## .config: 3342 :
+  CONFIG_FTRACE : n ## .config: 3343 :
+  CONFIG_PROVIDE_OHCI1394_DMA_INIT : n ## .config: 3344 :
+  CONFIG_SAMPLES : y ## .config: 3345 :configs/v6.10/standard/tiny/features/kernel-sample/kernel-sample.cfg (y) 
+  CONFIG_SAMPLE_KOBJECT : y ## .config: 3346 :configs/v6.10/standard/tiny/features/kernel-sample/kernel-sample.cfg (m) 
+    [NOTE]: 'CONFIG_SAMPLE_KOBJECT' last val (m) and .config val (y) do not match
+    [INFO]: raw config text:
+
+        config SAMPLE_KOBJECT
+        	tristate "Build kobject examples"
+        	depends on SAMPLES
+        	help
+        	  This config option will allow you to build a number of
+        	  different kobject sample modules showing how to use kobjects,
+        	  ksets, and ktypes properly.
+	  
+        	  If in doubt, say "N" here.
+
+        Config 'SAMPLE_KOBJECT' has the following Direct dependencies (SAMPLE_KOBJECT=y):
+                SAMPLES(=y)
+        Parent dependencies are:
+             SAMPLES [y]
+  CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB : n ## .config: 3347 :
+  CONFIG_HAVE_SAMPLE_FTRACE_DIRECT : y ## .config: 3348 :
+  CONFIG_HAVE_SAMPLE_FTRACE_DIRECT_MULTI : y ## .config: 3349 :
+  CONFIG_ARCH_HAS_DEVMEM_IS_ALLOWED : y ## .config: 3350 :
+  CONFIG_X86_VERBOSE_BOOTUP : n ## .config: 3355 :
+  CONFIG_EARLY_PRINTK : n ## .config: 3356 :
+  CONFIG_EFI_PGT_DUMP : n ## .config: 3357 :
+  CONFIG_DEBUG_TLBFLUSH : n ## .config: 3358 :
+  CONFIG_HAVE_MMIOTRACE_SUPPORT : y ## .config: 3359 :
+  CONFIG_X86_DECODER_SELFTEST : n ## .config: 3360 :
+  CONFIG_IO_DELAY_0X80 : y ## .config: 3361 :
+  CONFIG_IO_DELAY_0XED : n ## .config: 3362 :
+  CONFIG_IO_DELAY_UDELAY : n ## .config: 3363 :
+  CONFIG_IO_DELAY_NONE : n ## .config: 3364 :
+  CONFIG_CPA_DEBUG : n ## .config: 3365 :
+  CONFIG_DEBUG_ENTRY : n ## .config: 3366 :
+  CONFIG_DEBUG_NMI_SELFTEST : n ## .config: 3367 :
+  CONFIG_X86_DEBUG_FPU : n ## .config: 3368 :
+  CONFIG_PUNIT_ATOM_DEBUG : n ## .config: 3369 :
+  CONFIG_UNWINDER_ORC : n ## .config: 3370 :configs/v6.10/standard/tiny/cfg/x86_64.cfg (n) 
+  CONFIG_UNWINDER_FRAME_POINTER : y ## .config: 3371 :configs/v6.10/standard/tiny/cfg/x86_64.cfg (y) 
+  CONFIG_UNWINDER_GUESS : n ## .config: 3372 :
+  CONFIG_KUNIT : n ## .config: 3378 :
+  CONFIG_NOTIFIER_ERROR_INJECTION : n ## .config: 3379 :
+  CONFIG_FAULT_INJECTION : n ## .config: 3380 :
+  CONFIG_ARCH_HAS_KCOV : y ## .config: 3381 :
+  CONFIG_CC_HAS_SANCOV_TRACE_PC : y ## .config: 3382 :
+  CONFIG_KCOV : n ## .config: 3383 :
+  CONFIG_RUNTIME_TESTING_MENU : n ## .config: 3384 :
+  CONFIG_ARCH_USE_MEMTEST : y ## .config: 3385 :
+  CONFIG_MEMTEST : n ## .config: 3386 :
