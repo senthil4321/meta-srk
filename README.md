@@ -16,6 +16,7 @@ bitbake-layers show-layers
 PACKAGE_INSTALL
 IMAGE_INSTALL
 IMAGE_FSTYPES
+IMAGE_FEATURES
 ```
 
 ### Package Group Recipe
