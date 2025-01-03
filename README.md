@@ -12,6 +12,8 @@ bitbake-layers show-layers
 
 ## Important Variables
 
+```bash
 PACKAGE_INSTALL
 IMAGE_INSTALL
 IMAGE_FSTYPES
+```
