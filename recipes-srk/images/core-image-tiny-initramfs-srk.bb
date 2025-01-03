@@ -9,7 +9,7 @@ that can subsequently be picked up by external image generation tools such as wi
 VIRTUAL-RUNTIME_dev_manager ?= " "
 
 INIT_MANAGER = "systemd"
-VIRTUAL-RUNTIME_init_manager = "systemd"
+# VIRTUAL-RUNTIME_init_manager = "systemd"
 # VIRTUAL-RUNTIME_base-utils = "busybox"
 # PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL}"
 PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL} systemd systemd-analyze"

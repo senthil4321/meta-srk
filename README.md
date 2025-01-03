@@ -35,3 +35,17 @@ ls meta*/recipes-kernel/*
 ```bash
 bitbake -c copy_rootfs_to_nfs rootfs-nfs-copy 
 ```
+
+```bash
+# Generate the dependency graph files
+bitbake -g systemd
+
+# Install Graphviz (if not already installed)
+sudo apt-get install graphviz
+
+# Convert the DOT file to a PNG image
+dot -Tpng depends.dot -o systemd-dependency-tree.png
+
+# Open the PNG image to view the dependency tree
+xdg-open systemd-dependency-tree.png
+```
