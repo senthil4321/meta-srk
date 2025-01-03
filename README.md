@@ -17,3 +17,16 @@ PACKAGE_INSTALL
 IMAGE_INSTALL
 IMAGE_FSTYPES
 ```
+
+### Package Group Recipe
+
+A package group recipe bundles multiple packages together and then instead of having to explicitly specify each package in the IMAGE_INSTALL variable you can simply specify the package group name.
+
+* https://lists.yoctoproject.org/g/yocto/message/20345
+
+```bash
+# How to list all package groups?
+ls meta*/recipes*/packagegroups/*
+ls meta*/recipes*/images/*
+ls meta*/recipes-kernel/*
+```
