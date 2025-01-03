@@ -39,7 +39,4 @@ sync
 umount /mnt/beaglebone-boot
 umount /mnt/beaglebone-rootfs
 
-echo "BeagleBone SD card prepared successfully"
-
-
-sudo dd if=am335x-debian-11.7-iot-armhf-2023-09-02-4gb.img of=/dev/sda bs=4M
+echo "BeagleBone Black SD card prepared successfully"

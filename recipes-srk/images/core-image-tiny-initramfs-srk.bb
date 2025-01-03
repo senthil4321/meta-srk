@@ -7,8 +7,11 @@ actually generate an image but rather generates boot and rootfs artifacts \
 that can subsequently be picked up by external image generation tools such as wic."
 
 VIRTUAL-RUNTIME_dev_manager ?= " "
-
-PACKAGE_INSTALL = "${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL}"
+INIT_MANAGER = "systemd"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+# VIRTUAL-RUNTIME_base-utils = "busybox"
+# PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL}"
+PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL} systemd systemd-analyze"
 #PACKAGE_INSTALL = "packagegroup-core-boot "
 # Do not pollute the initrd image with rootfs features
 IMAGE_FEATURES = ""
@@ -29,16 +32,12 @@ IMAGE_ROOTFS_EXTRA_SPACE = "0"
 # Use the same restriction as initramfs-live-install
 COMPATIBLE_HOST = "(i.86|x86_64|aarch64|arm).*-linux"
 
-#python tinyinitrd () {
-# Modify our init file so the user knows we drop to shell prompt on purpose
-#  newinit = None
-#  with open(d.expand('${IMAGE_ROOTFS}/init'), 'r') as init:
-#    newinit = init.read()
-#    newinit = newinit.replace('Cannot find $ROOT_IMAGE file in /run/media/* , dropping to a shell ', 'Poky Tiny Reference Distribution:')
-#  with open(d.expand('${IMAGE_ROOTFS}/init'), 'w') as init:
-#    init.write(newinit)
-#}
+# python tinyinitrd () {
+#     import pdb
+#     pdb.set_trace()  # Add this line to start the debugger
+#     print("hello")
+# }
 
-#IMAGE_PREPROCESS_COMMAND += "tinyinitrd"
+# IMAGE_PREPROCESS_COMMAND += "tinyinitrd"
 
 QB_KERNEL_CMDLINE_APPEND += "debugshell=3 init=/bin/busybox sh init"
