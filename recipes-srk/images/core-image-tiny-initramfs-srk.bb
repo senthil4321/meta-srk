@@ -7,13 +7,14 @@ actually generate an image but rather generates boot and rootfs artifacts \
 that can subsequently be picked up by external image generation tools such as wic."
 
 VIRTUAL-RUNTIME_dev_manager ?= " "
-# INIT_MANAGER = "systemd"
-# VIRTUAL-RUNTIME_init_manager = "systemd"
+
+INIT_MANAGER = "systemd"
+VIRTUAL-RUNTIME_init_manager = "systemd"
 # VIRTUAL-RUNTIME_base-utils = "busybox"
-PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL}"
-# PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL} systemd systemd-analyze"
+# PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL}"
+PACKAGE_INSTALL = "packagegroup-core-boot ${VIRTUAL-RUNTIME_base-utils} ${VIRTUAL-RUNTIME_dev_manager} base-passwd ${ROOTFS_BOOTSTRAP_INSTALL} systemd systemd-analyze"
 #PACKAGE_INSTALL = "packagegroup-core-boot "
-# Do not pollute the initrd image with rootfs features
+
 IMAGE_FEATURES = ""
 
 IMAGE_NAME_SUFFIX ?= ""
