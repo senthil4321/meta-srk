@@ -31,3 +31,7 @@ ls meta*/recipes*/packagegroups/*
 ls meta*/recipes*/images/*
 ls meta*/recipes-kernel/*
 ```
+
+```bash
+bitbake -c copy_rootfs_to_nfs rootfs-nfs-copy 
+```
