@@ -49,3 +49,9 @@ dot -Tpng depends.dot -o systemd-dependency-tree.png
 # Open the PNG image to view the dependency tree
 xdg-open systemd-dependency-tree.png
 ```
+
+goto rootfs
+
+```bash
+cd $(bitbake -e core-image-tiny-initramfs-srk-1 | grep "^IMAGE_ROOTFS=" | cut -d'=' -f2 | tr -d '"')
+```
