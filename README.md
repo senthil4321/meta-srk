@@ -54,4 +54,9 @@ goto rootfs
 
 ```bash
 cd $(bitbake -e core-image-tiny-initramfs-srk-1 | grep "^IMAGE_ROOTFS=" | cut -d'=' -f2 | tr -d '"')
+
+openssl passwd -1 1 | sed 's/\$/\\$/g'
+
+echo '$1$V9izHbFg$z8ZfBeREgRqdOP3AuHGn51' | sed 's/\$/\\$/g'
+echo \$1\$V9izHbFg\$z8ZfBeREgRqdOP3AuHGn51 | sed 's/\\//g'
 ```
