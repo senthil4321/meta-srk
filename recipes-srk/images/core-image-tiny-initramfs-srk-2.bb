@@ -9,7 +9,7 @@ IMAGE_FSTYPES = "cpio.gz"
 inherit core-image
 
 # Include only systemd, busybox, and shadow in the rootfs
-IMAGE_INSTALL = "systemd busybox shadow"
+IMAGE_INSTALL = "systemd busybox shadow nfs-utils"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
