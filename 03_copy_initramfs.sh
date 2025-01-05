@@ -7,7 +7,7 @@ if [ -z "$1" ] && [ -z "$SCP_PASSWORD" ]; then
 fi
 
 # Define the input filename and destination
-INPUT_FILENAME="core-image-tiny-initramfs-srk-beaglebone-yocto.cpio.gz"
+INPUT_FILENAME="core-image-tiny-initramfs-srk-2-beaglebone-yocto.rootfs.cpio.gz"
 SOURCE_FILE="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$INPUT_FILENAME"
 DESTINATION="pi@srk.local:/tmp/"
 PASSWORD=${1:-$SCP_PASSWORD}
