@@ -5,13 +5,12 @@ LICENSE = "MIT"
 
 # Specify the filesystem types for the initramfs and root filesystem
 IMAGE_FSTYPES += "squashfs"
-IMAGE_INSTALL:append = " squashfs-tools"
 
 
 inherit core-image
 
 # Include only systemd, busybox, and shadow in the rootfs
-IMAGE_INSTALL = "systemd busybox shadow"
+IMAGE_INSTALL = "systemd busybox shadow squashfs-tools"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""

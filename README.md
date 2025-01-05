@@ -60,3 +60,10 @@ openssl passwd -1 1 | sed 's/\$/\\$/g'
 echo '$1$V9izHbFg$z8ZfBeREgRqdOP3AuHGn51' | sed 's/\$/\\$/g'
 echo \$1\$V9izHbFg\$z8ZfBeREgRqdOP3AuHGn51 | sed 's/\\//g'
 ```
+
+## Mount sqashfs and switch root
+
+```bash
+mount -t squashfs -o loop core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs /mnt/
+switch_root /mnt /sbin/init
+```

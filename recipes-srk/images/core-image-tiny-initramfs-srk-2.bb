@@ -30,3 +30,4 @@ EXTRA_USERS_PARAMS = "\
 # Enable essential systemd services
 SYSTEMD_AUTO_ENABLE = "enable"
 IMAGE_INSTALL:append = " systemd-serialgetty"
+IMAGE_INSTALL:append = " kernel-modules"
