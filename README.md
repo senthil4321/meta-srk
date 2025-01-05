@@ -64,6 +64,20 @@ echo \$1\$V9izHbFg\$z8ZfBeREgRqdOP3AuHGn51 | sed 's/\\//g'
 ## Mount sqashfs and switch root
 
 ```bash
+zcat /proc/config.gz |grep "=y"|grep "CONFIG_SQUASHFS"
+
+CONFIG_SQUASHFS=y
+CONFIG_SQUASHFS_FILE_CACHE=y
+CONFIG_SQUASHFS_DECOMP_SINGLE=y
+CONFIG_SQUASHFS_COMPILE_DECOMP_SINGLE=y
+CONFIG_SQUASHFS_XATTR=y
+CONFIG_SQUASHFS_ZLIB=y
+CONFIG_SQUASHFS_LZ4=y
+CONFIG_SQUASHFS_LZO=y
+CONFIG_SQUASHFS_XZ=y
+CONFIG_SQUASHFS_ZSTD=y
+
+modprobe loop
 mount -t squashfs -o loop core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs /mnt/
 switch_root /mnt /sbin/init
 ```
