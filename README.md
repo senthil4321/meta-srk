@@ -105,7 +105,10 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 
 ## Trial 3.1
 
-```config
+Use `busybox` init_manager
+Log : meta-srk/backup/01_busybox_init_srk-3/01_busybox_sysv_init_fileSize.txt
+
+```bash
 # 2. Remove Kernel and U-Boot from Image
 IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
 DISTRO_FEATURES:remove = "systemd"
@@ -115,11 +118,35 @@ VIRTUAL-RUNTIME_init_manager = "busybox"
 
 ## Trial 3.2
 
-```config
+Use `mdev-busybox` init_manager
+
+Log : meta-srk/backup/01_busybox_init_srk-3/02_busybox_mdev_init_fileSize
+
+```bash
 # 2. Remove Kernel and U-Boot from Image
 IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
 DISTRO_FEATURES:remove = "systemd"
 DISTRO_FEATURES:remove = " sysvinit"
 VIRTUAL-RUNTIME_init_manager = "mdev-busybox"
 SERIAL_CONSOLES = ""
+```
+
+## Trial 3.3 - TODO
+
+Change the library to `musl`
+
+Log : meta-srk/backup/01_busybox_init_srk-3/
+
+Result : Faulure
+
+```bash
+# 2. Remove Kernel and U-Boot from Image
+IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
+DISTRO_FEATURES:remove = "systemd"
+DISTRO_FEATURES:append = " sysvinit"
+VIRTUAL-RUNTIME_init_manager = "busybox"
+
+PREFERRED_PROVIDER_virtual/libc = "musl"
+PREFERRED_PROVIDER_virtual/libiconv = "glibc"
+
 ```
