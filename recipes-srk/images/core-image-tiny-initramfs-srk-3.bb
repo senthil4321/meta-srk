@@ -10,8 +10,7 @@ inherit core-image
 
 # Include only busybox and shadow in the rootfs
 IMAGE_INSTALL = "busybox shadow"
-
-
+IMAGE_INSTALL:append = " srk-init-folder"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
