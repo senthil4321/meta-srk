@@ -13,19 +13,19 @@ DESTINATION="pi@srk.local:/tmp/"
 PASSWORD=${1:-$SCP_PASSWORD}
 
 # Copy the file using scp
-echo "1. Copying file to  $DESTINATION"
+echo "1. Copying $INPUT_FILENAME to $DESTINATION"
 sshpass -p $PASSWORD scp $SOURCE_FILE $DESTINATION
 
 # Check if the copy was successful
 if [ $? -eq 0 ];  then
-    echo "2. File copied successfully to $DESTINATION"
-    # Delete the content of the NFS folder before extraction
-    sshpass -p $PASSWORD ssh pi@srk.local "sudo mv /tmp/zImage /srv/tftp/"
+    echo "2. $INPUT_FILENAME copied successfully to $DESTINATION"
+    # Move the file to the TFTP folder
+    sshpass -p $PASSWORD ssh pi@srk.local "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/"
     if [ $? -eq 0 ]; then
-        echo "3. NFS folder content deleted successfully"
+        echo "3. $INPUT_FILENAME moved successfully to /srv/tftp/"
     else
-        echo "3. Failed to delete NFS folder content"
+        echo "3. Failed to move $INPUT_FILENAME to /srv/tftp/"
     fi
 else
-    echo "2. Failed to copy file to $DESTINATION"
+    echo "2. Failed to copy $INPUT_FILENAME to $DESTINATION"
 fi
