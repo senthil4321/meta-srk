@@ -86,9 +86,19 @@ exec switch_root -c /dev/ttyS0 /mnt /sbin/init
 ```bash
 bootargs console=ttyS0,115200n8 root=/dev/ram0 rw
 
-bootargs=console=ttyO0,115200n8 root=/dev/ram0
-tftp 0x81000000 zImage; sleep .2 ; tftp 0x84000000 am335x-boneblack.dtb; sleep .2 ; sleep .2 ; bootz 0x81000000 - 0x84000000
+setenv bootargs 'console=ttyS0,115200n8 root=/dev/nfs nfsroot=192.168.1.100:/srv/nfsroot'
+setenv bootcmd 'tftp 0x81000000 zImage; sleep .2 ; tftp 0x84000000 am335x-boneblack.dtb; sleep .2 ; bootz 0x81000000 - 0x84000000'
 
+setenv bootargs 'console=ttyS0,115200n8 root=/dev/ram0'
+saveenv
+boo
 mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 
 ```
+
+## Workflow
+
+1. Run bitbake `bitbake core-image-tiny-initramfs-srk-2` to compile initRamFS Image
+2. Run bitbake `bitbake core-image-minimal-srk` to compile Kernel with initRamFS included
+3. Copy `zImage` using script `04_copy_zImage.sh`
+4. TODO Deply squashfs based ROOTS to `nfs`
