@@ -30,8 +30,7 @@ EXTRA_USERS_PARAMS = "\
     "
 
 # Enable essential kernel modules
-IMAGE_INSTALL:append = " kernel-modules"
-IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
-DISTRO_FEATURES:remove = "systemd"
-DISTRO_FEATURES:append = " sysvinit"
-VIRTUAL-RUNTIME_init_manager = "busybox"
+# DISTRO_FEATURES:remove = "systemd"
+# DISTRO_FEATURES:append = " sysvinit"
+# VIRTUAL-RUNTIME_init_manager = "busybox"
+
