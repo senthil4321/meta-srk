@@ -1,16 +1,23 @@
 #!/bin/bash
 
-# Check if the password argument is provided or set as an environment variable
-if [ -z "$1" ] && [ -z "$SCP_PASSWORD" ]; then
-    echo "Usage: $0 <scp_password> or set SCP_PASSWORD environment variable"
+# Check if the version and password arguments are provided or set as environment variables
+if [ -z "$1" ] || ([ -z "$2" ] && [ -z "$SCP_PASSWORD" ]); then
+    echo "Usage: $0 <version (2 or 3)> <scp_password> or set SCP_PASSWORD environment variable"
     exit 1
 fi
 
-# Define the input filename and destination
-INPUT_FILENAME="core-image-tiny-initramfs-srk-2-beaglebone-yocto.rootfs.cpio.gz"
+# Define the input filename based on the version argument
+VERSION="$1"
+if [[ "$VERSION" != "2" && "$VERSION" != "3" ]]; then
+    echo "Invalid version. Please provide either '2' or '3'."
+    exit 1
+fi
+INPUT_FILENAME="core-image-tiny-initramfs-srk-${VERSION}-beaglebone-yocto.rootfs.cpio.gz"
+
+# Define the source file and destination
 SOURCE_FILE="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$INPUT_FILENAME"
 DESTINATION="pi@srk.local:/tmp/"
-PASSWORD=${1:-$SCP_PASSWORD}
+PASSWORD=${2:-$SCP_PASSWORD}
 
 # Copy the file using scp
 echo "1. Copying $INPUT_FILENAME to $DESTINATION"
@@ -24,7 +31,7 @@ if [ $? -eq 0 ];  then
     if [ $? -eq 0 ]; then
         echo "3. NFS folder content deleted successfully"
         echo "4. Extracting $INPUT_FILENAME to /srv/nfs/"
-        # Extract the file in the remote to folder /srv/nfs/
+        # Extract the file in the remote folder /srv/nfs/
         sshpass -p $PASSWORD ssh pi@srk.local "gunzip -c /tmp/$INPUT_FILENAME | sudo cpio -idmv -D /srv/nfs/"
         if [ $? -eq 0 ]; then
             echo "5. $INPUT_FILENAME extracted successfully to /srv/nfs/"

@@ -8,8 +8,10 @@ IMAGE_FSTYPES = "cpio.gz"
 
 inherit core-image
 
-# Include only systemd, busybox, and shadow in the rootfs
-IMAGE_INSTALL = "systemd busybox shadow nfs-utils"
+# Include only busybox and shadow in the rootfs
+IMAGE_INSTALL = "busybox shadow"
+
+
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
@@ -27,7 +29,9 @@ EXTRA_USERS_PARAMS = "\
     useradd -p '${SRKPWD}' srk; \
     "
 
-# Enable essential systemd services
-SYSTEMD_AUTO_ENABLE = "enable"
-IMAGE_INSTALL:append = " systemd-serialgetty"
+# Enable essential kernel modules
 IMAGE_INSTALL:append = " kernel-modules"
+IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
+DISTRO_FEATURES:remove = "systemd"
+DISTRO_FEATURES:append = " sysvinit"
+VIRTUAL-RUNTIME_init_manager = "busybox"
