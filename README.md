@@ -84,7 +84,7 @@ exec switch_root -c /dev/ttyS0 /mnt /sbin/init
 ```
 
 ```bash
-bootargs console=ttyS0,115200n8 root=/dev/ram0 rw
+bootargs 'console=ttyS0,115200n8 root=/dev/ram0 rw'
 
 setenv bootargs  'console=ttyS0,115200n8 root=/dev/nfs ip=192.168.1.200 nfsroot=192.168.1.100:/srv/nfs,nfsvers=3,tcp rw'
 setenv bootcmd 'tftp 0x81000000 zImage; sleep .2 ; tftp 0x84000000 am335x-boneblack.dtb; sleep .2 ; bootz 0x81000000 - 0x84000000'
