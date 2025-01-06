@@ -102,3 +102,24 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 2. Run bitbake `bitbake core-image-minimal-srk` to compile Kernel with initRamFS included
 3. Copy `zImage` using script `04_copy_zImage.sh`
 4. TODO Deply squashfs based ROOTS to `nfs`
+
+## Trial 3.1
+
+```config
+# 2. Remove Kernel and U-Boot from Image
+IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
+DISTRO_FEATURES:remove = "systemd"
+DISTRO_FEATURES:append = " sysvinit"
+VIRTUAL-RUNTIME_init_manager = "busybox"
+```
+
+## Trial 3.2
+
+```config
+# 2. Remove Kernel and U-Boot from Image
+IMAGE_INSTALL:remove = "virtual/kernel virtual/bootloader"
+DISTRO_FEATURES:remove = "systemd"
+DISTRO_FEATURES:remove = " sysvinit"
+VIRTUAL-RUNTIME_init_manager = "mdev-busybox"
+SERIAL_CONSOLES = ""
+```
