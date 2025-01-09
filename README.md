@@ -44,7 +44,7 @@ bitbake -g systemd
 sudo apt-get install graphviz
 
 # Convert the DOT file to a PNG image
-dot -Tpng depends.dot -o systemd-dependency-tree.png
+dot -Tpng task-depends.dot -o systemd-dependency-tree.png
 
 # Open the PNG image to view the dependency tree
 xdg-open systemd-dependency-tree.png
