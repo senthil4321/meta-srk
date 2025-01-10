@@ -37,42 +37,38 @@ copy_encrypted_files() {
 }
 
 print_help() {
-    echo "Usage: $0 -p <password> -d <source_directory> [-s y] [-k y] [-i y]"
+    echo "Usage: $0 -p <password> -d <source_directory> [-s] [-k] [-i]"
     echo "Options:"
     echo "  -p <password>        : Password for scp and ssh"
-    echo "  -s y                 : Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
-    echo "  -k y                 : Copy keyfile from script directory"
-    echo "  -i y                 : Copy encrypted.img from script directory"
+    echo "  -s                   : Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+    echo "  -k                   : Copy keyfile from script directory"
+    echo "  -i                   : Copy encrypted.img from script directory"
     echo "Example:"
-    echo "  $0 -p mypassword -d /path/to/source -s y -k y -i y"
+    echo "  $0 -p mypassword -d /path/to/source -s -k -i"
 }
 
 # Parse command line arguments
 SOURCE_DIR=""
-while getopts "s:p:k:i:d:h" opt; do
+while getopts "sp:k:i:d:h" opt; do
     case $opt in
         s)
-            if [ "$OPTARG" = "y" ]; then
             SOURCE_FOLDER="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
             INPUT_FILES="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
             copy_file $INPUT_FILES $SOURCE_FOLDER
-
-            fi
             ;;
         p)
             PASSWORD=$OPTARG
             ;;
         k)
-            if [ "$OPTARG" = "y" ]; then
-                SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
-                copy_file "keyfile" $SCRIPT_DIR
-            fi
+            SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
+            copy_file "keyfile" $SCRIPT_DIR
             ;;
         i)
-            if [ "$OPTARG" = "y" ]; then
-                SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
-                copy_file "encrypted.img" $SCRIPT_DIR
-            fi
+            SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
+            copy_file "encrypted.img" $SCRIPT_DIR
+            ;;
+        d)
+            SOURCE_DIR=$OPTARG
             ;;
         h)
             print_help
