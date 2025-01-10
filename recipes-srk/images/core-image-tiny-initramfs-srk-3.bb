@@ -9,7 +9,7 @@ IMAGE_FSTYPES = "cpio.gz"
 inherit core-image
 
 # Include only busybox and shadow in the rootfs
-IMAGE_INSTALL = "busybox shadow cryptsetup util-linux-mount"
+IMAGE_INSTALL = "busybox shadow cryptsetup util-linux-mount e2fsprogs"
 # IMAGE_INSTALL:append = " srk-init-folder"
 
 # Do not include any additional features
