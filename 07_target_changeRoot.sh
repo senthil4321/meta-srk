@@ -1,3 +1,5 @@
+#!/bin/sh1
+
 mount -t proc proc /proc    
 echo "1. Mounting encrypted image on the target..."
 losetup -fP encrypted.img
@@ -17,6 +19,11 @@ mount -t squashfs -o loop /mnt/encrypted/core-image-minimal-srk-beaglebone-yocto
 
 new_root="/srk-mnt"
 old_root="/boot"
+
+if [ ! -d $new_root ]; then
+    mkdir -p $new_root
+fi
+
 mount --move /proc "$new_root/proc"
 mount --move /sys "$new_root/sys"
 mount --move /dev "$new_root/dev"
