@@ -1,5 +1,7 @@
 #!/bin/sh
 
+FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+
 create_luks_encrypted_image() {
     echo "1. Creating LUKS encrypted image..."
     dd if=/dev/zero of=encrypted.img bs=1M count=10
@@ -32,7 +34,7 @@ mount_encrypted_image() {
     echo "3. Mounting encrypted image..."
     local run_mkfs=$1
     if [ "$run_mkfs" = true ]; then
-        dd if=/dev/zero of=encrypted.img bs=1M count=10
+        dd if=/dev/zero of=encrypted.img bs=1M count=40
     fi    
     sudo losetup -fP encrypted.img
     LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
@@ -46,6 +48,11 @@ mount_encrypted_image() {
     if [ "$run_mkfs" = true ]; then
         sudo mkfs.ext4 /dev/mapper/en_device
     fi
+
+    if [ ! -d /mnt/encrypted ]; then
+        sudo mkdir -p /mnt/encrypted
+    fi
+
     sudo mount /dev/mapper/en_device /mnt/encrypted
 }
 
@@ -59,8 +66,33 @@ read_encrypted_data() {
     sudo cat /mnt/encrypted/hello.txt
 }
 
+# core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs
+# home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto
+copy_file_to_mounted_drive() {
+    echo "6. Copying file to mounted drive..."
+    local FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+    local src_path="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$FILE_NAME"
+    local dest_path="/mnt/encrypted/$FILE_NAME"
+    sudo cp $src_path $dest_path
+}
+
+verify_file_hash() {
+    echo "7. Verifying file hash..."
+    local FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+    local src_path="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$FILE_NAME"
+    local dest_path="/mnt/encrypted/$FILE_NAME"
+    local src_hash=$(sha256sum $src_path | cut -d ' ' -f 1)
+    local dest_hash=$(sudo sha256sum $dest_path | cut -d ' ' -f 1)
+    if [ "$src_hash" = "$dest_hash" ]; then
+        echo "File hash verification successful."
+    else
+        echo "File hash verification failed."
+        exit 1
+    fi
+}
+
 cleanup_encrypted_image() {
-    echo "6. Cleaning up encrypted image..."
+    echo "8. Cleaning up encrypted image..."
     sudo umount /mnt/encrypted
     sudo cryptsetup close en_device
     sudo losetup -d $LOOP_DEVICE
@@ -70,5 +102,7 @@ cleanup_encrypted_image() {
 mount_encrypted_image true
 write_sample_data
 read_encrypted_data
+copy_file_to_mounted_drive
+verify_file_hash
 cleanup_encrypted_image
 
