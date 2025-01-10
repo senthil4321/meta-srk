@@ -56,6 +56,26 @@ mount_encrypted_image() {
     sudo mount /dev/mapper/en_device /mnt/encrypted
 }
 
+mount_encrypted_imageTarget() {
+    mount -t proc proc /proc    
+    echo "1. Mounting encrypted image on the target..."
+    losetup -fP encrypted.img
+    LOOP_DEVICE=$(losetup -a | grep encrypted.img | cut -d: -f1)
+    echo $LOOP_DEVICE
+    cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --key-file keyfile $LOOP_DEVICE en_device
+    if [ ! -d /mnt/encrypted ]; then
+        sudo mkdir -p /mnt/encrypted
+    fi
+    mount /dev/mapper/en_device /mnt/encrypted
+
+    mount -t squashfs -o loop /mnt/encrypted/core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs /srk-mnt
+    umount  /srk-mnt
+
+    umount /mnt/encrypted
+    cryptsetup close en_device
+    losetup -d $LOOP_DEVICE
+}
+
 write_sample_data() {
     echo "4. Writing sample data..."
     echo "Hello $(date)" | sudo tee -a /mnt/encrypted/hello.txt
