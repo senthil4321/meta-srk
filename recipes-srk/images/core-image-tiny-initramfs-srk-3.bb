@@ -9,8 +9,9 @@ IMAGE_FSTYPES = "cpio.gz"
 inherit core-image
 
 # Include only busybox and shadow in the rootfs
-IMAGE_INSTALL = "busybox shadow cryptsetup util-linux-mount"
+IMAGE_INSTALL = "busybox shadow cryptsetup util-linux-mount srk-init"
 # IMAGE_INSTALL:append = " srk-init-folder"
+IMAGE_INSTALL:append = " srk-init"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
@@ -32,4 +33,3 @@ EXTRA_USERS_PARAMS = "\
 # DISTRO_FEATURES:remove = "systemd"
 # DISTRO_FEATURES:append = " sysvinit"
 # VIRTUAL-RUNTIME_init_manager = "busybox"
-
