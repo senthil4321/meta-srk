@@ -29,26 +29,18 @@ copy_file() {
     fi
 }
 
-copy_encrypted_files() {
-    local SOURCE_DIR=$1
-    for FILE in "${INPUT_FILES[@]}"; do
-        copy_file $FILE $SOURCE_DIR
-    done
-}
-
 print_help() {
-    echo "Usage: $0 -p <password> -d <source_directory> [-s] [-k] [-i]"
+    echo "Usage: $0 -p <password> [-s] [-k] [-i]"
     echo "Options:"
     echo "  -p <password>        : Password for scp and ssh"
     echo "  -s                   : Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
     echo "  -k                   : Copy keyfile from script directory"
     echo "  -i                   : Copy encrypted.img from script directory"
     echo "Example:"
-    echo "  $0 -p mypassword -d /path/to/source -s -k -i"
+    echo "  $0 -p mypassword -s -k -i"
 }
 
 # Parse command line arguments
-SOURCE_DIR=""
 while getopts "sp:k:i:d:h" opt; do
     case $opt in
         s)
@@ -66,9 +58,6 @@ while getopts "sp:k:i:d:h" opt; do
         i)
             SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
             copy_file "encrypted.img" $SCRIPT_DIR
-            ;;
-        d)
-            SOURCE_DIR=$OPTARG
             ;;
         h)
             print_help
