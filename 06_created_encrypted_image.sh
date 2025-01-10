@@ -1,6 +1,7 @@
 #!/bin/sh
 
 create_luks_encrypted_image() {
+    echo "1. Creating LUKS encrypted image..."
     dd if=/dev/zero of=encrypted.img bs=1M count=10
     sudo losetup -f encrypted.img
     LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
@@ -21,12 +22,14 @@ create_luks_encrypted_image() {
 # create_luks_encrypted_image
 
 generate_keyfile() {
+    echo "2. Generating keyfile..."
     dd if=/dev/urandom of=keyfile bs=64 count=1
     chmod 600 keyfile
     echo -n "KkzPRSNodEhlTr9F7JB6Rrh3yGyfgl22r5aMmKBcBOJ5Kd3xslfshwYft+V1u5Ki" > keyfile
 }
 
 mount_encrypted_image() {
+    echo "3. Mounting encrypted image..."
     local run_mkfs=$1
     if [ "$run_mkfs" = true ]; then
         dd if=/dev/zero of=encrypted.img bs=1M count=10
@@ -47,14 +50,17 @@ mount_encrypted_image() {
 }
 
 write_sample_data() {
+    echo "4. Writing sample data..."
     echo "Hello $(date)" | sudo tee -a /mnt/encrypted/hello.txt
 }
 
 read_encrypted_data() {
+    echo "5. Reading encrypted data..."
     sudo cat /mnt/encrypted/hello.txt
 }
 
 cleanup_encrypted_image() {
+    echo "6. Cleaning up encrypted image..."
     sudo umount /mnt/encrypted
     sudo cryptsetup close en_device
     sudo losetup -d $LOOP_DEVICE
