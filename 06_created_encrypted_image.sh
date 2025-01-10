@@ -1,107 +1,68 @@
 #!/bin/sh
 
-# Create a file to use as the encrypted device
-dd if=/dev/zero of=encrypted.img bs=1M count=10
+create_luks_encrypted_image() {
+    dd if=/dev/zero of=encrypted.img bs=1M count=10
+    sudo losetup -f encrypted.img
+    LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
+    if [ -z "$LOOP_DEVICE" ]; then
+        echo "Error: Loop device for encrypted.img not found."
+        exit 1
+    fi
+    sudo cryptsetup luksFormat --cipher aes-cbc-essiv:sha256 $LOOP_DEVICE
+    sudo cryptsetup luksOpen $LOOP_DEVICE encrypted_device
+    sudo mkfs.ext3 /dev/mapper/encrypted_device
+    sudo mount /dev/mapper/encrypted_device /mnt/encrypted
+    echo "This is a test file" | sudo tee /mnt/encrypted/testfile.txt
+    sudo umount /mnt/encrypted
+    sudo cryptsetup luksClose encrypted_device
+    sudo losetup -d $LOOP_DEVICE
+}
 
-# Set up the loop device
-sudo losetup -f encrypted.img
+# create_luks_encrypted_image
 
-# Get the loop device for encrypted.img
-LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
-if [ -z "$LOOP_DEVICE" ]; then
-    echo "Error: Loop device for encrypted.img not found."
-    exit 1
-fi
+generate_keyfile() {
+    dd if=/dev/urandom of=keyfile bs=64 count=1
+    chmod 600 keyfile
+    echo -n "KkzPRSNodEhlTr9F7JB6Rrh3yGyfgl22r5aMmKBcBOJ5Kd3xslfshwYft+V1u5Ki" > keyfile
+}
 
-# Create the LUKS encrypted device
-sudo cryptsetup luksFormat $LOOP_DEVICE
+mount_encrypted_image() {
+    local run_mkfs=$1
+    if [ "$run_mkfs" = true ]; then
+        dd if=/dev/zero of=encrypted.img bs=1M count=10
+    fi    
+    sudo losetup -fP encrypted.img
+    LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
+    if [ -z "$LOOP_DEVICE" ]; then
+        echo "Error: Loop device for encrypted.img not found."
+        exit 1
+    fi
+    echo $LOOP_DEVICE
+    sudo cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --key-file keyfile $LOOP_DEVICE en_device
 
-# Open the encrypted device
-sudo cryptsetup luksOpen $LOOP_DEVICE encrypted_device
+    if [ "$run_mkfs" = true ]; then
+        sudo mkfs.ext4 /dev/mapper/en_device
+    fi
+    sudo mount /dev/mapper/en_device /mnt/encrypted
+}
 
-# Create a filesystem on the encrypted device
-mkfs.ext3 /dev/mapper/encrypted_device
+write_sample_data() {
+    echo "Hello $(date)" | sudo tee -a /mnt/encrypted/hello.txt
+}
 
-# Mount the encrypted device
-mkdir -p /mnt/encrypted
-mount /dev/mapper/encrypted_device /mnt/encrypted
+read_encrypted_data() {
+    sudo cat /mnt/encrypted/hello.txt
+}
 
-# Add some data to the encrypted device
-echo "This is a test file" > /mnt/encrypted/testfile.txt
+cleanup_encrypted_image() {
+    sudo umount /mnt/encrypted
+    sudo cryptsetup close en_device
+    sudo losetup -d $LOOP_DEVICE
+}
 
-# Unmount and close the encrypted device
-umount /mnt/encrypted
-cryptsetup luksClose encrypted_device
-sudo losetup -d $LOOP_DEVICE
-
-
-
-# Create the LUKS encrypted device with specific cipher
-dd if=/dev/zero of=encrypted.img bs=1M count=10
-
-# Set up the loop device
-sudo losetup -f encrypted.img
-
-# Get the loop device for encrypted.img
-LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
-if [ -z "$LOOP_DEVICE" ]; then
-    echo "Error: Loop device for encrypted.img not found."
-    exit 1
-fi
-sudo cryptsetup luksFormat --cipher aes-cbc-essiv:sha256 $LOOP_DEVICE
-sudo cryptsetup luksOpen $LOOP_DEVICE encrypted_device
-sudo mkfs.ext3 /dev/mapper/encrypted_device
-sudo mount /dev/mapper/encrypted_device /mnt/encrypted
-echo "This is a test file" > /mnt/encrypted/testfile.txt
-sudo umount /mnt/encrypted
-sudo cryptsetup luksClose encrypted_device
-sudo losetup -d $LOOP_DEVICE
-
-
-LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
-if [ -z "$LOOP_DEVICE" ]; then
-    echo "Error: Loop device for encrypted.img not found."
-    exit 1
-fi
-sudo cryptsetup open --type plain $LOOP_DEVICE my_encrypted_device
-sudo mkfs.ext3 /dev/mapper/my_encrypted_device
-sudo mount /dev/mapper/my_encrypted_device /mnt
-sudo umount /mnt
-sudo cryptsetup close my_encrypted_device
-sudo losetup -d $LOOP_DEVICE
-
-
-sudo losetup -fP encrypted.img
-if [ -z "$LOOP_DEVICE" ]; then
-    echo "Error: Loop device for encrypted.img not found."
-    exit 1
-fi
-sudo cryptsetup open --type plain $LOOP_DEVICE my_encrypted_device
-
-dd if=/dev/zero of=encrypted.img bs=1M count=10
-sudo losetup -fP encrypted.img
-if [ -z "$LOOP_DEVICE" ]; then
-    echo "Error: Loop device for encrypted.img not found."
-    exit 1
-fi
-
-dd if=/dev/urandom of=keyfile bs=64 count=1
-chmod 600 keyfile
-echo -n "KkzPRSNodEhlTr9F7JB6Rrh3yGyfgl22r5aMmKBcBOJ5Kd3xslfshwYft+V1u5Ki" > keyfile
-
----
-
-sudo losetup -fP encrypted.img
-LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
-echo $LOOP_DEVICE
-sudo cryptsetup open --type plain --key-file keyfile $LOOP_DEVICE en_device
-sudo cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --key-file keyfile $LOOP_DEVICE en_device
-
-sudo mkfs.ext4 /dev/mapper/en_device
-sudo mount /dev/mapper/en_device /mnt/encrypted
-
-
-sudo umount /mnt/encrypted
-sudo cryptsetup close en_device
-sudo losetup -d $LOOP_DEVICE
+# generate_keyfile
+mount_encrypted_image true
+write_sample_data
+read_encrypted_data
+cleanup_encrypted_image
 
