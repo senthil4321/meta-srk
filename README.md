@@ -101,7 +101,7 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 1. Run bitbake `bitbake core-image-tiny-initramfs-srk-2` to compile initRamFS Image
 2. Run bitbake `bitbake core-image-minimal-srk` to compile Kernel with initRamFS included
 3. Copy `zImage` using script `04_copy_zImage.sh`
-4. TODO Deply squashfs based ROOTS to `nfs`
+4. Deply squashfs based ROOTS to `nfs`
 
 ## Trial 3.1
 
