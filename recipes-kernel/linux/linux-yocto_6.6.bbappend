@@ -17,3 +17,5 @@ SRC_URI += "file://trail12_usb_sound.cfg"
 # remove SMB file system
 SRC_URI += "file://trial13_smb.cfg"
 
+# remove BTRFS file system
+SRC_URI += "file://trial14_btrf.cfg"
