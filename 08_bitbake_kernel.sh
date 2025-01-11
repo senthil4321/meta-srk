@@ -2,6 +2,7 @@
 
 show_menu() {
     echo "Select an option:"
+    echo "0. Build kernel"
     echo "1. bitbake linux-yocto -c kernel_configme -f"
     echo "2. bitbake linux-yocto -c menuconfig"
     echo "3. bitbake linux-yocto -c diffconfig"
@@ -18,6 +19,9 @@ show_menu() {
 
 execute_option() {
     case $1 in
+        0)
+            bitbake virtual/kernel
+            ;;
         1)
             bitbake linux-yocto -c kernel_configme -f
             ;;
@@ -49,7 +53,7 @@ execute_option() {
             cat "/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/fragment.cfg"
             ;;
         11)
-            echo "Run 2. menuconfig.  3. diffconfig and view the fragment.cfg file. using 10. Print fragment.cfg file contents"
+            echo "Run 2. menuconfig.  3. diffconfig and view the fragment.cfg file using 10. Print fragment.cfg file contents"
             ;;
         12)
             echo "Exiting..."
