@@ -19,7 +19,7 @@ mkdir -p ${BACKUP_DIR}
 # Print progress
 echo "Running ksize.py and saving output to ${KSIZE_OUTPUT}"
 cd ${BUILD_DIR}
-ksize.py ${KSIZE_OUTPUT}
+ksize.py > ${KSIZE_OUTPUT}
 
 # Print progress
 echo "Copying .config file to ${BACKUP_DIR}"
