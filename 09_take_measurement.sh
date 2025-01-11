@@ -8,10 +8,11 @@ fi
 
 # Define variables for the paths
 FOLDER_NAME=$1
-BACKUP_DIR=~/project/srk-linux/beaglebone/backup/${FOLDER_NAME}/
+BACKUP_DIR_SHORT=~/project/srk-linux/beaglebone/backup
+BACKUP_DIR=${BACKUP_DIR_SHORT}/${FOLDER_NAME}/
 BUILD_DIR=~/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/linux-beaglebone_yocto-standard-build
 KSIZE_OUTPUT=${BACKUP_DIR}${FOLDER_NAME}_ksize.txt
-ZIMAGE_SIZE_LOG=${BACKUP_DIR}zImageSize.txt
+ZIMAGE_SIZE_LOG=${BACKUP_DIR_SHORT}/zImageSize.txt
 
 # Print progress
 echo "Creating backup directory: ${BACKUP_DIR}"
@@ -20,7 +21,7 @@ mkdir -p ${BACKUP_DIR}
 # Print progress
 echo "Running ksize.py and saving output to ${KSIZE_OUTPUT}"
 cd ${BUILD_DIR}
-ksize.py ${KSIZE_OUTPUT}
+ksize.py > ${KSIZE_OUTPUT}
 
 # Print progress
 echo "Copying .config file to ${BACKUP_DIR}"
