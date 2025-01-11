@@ -19,3 +19,5 @@ SRC_URI += "file://trial13_smb.cfg"
 
 # remove BTRFS file system
 SRC_URI += "file://trial14_btrf.cfg"
+
+SRC_URI += "file://trial15_ktime.cfg"
