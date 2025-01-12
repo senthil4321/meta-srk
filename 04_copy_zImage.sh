@@ -9,18 +9,21 @@ fi
 # Define the input filename and destination
 INPUT_FILENAME="zImage"
 SOURCE_FILE="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$INPUT_FILENAME"
-DESTINATION="pi@srk.local:/tmp/"
+USERNAME="pi"
+HOSTNAME="srk.local"
+SERVER_NAME="$USERNAME@$HOSTNAME"
+DESTINATION="$SERVER_NAME:/tmp/"
 PASSWORD=${1:-$SCP_PASSWORD}
 
 # Copy the file using scp
 echo "1. Copying $INPUT_FILENAME to $DESTINATION"
+START_TIME=$(date +%s)
 sshpass -p $PASSWORD scp $SOURCE_FILE $DESTINATION
-
 # Check if the copy was successful
 if [ $? -eq 0 ];  then
     echo "2. $INPUT_FILENAME copied successfully to $DESTINATION"
     # Move the file to the TFTP folder
-    sshpass -p $PASSWORD ssh pi@srk.local "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/"
+    sshpass -p $PASSWORD ssh $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/"
     if [ $? -eq 0 ]; then
         echo "3. $INPUT_FILENAME moved successfully to /srv/tftp/"
     else
@@ -29,3 +32,6 @@ if [ $? -eq 0 ];  then
 else
     echo "2. Failed to copy $INPUT_FILENAME to $DESTINATION"
 fi
+END_TIME=$(date +%s)
+TIME_TAKEN=$(($END_TIME - $START_TIME))
+echo "Time taken to copy: $TIME_TAKEN seconds"
