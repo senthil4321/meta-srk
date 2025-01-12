@@ -14,7 +14,8 @@ show_menu() {
     echo "9. Print fragment.cfg file path"
     echo "10. Print fragment.cfg file contents"
     echo "11. Print fragment workflow"
-    echo "12. Exit"
+    echo "12. Show help"
+    echo "13. Exit"
 }
 
 execute_option() {
@@ -56,6 +57,9 @@ execute_option() {
             echo "Run 2. menuconfig.  3. diffconfig and view the fragment.cfg file using 10. Print fragment.cfg file contents"
             ;;
         12)
+            show_help
+            ;;
+        13)
             echo "Exiting..."
             exit 0
             ;;
@@ -65,8 +69,28 @@ execute_option() {
     esac
 }
 
-while true; do
+show_help() {
+    echo "Help:"
+    echo "0. Build kernel: Builds the kernel using bitbake."
+    echo "1. kernel_configme: Configures the kernel."
+    echo "2. menuconfig: Opens the kernel menu configuration."
+    echo "3. diffconfig: Shows the differences in the kernel configuration."
+    echo "4. kernel_configcheck: Checks the kernel configuration."
+    echo "5. Save defconfig: Saves the current kernel configuration."
+    echo "6. Print .config file path: Prints the path to the .config file."
+    echo "7. Print defconfig file path meta-srk: Prints the path to the defconfig file in meta-srk."
+    echo "8. Print defconfig file path: Prints the path to the defconfig file."
+    echo "9. Print fragment.cfg file path: Prints the path to the fragment.cfg file."
+    echo "10. Print fragment.cfg file contents: Prints the contents of the fragment.cfg file."
+    echo "11. Print fragment workflow: Prints the workflow for using fragment.cfg."
+    echo "12. Show help: Displays this help message."
+    echo "13. Exit: Exits the script."
+}
+
+if [ -z "$1" ]; then
     show_menu
     read -p "Enter your choice: " choice
     execute_option $choice
-done
+else
+    execute_option $1
+fi
