@@ -26,3 +26,5 @@ SRC_URI += "file://trial15_ktime.cfg"
 # remove MTD file system and sound
 SRC_URI += "file://trial16_sound_mtd.cfg"
 
+# remove SCSI CD etc
+SRC_URI += "file://trial17_scsi.cfg"
