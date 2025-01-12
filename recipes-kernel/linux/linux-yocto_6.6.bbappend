@@ -20,4 +20,9 @@ SRC_URI += "file://trial13_smb.cfg"
 # remove BTRFS file system
 SRC_URI += "file://trial14_btrf.cfg"
 
+# add ktime support during boot
 SRC_URI += "file://trial15_ktime.cfg"
+
+# remove MTD file system and sound
+SRC_URI += "file://trial16_sound_mtd.cfg"
+
