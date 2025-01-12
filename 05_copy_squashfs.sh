@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Define the input filenames and destination
-
-
 DESTINATION="pi@srk.local:/tmp/"
 PASSWORD=${SCP_PASSWORD:-""}
 
@@ -41,7 +39,7 @@ print_help() {
 }
 
 # Parse command line arguments
-while getopts "sp:k:i:d:h" opt; do
+while getopts "p:skih" opt; do
     case $opt in
         s)
             SOURCE_FOLDER="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
