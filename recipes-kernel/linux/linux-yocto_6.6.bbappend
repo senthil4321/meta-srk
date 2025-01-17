@@ -28,3 +28,6 @@ SRC_URI += "file://trial16_sound_mtd.cfg"
 
 # remove SCSI CD etc
 SRC_URI += "file://trial17_scsi.cfg"
+
+# add AES OMAP support
+SRC_URI += "file://trial18_aes_omap.cfg"
