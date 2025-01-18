@@ -10,7 +10,7 @@ IMAGE_FSTYPES += "squashfs"
 inherit core-image
 
 # Include only systemd, busybox, and shadow in the rootfs
-IMAGE_INSTALL = "systemd busybox shadow squashfs-tools"
+IMAGE_INSTALL = "systemd busybox shadow squashfs-tools srk-seccomp"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""

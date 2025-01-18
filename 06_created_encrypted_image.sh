@@ -56,19 +56,21 @@ create_and_mount_encrypted_image() {
 
 mount_encrypted_image() {
     echo "4. Mounting encrypted image..."
-    losetup -fP encrypted.img
-    LOOP_DEVICE=$(sudo losetup -a | grep encrypted1.img | cut -d: -f1)
+    sudo losetup -fP encrypted.img
+    LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
     if [ -z "$LOOP_DEVICE" ]; then
-        echo "Error: Loop device for encrypted1.img not found."
+        echo "Error: Loop device for encrypted.img not found."
         exit 1
     fi
     echo $LOOP_DEVICE
-    cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --key-file keyfile $LOOP_DEVICE en_device
+    sudo cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --key-file keyfile $LOOP_DEVICE en_device
 
     if [ ! -d /mnt/encrypted ]; then
-        mkdir -p /mnt/encrypted
+        sudo mkdir -p /mnt/encrypted
     fi
-    mount /dev/mapper/en_device /mnt/encrypted
+    sudo mount /dev/mapper/en_device /mnt/encrypted
+    echo "Mounted encrypted image."
+    ls -la /mnt/encrypted
 }
 
 mount_encrypted_imageTarget() {
@@ -106,7 +108,11 @@ copy_file_to_mounted_drive() {
     local FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
     local src_path="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$FILE_NAME"
     local dest_path="/mnt/encrypted/$FILE_NAME"
+    sudo rm $dest_path
+    ls /mnt/encrypted
     sudo cp $src_path $dest_path
+    ls -lah /mnt/encrypted
+    echo "File copied successfully."
 }
 
 verify_file_hash() {
@@ -144,7 +150,7 @@ show_menu() {
     echo "7. Read encrypted data"
     echo "8. Copy file to mounted drive"
     echo "9. Verify file hash"
-    echo "10. Cleanup encrypted image"
+    echo "10. Unmount encrypted image"
     echo "11. Exit"
 }
 
