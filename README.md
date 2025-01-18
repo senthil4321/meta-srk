@@ -164,3 +164,13 @@ TODO
 
 To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
 # LINUX_VERSION_EXTENSION += "-srk-trial20"
+
+### workflow rootfs encrypted build
+
+```bash
+bitbake core-image-minimal-srk
+06_created_encrypted_image.sh 4
+06_created_encrypted_image.sh 8
+06_created_encrypted_image.sh 10
+05_copy_squashfs.sh -i
+```
