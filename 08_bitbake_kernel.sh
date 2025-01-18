@@ -2,7 +2,7 @@
 
 show_menu() {
     echo "Select an option:"
-    echo "0. Build kernel"
+    echo "0. bitbake virtual/kernel "
     echo "1. bitbake linux-yocto -c kernel_configme -f"
     echo "2. bitbake linux-yocto -c menuconfig"
     echo "3. bitbake linux-yocto -c diffconfig"
@@ -16,7 +16,7 @@ show_menu() {
     echo "11. Print fragment workflow"
     echo "12. Show help"
     echo "13. Exit"
-    echo "14. Clean kernel"
+    echo "14. bitbake -c clean virtual/kernel"
 }
 
 execute_option() {
