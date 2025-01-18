@@ -3,7 +3,12 @@
 #include <errno.h>
 #include <unistd.h>
 
+#define VERSION "1.0.0"
+
 int main() {
+    // Print version
+    printf("Version: %s\n", VERSION);
+
     // Initialize the seccomp filter
     scmp_filter_ctx ctx;
     ctx = seccomp_init(SCMP_ACT_KILL); // Default action: kill the process

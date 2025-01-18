@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERSION="1.0.0"
+
 show_menu() {
     echo "Select an option:"
     echo "0. bitbake virtual/kernel "
@@ -18,6 +20,7 @@ show_menu() {
     echo "13. Exit"
     echo "14. bitbake -c clean virtual/kernel"
     echo "15. bitbake -c devshell linux-yocto"
+    echo "16. Print version"
 }
 
 execute_option() {
@@ -71,6 +74,9 @@ execute_option() {
         15)
             bitbake -c devshell linux-yocto
             ;;
+        16)
+            echo "Version: $VERSION"
+            ;;
         *)
             echo "Invalid option. Please try again."
             ;;
@@ -95,6 +101,7 @@ show_help() {
     echo "13. Exit: Exits the script."
     echo "14. Clean kernel: Cleans the kernel build using bitbake."
     echo "15. Open devshell: Opens the development shell for linux-yocto."
+    echo "16. Print version: Prints the version of the script."
 }
 
 if [ -z "$1" ]; then
