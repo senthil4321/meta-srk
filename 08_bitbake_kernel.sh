@@ -17,6 +17,7 @@ show_menu() {
     echo "12. Show help"
     echo "13. Exit"
     echo "14. bitbake -c clean virtual/kernel"
+    echo "15. bitbake -c devshell linux-yocto"
 }
 
 execute_option() {
@@ -67,6 +68,9 @@ execute_option() {
         14)
             bitbake -c clean virtual/kernel
             ;;
+        15)
+            bitbake -c devshell linux-yocto
+            ;;
         *)
             echo "Invalid option. Please try again."
             ;;
@@ -90,6 +94,7 @@ show_help() {
     echo "12. Show help: Displays this help message."
     echo "13. Exit: Exits the script."
     echo "14. Clean kernel: Cleans the kernel build using bitbake."
+    echo "15. Open devshell: Opens the development shell for linux-yocto."
 }
 
 if [ -z "$1" ]; then
