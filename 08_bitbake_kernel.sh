@@ -16,6 +16,7 @@ show_menu() {
     echo "11. Print fragment workflow"
     echo "12. Show help"
     echo "13. Exit"
+    echo "14. Clean kernel"
 }
 
 execute_option() {
@@ -63,6 +64,9 @@ execute_option() {
             echo "Exiting..."
             exit 0
             ;;
+        14)
+            bitbake -c clean virtual/kernel
+            ;;
         *)
             echo "Invalid option. Please try again."
             ;;
@@ -85,6 +89,7 @@ show_help() {
     echo "11. Print fragment workflow: Prints the workflow for using fragment.cfg."
     echo "12. Show help: Displays this help message."
     echo "13. Exit: Exits the script."
+    echo "14. Clean kernel: Cleans the kernel build using bitbake."
 }
 
 if [ -z "$1" ]; then
