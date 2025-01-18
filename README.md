@@ -150,3 +150,10 @@ PREFERRED_PROVIDER_virtual/libc = "musl"
 PREFERRED_PROVIDER_virtual/libiconv = "glibc"
 
 ```
+
+### Kernel Modules
+
+```bash
+sunrpc - Used by NFS
+xfrm - used by IPSec
+```
