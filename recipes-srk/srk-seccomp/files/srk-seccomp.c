@@ -12,11 +12,21 @@ int main(int argc, char *argv[]) {
 
     int skip_fork_seccomp = 0;
     int skip_print_seccomp = 0;
+    int run_as_daemon = 0;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-s") == 0) {
             skip_fork_seccomp = 1;
         } else if (strcmp(argv[i], "-p") == 0) {
             skip_print_seccomp = 1;
+        } else if (strcmp(argv[i], "-d") == 0) {
+            run_as_daemon = 1;
+        }
+    }
+
+    if (run_as_daemon) {
+        if (daemon(0, 0) < 0) {
+            perror("daemon");
+            return 1;
         }
     }
 
@@ -25,12 +35,14 @@ int main(int argc, char *argv[]) {
     scmp_filter_ctx ctx;
     ctx = seccomp_init(SCMP_ACT_KILL); // Default action: kill the process
     printf("Hello, World! seccomp context init  ! \n");
-    // Allow the write and usleep syscalls
+    // Allow the write and sleep syscalls
     if (!skip_print_seccomp) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
         printf("SCMP_SYS(write) added  ! \n");
     }
     
+    seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sleep), 0); // Allow the sleep syscall
+    printf("SCMP_SYS(sleep) added  ! \n");
 
     if (!skip_fork_seccomp) {
         // Allow the fork syscall
@@ -45,8 +57,9 @@ int main(int argc, char *argv[]) {
     }
     printf("System seccomp protection activated \n");
     // This will be allowed by seccomp
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 60; i++) { // Run the loop for 60 seconds
         printf("Hello, World! %d\n", i); // Print loop count
+        sleep(1); // Sleep for 1 second
     }
 
     // This will be killed by seccomp
