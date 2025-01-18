@@ -1,5 +1,7 @@
 #!/bin/bash
 
+BACKUP_DIR_SHORT=~/project/srk-linux/beaglebone/backup
+
 show_menu() {
     echo "Select an option:"
     echo "1. Take measurement"
@@ -21,7 +23,7 @@ take_measurement() {
 
     # Define variables for the paths
     FOLDER_NAME=$1
-    BACKUP_DIR_SHORT=~/project/srk-linux/beaglebone/backup
+
     BACKUP_DIR=${BACKUP_DIR_SHORT}/${FOLDER_NAME}/
     BUILD_DIR=~/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/linux-beaglebone_yocto-standard-build
     KSIZE_OUTPUT=${BACKUP_DIR}${FOLDER_NAME}_ksize.txt
