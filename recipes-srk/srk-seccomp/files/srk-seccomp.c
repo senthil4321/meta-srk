@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define VERSION "1.0.0"
+#define VERSION "2.0.0"
 
 int main(int argc, char *argv[]) {
     // Print version
@@ -41,8 +41,6 @@ int main(int argc, char *argv[]) {
         printf("SCMP_SYS(write) added  ! \n");
     }
     
-    seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(sleep), 0); // Allow the sleep syscall
-    printf("SCMP_SYS(sleep) added  ! \n");
 
     if (!skip_fork_seccomp) {
         // Allow the fork syscall
@@ -59,7 +57,6 @@ int main(int argc, char *argv[]) {
     // This will be allowed by seccomp
     for (int i = 0; i < 60; i++) { // Run the loop for 60 seconds
         printf("Hello, World! %d\n", i); // Print loop count
-        sleep(1); // Sleep for 1 second
     }
 
     // This will be killed by seccomp
