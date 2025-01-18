@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <seccomp.h>
 #include <errno.h>
+#include <unistd.h>
 
 int main() {
     // Initialize the seccomp filter

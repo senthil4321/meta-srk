@@ -35,4 +35,4 @@ SRC_URI += "file://trial18_aes_omap.cfg"
 # reove uwanted network driver
 SRC_URI += "file://trial19_xfrm-ipsec.cfg"
 
-LINUX_VERSION_EXTENSION += "-srk-trial20"
+
