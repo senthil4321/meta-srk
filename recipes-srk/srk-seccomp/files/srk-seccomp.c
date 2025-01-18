@@ -24,28 +24,32 @@ int main(int argc, char *argv[]) {
     printf("Hello, World! init \n");
     scmp_filter_ctx ctx;
     ctx = seccomp_init(SCMP_ACT_KILL); // Default action: kill the process
-
+    printf("Hello, World! seccomp context init  ! \n");
     // Allow the write and usleep syscalls
     if (!skip_print_seccomp) {
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(write), 0);
+        printf("SCMP_SYS(write) added  ! \n");
     }
+    
     seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(nanosleep), 0);
+    printf("SCMP_SYS(nanosleep) added  ! \n");
 
     if (!skip_fork_seccomp) {
         // Allow the fork syscall
         seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(fork), 0);
+        printf("SCMP_SYS(fork) added  ! \n");
     }
-
+    printf("Loading the filter \n");
     // Load the filter
     if (seccomp_load(ctx) < 0) {
         perror("seccomp_load");
         return 1;
     }
-
+    printf("System seccomp protection activated \n");
     // This will be allowed by seccomp
     for (int i = 0; i < 5; i++) {
-        printf("Hello, World!\n");
-        usleep(500000); // Sleep for 500 ms
+        printf("Hello, World! %d\n", i); // Print loop count
+        usleep(1000000); // Sleep for 1 second (1000000 microseconds)
     }
 
     // This will be killed by seccomp
