@@ -31,3 +31,6 @@ SRC_URI += "file://trial17_scsi.cfg"
 
 # add AES OMAP support
 SRC_URI += "file://trial18_aes_omap.cfg"
+
+# reove uwanted network driver
+SRC_URI += "file://trial19_aes_xfrm-ipsec.cfg"
