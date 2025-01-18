@@ -31,8 +31,6 @@ int main(int argc, char *argv[]) {
         printf("SCMP_SYS(write) added  ! \n");
     }
     
-    seccomp_rule_add(ctx, SCMP_ACT_ALLOW, SCMP_SYS(nanosleep), 0);
-    printf("SCMP_SYS(nanosleep) added  ! \n");
 
     if (!skip_fork_seccomp) {
         // Allow the fork syscall
@@ -49,7 +47,6 @@ int main(int argc, char *argv[]) {
     // This will be allowed by seccomp
     for (int i = 0; i < 5; i++) {
         printf("Hello, World! %d\n", i); // Print loop count
-        usleep(1000000); // Sleep for 1 second (1000000 microseconds)
     }
 
     // This will be killed by seccomp
