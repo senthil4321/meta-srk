@@ -11,4 +11,5 @@ do_install() {
     install -d ${D}/sbin
     install -m 0755 ${S}/srk-init.sh ${D}/sbin/init
 }
-FILES_${PN} = "/sbin/init"
+
+FILES:${PN} = "/sbin/init"
