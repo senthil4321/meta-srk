@@ -58,7 +58,7 @@ print_help() {
 Usage: $0 [options]
 
 Options:
-    -s             Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs
+    -s             Copy core-image-minimal-squashfs-srk-beaglebone-yocto.rootfs.squashfs
     -k             Copy keyfile from script directory
     -i             Copy encrypted.img from script directory
     -q             Quiet mode (suppress normal output; errors still shown)
@@ -81,7 +81,7 @@ while getopts "skiqVh" opt; do
     case $opt in
         s)
             SOURCE_FOLDER="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
-            INPUT_FILES="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+            INPUT_FILES="core-image-minimal-squashfs-srk-beaglebone-yocto.rootfs.squashfs"
             copy_file $INPUT_FILES $SOURCE_FOLDER
             ;;
         k)
