@@ -20,8 +20,8 @@ COMPATIBLE_HOST = "(i.86|x86_64|aarch64|arm).*-linux"
 
 # Set default root password
 inherit extrausers
-PASSWD = "\$1\$WUwXnz3s\$dCRM7MUDP8/0wPAef1XfO1" 
-SRKPWD = "\$1\$V9izHbFg\$z8ZfBeREgRqdOP3AuHGn51" 
+PASSWD = "\$1\$1.BURo5Y\$QI5ij4TNpxJB7p0WbIouS." 
+SRKPWD = "\$1\$Lgfdhcj4\$c63Yh3BP7PTnOSB55JdJL0" 
 inherit extrausers
 EXTRA_USERS_PARAMS = "\
     usermod -p '${PASSWD}' root; \
