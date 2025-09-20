@@ -14,7 +14,7 @@ mount /dev/mapper/en_device /mnt/encrypted
 
 cat /mnt/encrypted/hello.txt
 
-mount -t squashfs -o loop /mnt/encrypted/core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs /srk-mnt
+mount -t squashfs -o loop /mnt/encrypted/core-image-minimal-squashfs-srk-beaglebone-yocto.rootfs.squashfs /srk-mnt
 
 
 new_root="/srk-mnt"
