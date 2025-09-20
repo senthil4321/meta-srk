@@ -2,11 +2,18 @@
 
 set -o pipefail
 
+VERSION="1.0.0"
+QUIET=0
+
 # Define the input filenames and destination
 DESTINATION="pi@srk.local:/tmp/"
 PASSWORD="${SCP_PASSWORD:-}" 
 
 have_cmd() { command -v "$1" >/dev/null 2>&1; }
+
+log() {
+    [ "$QUIET" -eq 0 ] && echo "$@"
+}
 
 copy_file() {
     local FILE="$1"
@@ -14,11 +21,11 @@ copy_file() {
     local SOURCE_FILE="${SOURCE_DIR}${FILE}"
 
     if [ ! -f "$SOURCE_FILE" ]; then
-        echo "[ERROR] Source file not found: $SOURCE_FILE" >&2
+        [ "$QUIET" -eq 0 ] && echo "[ERROR] Source file not found: $SOURCE_FILE" >&2
         return 1
     fi
 
-    echo "1. Copying $FILE to $DESTINATION"
+    log "1. Copying $FILE to $DESTINATION"
 
     # Prefer rsync for a clean progress bar if available
     if have_cmd rsync; then
@@ -26,40 +33,50 @@ copy_file() {
         sshpass -p "$PASSWORD" rsync -ah --progress "$SOURCE_FILE" "$DESTINATION"
         rc=$?
     else
-        echo "[INFO] rsync not found; falling back to scp (showing verbose progress)." >&2
+        [ "$QUIET" -eq 0 ] && echo "[INFO] rsync not found; falling back to scp." >&2
         # scp shows a progress meter when stderr is a TTY; force it with -v for feedback
         sshpass -p "$PASSWORD" scp -v "$SOURCE_FILE" "$DESTINATION"
         rc=$?
     fi
 
     if [ $rc -eq 0 ]; then
-        echo "2. $FILE copied successfully to $DESTINATION"
-        echo "3. Moving $FILE to /srv/nfs/"
+        log "2. $FILE copied successfully to $DESTINATION"
+        log "3. Moving $FILE to /srv/nfs/"
         if sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no pi@srk.local "sudo mv /tmp/'$FILE' /srv/nfs/"; then
-            echo "4. $FILE moved successfully to /srv/nfs/"
+            log "4. $FILE moved successfully to /srv/nfs/"
         else
-            echo "4. Failed to move $FILE to /srv/nfs/" >&2
+            [ "$QUIET" -eq 0 ] && echo "4. Failed to move $FILE to /srv/nfs/" >&2
             return 1
         fi
     else
-        echo "2. Failed to copy $FILE to $DESTINATION" >&2
+        [ "$QUIET" -eq 0 ] && echo "2. Failed to copy $FILE to $DESTINATION" >&2
         return $rc
     fi
 }
 
 print_help() {
-    echo "Usage: $0 -p <password> [-s] [-k] [-i]"
-    echo "Options:"
-    echo "  -p <password>        : Password for scp and ssh"
-    echo "  -s                   : Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
-    echo "  -k                   : Copy keyfile from script directory"
-    echo "  -i                   : Copy encrypted.img from script directory"
-    echo "Example:"
-    echo "  $0 -p mypassword -s -k -i"
+        cat <<EOF
+Usage: $0 -p <password> [options]
+
+Options:
+    -p <password>  Password for scp/ssh (or set SCP_PASSWORD env).
+    -s             Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs
+    -k             Copy keyfile from script directory
+    -i             Copy encrypted.img from script directory
+    -q             Quiet mode (suppress normal output; errors still shown)
+    -V             Show version and exit
+    -h             This help
+
+Examples:
+    $0 -p mypassword -s -k -i
+    SCP_PASSWORD=mypassword $0 -s -q
+
+Version: $VERSION
+EOF
 }
 
 # Parse command line arguments
-while getopts "p:skih" opt; do
+while getopts "p:skiqVh" opt; do
     case $opt in
         s)
             SOURCE_FOLDER="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
@@ -77,6 +94,13 @@ while getopts "p:skih" opt; do
             SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
             copy_file "encrypted.img" $SCRIPT_DIR
             ;;
+        q)
+            QUIET=1
+            ;;
+        V)
+            echo "$(basename "$0") version $VERSION"
+            exit 0
+            ;;
         h)
             print_help
             exit 0
@@ -90,7 +114,7 @@ while getopts "p:skih" opt; do
 done
 
 if [ -z "$PASSWORD" ]; then
-    echo "Password is required. Use -p option to provide the password or set SCP_PASSWORD environment variable."
-    print_help
+    echo "Password is required. Use -p option to provide the password or set SCP_PASSWORD environment variable." >&2
+    [ "$QUIET" -eq 1 ] || print_help
     exit 1
 fi
