@@ -7,8 +7,18 @@ DESCRIPTION = "Creates an encrypted container containing the SquashFS image"
 
 LICENSE = "MIT"
 
-# No inheritance needed for post-processing recipe
-# This recipe depends on core-image-minimal-squashfs-srk being built first
+# Simple recipe for post-processing encryption
+# This doesn't inherit from core-image to avoid circular dependencies
+
+SUMMARY = "Encrypted SquashFS image with post-processing"
+DESCRIPTION = "Creates an encrypted container containing the SquashFS image"
+
+LICENSE = "MIT"
+
+# Dependencies - ensure base image is built first
+do_deploy[depends] += "core-image-minimal-squashfs-srk:do_image_complete"
+do_deploy[depends] += "cryptsetup-native:do_populate_sysroot"
+do_deploy[depends] += "e2fsprogs-native:do_populate_sysroot"
 
 # NOTE: cryptsetup tools are NOT needed here since initramfs is built separately
 # and will include the necessary decryption tools
@@ -25,7 +35,7 @@ do_deploy() {
     fi
 
     # Create encrypted container
-    ENCRYPTED_IMG="${DEPLOYDIR}/core-image-minimal-squashfs-srk-${MACHINE}-encrypted.img"
+    ENCRYPTED_IMG="${DEPLOY_DIR_IMAGE}/core-image-minimal-squashfs-srk-${MACHINE}-encrypted.img"
     bbnote "Creating encrypted container: ${ENCRYPTED_IMG}"
 
     # Create container file
@@ -73,8 +83,8 @@ do_deploy() {
 }
 
 # Make encryption optional
-ENCRYPT_IMAGE ?= "1"
-do_deploy[noexec] = "${@'1' if d.getVar('ENCRYPT_IMAGE') == '0' else '0'}"
+# ENCRYPT_IMAGE ?= "1"
+# do_deploy[noexec] = "${@'1' if d.getVar('ENCRYPT_IMAGE') == '0' else '0'}"
 
 # Task flags
 do_deploy[network] = "0"
@@ -83,4 +93,6 @@ do_deploy[umask] = "022"
 # Dependencies
 do_deploy[depends] += "cryptsetup-native:do_populate_sysroot"
 do_deploy[depends] += "e2fsprogs-native:do_populate_sysroot"
-do_deploy[depends] += "core-image-minimal-squashfs-srk:do_image_complete"
+
+# Ensure deploy runs after base image is complete
+addtask do_deploy
