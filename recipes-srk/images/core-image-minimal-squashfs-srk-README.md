@@ -87,14 +87,16 @@ graph TB
 ## Architecture
 
 ### Distro Configuration (`srk-minimal-squashfs-distro.conf`)
+
 - **Purpose**: System-wide feature configuration
-- **Features**: 
+- **Features**:
   - Enables systemd, usrmerge
   - Removes sysvinit, package-management
   - Sets systemd as init manager
   - Removes bootloader dependencies
 
 ### Image Recipe (`core-image-minimal-squashfs-srk.bb`)
+
 - **Purpose**: Package selection and image-specific settings
 - **Packages**:
   - **Core**: systemd, busybox, shadow
@@ -117,11 +119,13 @@ graph TB
 ## Security Features
 
 ### User Accounts
+
 - **Root User**: Full system access with hashed password
 - **SRK User**: Limited user account for applications
 - **Password Hashing**: MD5 crypt format for compatibility
 
 ### SecComp Integration
+
 - System call filtering via `srk-seccomp`
 - Restricts dangerous system calls
 - Enhances security for embedded applications
@@ -129,6 +133,7 @@ graph TB
 ## Build Instructions
 
 ### Prerequisites
+
 ```bash
 # Ensure meta-srk layer is added
 bitbake-layers add-layer ../meta-srk
@@ -136,6 +141,7 @@ bitbake-layers show-layers
 ```
 
 ### Building the Image
+
 ```bash
 # Set the distro (if not set in image recipe)
 echo 'DISTRO = "srk-minimal-squashfs-distro"' >> conf/local.conf
@@ -145,6 +151,7 @@ bitbake core-image-minimal-squashfs-srk
 ```
 
 ### Output Location
+
 ```bash
 # Image will be created at:
 tmp/deploy/images/${MACHINE}/core-image-minimal-squashfs-srk-${MACHINE}.squashfs
@@ -153,12 +160,14 @@ tmp/deploy/images/${MACHINE}/core-image-minimal-squashfs-srk-${MACHINE}.squashfs
 ## Configuration Options
 
 ### Current Settings
+
 - **Filesystem Type**: SquashFS
 - **Init System**: systemd
 - **Image Size**: 8192 KB
 - **Features**: Minimal (no package management)
 
 ### Future Enhancements (TODO)
+
 - **Compression**: XZ compression with 1MB blocks
 - **Size Optimization**: Reduced to 6144 KB
 - **Read-Only**: Enhanced read-only filesystem features
@@ -166,6 +175,7 @@ tmp/deploy/images/${MACHINE}/core-image-minimal-squashfs-srk-${MACHINE}.squashfs
 ## Testing
 
 ### Boot Testing
+
 ```bash
 # Mount the squashfs image (for testing)
 sudo mkdir -p /mnt/test-squashfs
@@ -176,6 +186,7 @@ ls -la /mnt/test-squashfs/
 ```
 
 ### User Account Verification
+
 ```bash
 # Check user accounts in the image
 sudo chroot /mnt/test-squashfs /bin/bash
@@ -185,11 +196,13 @@ cat /etc/passwd | grep -E "(root|srk)"
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Build Failures**: Ensure all dependencies are available
 2. **Size Issues**: Check `IMAGE_ROOTFS_SIZE` if image is too large
 3. **Boot Issues**: Verify systemd configuration and services
 
 ### Debug Commands
+
 ```bash
 # Show image contents
 bitbake -e core-image-minimal-squashfs-srk | grep ^IMAGE_INSTALL=
