@@ -29,6 +29,28 @@ generate_keyfile() {
     echo -n "KkzPRSNodEhlTr9F7JB6Rrh3yGyfgl22r5aMmKBcBOJ5Kd3xslfshwYft+V1u5Ki" > keyfile
 }
 
+create_plain_encrypted_image() {
+    echo "2.5. Creating plain encrypted image..."
+    if [ ! -f "keyfile" ]; then
+        echo "Keyfile not found. Generating keyfile first..."
+        generate_keyfile
+    fi
+    echo "Creating encrypted.img with plain encryption..."
+    dd if=/dev/zero of=encrypted.img bs=1M count=40
+    sudo losetup -fP encrypted.img
+    LOOP_DEVICE=$(sudo losetup -a | grep encrypted.img | cut -d: -f1)
+    if [ -z "$LOOP_DEVICE" ]; then
+        echo "Error: Loop device for encrypted.img not found."
+        exit 1
+    fi
+    echo "Setting up plain encryption on $LOOP_DEVICE"
+    sudo cryptsetup open --type plain --cipher aes-xts-plain64 --key-size 256 --key-file keyfile $LOOP_DEVICE en_device
+    sudo mkfs.ext4 /dev/mapper/en_device
+    sudo cryptsetup close en_device
+    sudo losetup -d $LOOP_DEVICE
+    echo "Plain encrypted image created successfully."
+}
+
 create_and_mount_encrypted_image() {
     echo "3. Creating and mounting encrypted image..."
     local run_mkfs=$1
@@ -108,7 +130,7 @@ copy_file_to_mounted_drive() {
     echo "8. Copying file to mounted drive..."
     local src_path="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$FILE_NAME"
     local dest_path="/mnt/encrypted/$FILE_NAME"
-    sudo rm $dest_path
+    sudo rm -f $dest_path
     ls /mnt/encrypted
     sudo cp $src_path $dest_path
     ls -lah /mnt/encrypted
@@ -152,6 +174,7 @@ show_menu() {
     echo "Select an option:"
     echo "1. Create LUKS encrypted image"
     echo "2. Generate keyfile"
+    echo "2.5. Create plain encrypted image"
     echo "3. Create and mount encrypted image"
     echo "4. Mount encrypted image"
     echo "5. Mount encrypted image on the target"
@@ -171,6 +194,9 @@ execute_option() {
             ;;
         2)
             generate_keyfile
+            ;;
+        2.5)
+            create_plain_encrypted_image
             ;;
         3)
             create_and_mount_encrypted_image true

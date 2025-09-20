@@ -5,6 +5,14 @@
 # Version: 1.0.0
 # Author: senthil4321
 
+# Source Yocto environment
+if [[ -f "/home/srk2cob/project/poky/oe-init-build-env" ]]; then
+    source /home/srk2cob/project/poky/oe-init-build-env /home/srk2cob/project/poky/build
+else
+    echo "Error: Yocto environment script not found at /home/srk2cob/project/poky/oe-init-build-env"
+    exit 1
+fi
+
 set -e  # Exit on any error
 
 # Color codes for output
@@ -107,7 +115,23 @@ step_build_image() {
     fi
 }
 
-# Step 2: Mount encrypted image
+# Step 2: Create encrypted image
+step_create_encrypted() {
+    log_step "Creating encrypted image"
+    log_info "Changing to meta directory: $META_DIR"
+
+    cd "$META_DIR" || handle_error "Change to meta directory" $?
+
+    log_info "Running: ./06_created_encrypted_image.sh 2.5"
+    if ./06_created_encrypted_image.sh 2.5; then
+        log_success "Encrypted image created successfully"
+        return 0
+    else
+        handle_error "Create encrypted image" $?
+    fi
+}
+
+# Step 3: Mount encrypted image
 step_mount_encrypted() {
     log_step "Mounting encrypted image"
     log_info "Changing to meta directory: $META_DIR"
@@ -154,7 +178,7 @@ step_copy_to_remote() {
     log_step "Copying SquashFS to remote server"
     log_info "Running: ./05_copy_squashfs.sh -i"
 
-    if ./05_copy_squashfs.sh -s; then
+    if ./05_copy_squashfs.sh -i; then
         log_success "SquashFS copied to remote server successfully"
         return 0
     else
@@ -178,6 +202,9 @@ main() {
 
     # Execute workflow steps
     step_build_image
+    echo
+
+    step_create_encrypted
     echo
 
     step_mount_encrypted
@@ -205,6 +232,7 @@ main() {
     echo
     echo "📋 Workflow Summary:"
     echo "  ✅ Base image built"
+    echo "  ✅ Encrypted container created"
     echo "  ✅ Encrypted container mounted"
     echo "  ✅ SquashFS copied to encrypted container"
     echo "  ✅ Encrypted container cleaned up"
