@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+FILE_NAME="core-image-minimal-squash-srk-beaglebone-yocto.rootfs.squashfs"
 
 create_luks_encrypted_image() {
     echo "1. Creating LUKS encrypted image..."
