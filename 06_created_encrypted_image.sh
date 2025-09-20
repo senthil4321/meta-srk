@@ -1,5 +1,6 @@
 #!/bin/sh
 
+VERSION="1.1.0"
 FILE_NAME="core-image-minimal-squash-srk-beaglebone-yocto.rootfs.squashfs"
 
 create_luks_encrypted_image() {
@@ -85,7 +86,7 @@ mount_encrypted_imageTarget() {
     fi
     mount /dev/mapper/en_device /mnt/encrypted
 
-    mount -t squashfs -o loop /mnt/encrypted/core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs /srk-mnt
+    mount -t squashfs -o loop /mnt/encrypted/$FILE_NAME /srk-mnt
     umount  /srk-mnt
 
     umount /mnt/encrypted
@@ -105,7 +106,6 @@ read_encrypted_data() {
 
 copy_file_to_mounted_drive() {
     echo "8. Copying file to mounted drive..."
-    local FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
     local src_path="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$FILE_NAME"
     local dest_path="/mnt/encrypted/$FILE_NAME"
     sudo rm $dest_path
@@ -117,7 +117,6 @@ copy_file_to_mounted_drive() {
 
 verify_file_hash() {
     echo "9. Verifying file hash..."
-    local FILE_NAME="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
     local src_path="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$FILE_NAME"
     local dest_path="/mnt/encrypted/$FILE_NAME"
     local src_hash=$(sha256sum $src_path | cut -d ' ' -f 1)
@@ -151,7 +150,8 @@ show_menu() {
     echo "8. Copy file to mounted drive"
     echo "9. Verify file hash"
     echo "10. Unmount encrypted image"
-    echo "11. Exit"
+    echo "11. Show version"
+    echo "12. Exit"
 }
 
 execute_option() {
@@ -187,6 +187,9 @@ execute_option() {
             cleanup_encrypted_image
             ;;
         11)
+            echo "Encrypted Image Script Version: $VERSION"
+            ;;
+        12)
             echo "Exiting..."
             exit 0
             ;;
