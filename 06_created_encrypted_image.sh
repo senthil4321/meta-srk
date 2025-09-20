@@ -113,6 +113,16 @@ copy_file_to_mounted_drive() {
     sudo cp $src_path $dest_path
     ls -lah /mnt/encrypted
     echo "File copied successfully."
+
+    # WORKAROUND: Create symlink with old filename for compatibility with init script
+    # TODO: Remove this workaround when srk-init.sh is updated to use correct filename
+    # https://github.com/senthil4321/meta-srk/issues/2
+    local old_filename="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
+    local old_dest_path="/mnt/encrypted/$old_filename"
+    echo "Creating compatibility symlink: $old_filename -> $FILE_NAME"
+    sudo ln -sf "$FILE_NAME" "$old_dest_path"
+    ls -lah /mnt/encrypted
+    echo "Compatibility workaround applied successfully."
 }
 
 verify_file_hash() {
