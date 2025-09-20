@@ -2,12 +2,11 @@
 
 set -o pipefail
 
-VERSION="1.0.0"
+VERSION="1.1.0"
 QUIET=0
 
 # Define the input filenames and destination
 DESTINATION="pi@srk.local:/tmp/"
-PASSWORD="${SCP_PASSWORD:-}" 
 
 have_cmd() { command -v "$1" >/dev/null 2>&1; }
 
@@ -30,19 +29,19 @@ copy_file() {
     # Prefer rsync for a clean progress bar if available
     if have_cmd rsync; then
         # --info=progress2 gives a single consolidated progress line (rsync >= 3.1)
-        sshpass -p "$PASSWORD" rsync -ah --progress "$SOURCE_FILE" "$DESTINATION"
+        rsync -ah --progress "$SOURCE_FILE" "$DESTINATION"
         rc=$?
     else
         [ "$QUIET" -eq 0 ] && echo "[INFO] rsync not found; falling back to scp." >&2
         # scp shows a progress meter when stderr is a TTY; force it with -v for feedback
-        sshpass -p "$PASSWORD" scp -v "$SOURCE_FILE" "$DESTINATION"
+        scp -v "$SOURCE_FILE" "$DESTINATION"
         rc=$?
     fi
 
     if [ $rc -eq 0 ]; then
         log "2. $FILE copied successfully to $DESTINATION"
         log "3. Moving $FILE to /srv/nfs/"
-        if sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no pi@srk.local "sudo mv /tmp/'$FILE' /srv/nfs/"; then
+        if ssh -o StrictHostKeyChecking=no pi@srk.local "sudo mv /tmp/'$FILE' /srv/nfs/"; then
             log "4. $FILE moved successfully to /srv/nfs/"
         else
             [ "$QUIET" -eq 0 ] && echo "4. Failed to move $FILE to /srv/nfs/" >&2
@@ -56,10 +55,9 @@ copy_file() {
 
 print_help() {
         cat <<EOF
-Usage: $0 -p <password> [options]
+Usage: $0 [options]
 
 Options:
-    -p <password>  Password for scp/ssh (or set SCP_PASSWORD env).
     -s             Copy core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs
     -k             Copy keyfile from script directory
     -i             Copy encrypted.img from script directory
@@ -68,23 +66,23 @@ Options:
     -h             This help
 
 Examples:
-    $0 -p mypassword -s -k -i
-    SCP_PASSWORD=mypassword $0 -s -q
+    $0 -s -k -i
+    $0 -s -q
+
+Notes:
+    - Uses SSH key-based authentication (no password required)
 
 Version: $VERSION
 EOF
 }
 
 # Parse command line arguments
-while getopts "p:skiqVh" opt; do
+while getopts "skiqVh" opt; do
     case $opt in
         s)
             SOURCE_FOLDER="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
             INPUT_FILES="core-image-minimal-srk-beaglebone-yocto.rootfs.squashfs"
             copy_file $INPUT_FILES $SOURCE_FOLDER
-            ;;
-        p)
-            PASSWORD=$OPTARG
             ;;
         k)
             SCRIPT_DIR="$(dirname "$(realpath "$0")")/"
@@ -113,8 +111,4 @@ while getopts "p:skiqVh" opt; do
     esac
 done
 
-if [ -z "$PASSWORD" ]; then
-    echo "Password is required. Use -p option to provide the password or set SCP_PASSWORD environment variable." >&2
-    [ "$QUIET" -eq 1 ] || print_help
-    exit 1
-fi
+# SSH key-based authentication is used - no password required
