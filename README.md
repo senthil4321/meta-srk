@@ -181,13 +181,14 @@ bitbake core-image-minimal-srk
 A Python-based test automation script for SRK target devices that connects via SSH and performs serial communication testing.
 
 ### Version
-1.3.0
+1.4.0
 
 ### Features
 
 - **Remote Serial Testing**: Connects to target device via SSH and socat for reliable serial communication
 - **Automated Test Suite**: Runs comprehensive tests including login, command execution, and output verification
 - **Colored Report Generation**: Generates formatted test reports with color-coded status indicators
+- **Detailed Output**: Shows actual system information (versions, timestamps, uptime) in test results
 - **Modular Design**: Separated report generation into a reusable module
 - **Command-line Interface**: Supports saving reports to files and version display
 
@@ -227,12 +228,13 @@ The script performs the following test steps:
 
 ### Build Time Information
 
-The test script now includes comprehensive build time checking:
+The test script now includes comprehensive build time checking with **detailed output**:
 
-- **Kernel Build Time**: Shows when the Linux kernel was compiled
+- **Kernel Build Time**: Shows when the Linux kernel was compiled (e.g., "Tue Mar 19 16:42:51 UTC 2024")
 - **System Timestamp**: Displays the build timestamp from system files
-- **System Uptime**: Indicates how long the system has been running
+- **System Uptime**: Indicates how long the system has been running (e.g., "2 days, 3:45")
 - **Build Version**: Shows complete system version information
+- **BusyBox Version**: Displays the exact BusyBox version installed
 
 This information is crucial for:
 - Verifying the freshness of the build

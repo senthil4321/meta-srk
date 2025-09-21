@@ -3,13 +3,13 @@
 Serial Test Script for SRK Target Device over Remote SSH
 Connects to remote host and accesses serial device using socat
 
-Version: 1.3.0
+Version: 1.4.0
 Author: SRK Development Team
 Copyright (c) 2025 SRK. All rights reserved.
 License: MIT
 """
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -232,11 +232,11 @@ class TestSerialHello(unittest.TestCase):
                 "Hello, World! 20SEP2025 07:28 !!!",
                 "Hello, World! 20SEP2025 23:50 !!!"
             ]))[2]),
-            ("Check build version", lambda t: (t.send_command("uname -a"), assert_in("Linux", t.read_until("beaglebone-yocto:~$", 10)))[1]),
-            ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output))[1]),
-            ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0)[1]),
-            ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output))[1]),
-            ("Check BusyBox version", lambda t: (t.send_command("busybox"), assert_in("BusyBox", t.read_until("beaglebone-yocto:~$", 10)))[1]),
+            ("Check build version", lambda t: (t.send_command("uname -a"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("Linux", output), output.split("Linux")[1].split("beaglebone-yocto")[0].strip() if "Linux" in output else "Unknown")[1:]),
+            ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output), output.split("#")[1].split()[0] if "#" in output else "Unknown")[1:]),
+            ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, output.strip().split('\n')[-1] if output.strip() else "Unknown")[1:]),
+            ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown")[1:]),
+            ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown")[1:]),
         ]
 
         non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"]
@@ -246,8 +246,13 @@ class TestSerialHello(unittest.TestCase):
             print(f"\n➡️ Step: {name}")
             try:
                 result = func(self.tester)
-                results.append((name, True, "OK"))
-                print(f"✅ PASS: {name}")
+                # For tests that return actual values, use those as the message
+                if isinstance(result, str) and result != "True":
+                    message = result
+                else:
+                    message = "OK"
+                results.append((name, True, message))
+                print(f"✅ PASS: {name} - {message}")
             except Exception as e:
                 results.append((name, False, str(e)))
                 print(f"❌ FAIL: {name} - {e}")

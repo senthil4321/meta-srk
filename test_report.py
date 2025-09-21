@@ -4,7 +4,7 @@ Test Report Generation Module
 Provides utilities for generating formatted test reports with colored output.
 """
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -41,8 +41,8 @@ class TestReportGenerator:
         report_lines.append("="*80)
 
         # Table header
-        report_lines.append(f"{'#':<3} | {'Test Name':<30} | {'Status':<20} | {'Message':<40}")
-        report_lines.append("-" * 97)
+        report_lines.append(f"{'#':<3} | {'Test Name':<30} | {'Status':<20} | {'Details':<57}")
+        report_lines.append("-" * 114)
 
         # Table rows
         counter = 1
@@ -51,12 +51,12 @@ class TestReportGenerator:
 
             # Truncate name and msg if too long
             name_display = name[:28] + "..." if len(name) > 28 else name
-            msg_display = msg[:38] + "..." if len(msg) > 38 else msg
+            msg_display = msg[:55] + "..." if len(msg) > 55 else msg
 
-            report_lines.append(f"{counter:<3} | {name_display:<30} | {status:<20} | {msg_display:<40}")
+            report_lines.append(f"{counter:<3} | {name_display:<30} | {status:<20} | {msg_display:<57}")
             counter += 1
 
-        report_lines.append("-" * 97)
+        report_lines.append("-" * 114)
 
         # Statistics
         stats = self._calculate_statistics(results, non_blocking)
