@@ -6,7 +6,7 @@ VERSION="1.1.0"
 QUIET=0
 
 # Define the input filenames and destination
-DESTINATION="pi@srk.local:/tmp/"
+DESTINATION="p:/tmp/"
 
 have_cmd() { command -v "$1" >/dev/null 2>&1; }
 
@@ -41,7 +41,7 @@ copy_file() {
     if [ $rc -eq 0 ]; then
         log "2. $FILE copied successfully to $DESTINATION"
         log "3. Moving $FILE to /srv/nfs/"
-        if ssh -o StrictHostKeyChecking=no pi@srk.local "sudo mv /tmp/'$FILE' /srv/nfs/"; then
+        if ssh p "sudo mv /tmp/'$FILE' /srv/nfs/"; then
             log "4. $FILE moved successfully to /srv/nfs/"
         else
             [ "$QUIET" -eq 0 ] && echo "4. Failed to move $FILE to /srv/nfs/" >&2
@@ -70,7 +70,8 @@ Examples:
     $0 -s -q
 
 Notes:
-    - Uses SSH key-based authentication (no password required)
+    - Uses SSH alias 'p' configured in ~/.ssh/config
+    - SSH key-based authentication is used (no password required)
 
 Version: $VERSION
 EOF
