@@ -258,7 +258,7 @@ bitbake core-image-minimal-srk
 A Python-based test automation script for SRK target devices that connects via SSH and performs serial communication testing.
 
 ### Version
-1.5.0
+1.6.0
 
 ### Features
 
@@ -268,7 +268,7 @@ A Python-based test automation script for SRK target devices that connects via S
 - **Detailed Output**: Shows actual system information (versions, timestamps, uptime) in test results
 - **Modular Design**: Separated report generation into a reusable module
 - **Command-line Interface**: Supports saving reports to files and version display
-- **Initramfs Version Detection**: Automatically identifies srk-2 (systemd) vs srk-3 (busybox) initramfs
+- **Initramfs Analysis**: Separated checks for init system type and encryption support
 
 ### Usage
 
@@ -303,7 +303,8 @@ The script performs the following test steps:
 10. **Check system timestamp** - Shows system build time from `/etc/timestamp` or file modification dates
 11. **Check system uptime** - Displays how long the system has been running since last boot
 12. **Check BusyBox version** - Verifies BusyBox installation
-13. **Check initramfs version** - Determines whether srk-2 (systemd) or srk-3 (busybox) initramfs is running
+13. **Check encryption support** - Verifies presence of encryption components (cryptsetup, srk-init)
+14. **Check init system type** - Determines whether systemd or busybox init is running
 
 ### Build Time Information
 
