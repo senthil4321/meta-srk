@@ -157,13 +157,13 @@ PREFERRED_PROVIDER_virtual/libiconv = "glibc"
 sunrpc - Used by NFS
 xfrm - used by IPSec
 ```
-
-TODO 
-
-~~~ ### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`~~
-
+### TODO 
+~### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`~
 To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
+
+```text
 # LINUX_VERSION_EXTENSION += "-srk-trial20"
+```
 
 ### workflow rootfs encrypted build
 
