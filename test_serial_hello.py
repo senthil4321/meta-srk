@@ -87,6 +87,140 @@ class RemoteSerialTester:
             print(f"Sent: {command}")
             time.sleep(1)  # Give time for command to be processed
 
+    def wait_for_initial_prompt(self):
+        """Wait for login prompt or shell prompt if already logged in"""
+        print("\n1. Waiting for login prompt...")
+        login_found = False
+        already_logged_in = False
+        combined_buffer = ""
+        start_time = time.time()
+        last_data_time = start_time
+
+        while time.time() - start_time < 90:  # 90 second timeout
+            try:
+                data = self.output_queue.get(timeout=1.0)
+                combined_buffer += data
+                print(f"Received: {data.strip()}")
+                last_data_time = time.time()
+
+                if not login_found and "beaglebone-yocto login:" in combined_buffer:
+                    login_found = True
+                    print("✓ Login prompt detected")
+                    break
+
+                if not already_logged_in and "beaglebone-yocto:~$" in combined_buffer:
+                    already_logged_in = True
+                    print("✓ Already logged in, shell prompt detected")
+                    break
+
+            except queue.Empty:
+                # If no data for 5 seconds, send enter to refresh prompt
+                if time.time() - last_data_time > 5 and not login_found and not already_logged_in:
+                    print("No activity detected, sending enter to refresh prompt...")
+                    if self.channel:
+                        self.channel.send("\n")
+                    last_data_time = time.time()
+                continue
+
+        if not login_found and not already_logged_in:
+            print("ERROR: Neither login prompt nor shell prompt found")
+            print(f"Last received data: {combined_buffer[-500:]}")  # Show last 500 chars
+            return False, False
+
+        return login_found, already_logged_in
+
+    def perform_login(self):
+        """Send username, handle password if needed, and wait for shell prompt"""
+        print("\n2. Sending username 'srk'...")
+        if self.channel:
+            self.channel.send("srk\n")
+            print("Sent: srk")
+            time.sleep(1)
+
+        print("3. Waiting for password prompt or shell prompt...")
+        buffer = ""
+        start_time = time.time()
+        password_sent = False
+        while time.time() - start_time < 30:
+            try:
+                data = self.output_queue.get(timeout=0.5)
+                buffer += data
+                print(f"Received: {data.strip()}")
+                if "Password:" in buffer and not password_sent:
+                    print("✓ Password prompt detected, sending empty password")
+                    if self.channel:
+                        self.channel.send("\n")
+                    password_sent = True
+                if "beaglebone-yocto:~$" in buffer:
+                    print("✓ Shell prompt detected")
+                    break
+            except queue.Empty:
+                pass
+        else:
+            print("ERROR: Timeout waiting for shell prompt")
+            return False
+
+        if "beaglebone-yocto:" not in buffer:
+            print("ERROR: Shell prompt not found")
+            print(f"Received data: {buffer}")
+            return False
+
+        return True
+
+    def check_hello_exists(self):
+        """Check if hello command exists on the system"""
+        print("\n4. Checking if hello command exists...")
+        self.send_command("which hello")
+        which_output = self.read_until("beaglebone-yocto:~$", timeout=10)
+        if "hello" not in which_output:
+            print("ERROR: hello command not found on target system")
+            print(f"which output: {which_output}")
+            return False
+        print("✓ hello command found")
+        return True
+
+    def run_and_verify_hello(self):
+        """Run hello command and verify its output"""
+        print("5. Running 'hello' command...")
+        self.send_command("hello")
+
+        print("6. Capturing hello command output...")
+        output = ""
+        for _ in range(10):
+            try:
+                data = self.output_queue.get(timeout=0.5)
+                output += data
+                print(f"Received: {data.strip()}")
+            except queue.Empty:
+                break
+
+        # Also try to read until we get a shell prompt to make sure command completed
+        remaining_output = self.read_until("beaglebone-yocto:~$", timeout=5)
+        output += remaining_output
+
+        expected_lines = [
+            "Hello, World! from meta-srk layer and recipes-srk V2!!!",
+            "Hello, World! 20SEP2025 07:28 !!!",
+            "Hello, World! 20SEP2025 23:50 !!!"
+        ]
+
+        print("\n7. Verifying output...")
+        success = True
+        for line in expected_lines:
+            if line in output:
+                print(f"✓ Found: {line}")
+            else:
+                print(f"✗ Missing: {line}")
+                success = False
+
+        if success:
+            print("\n🎉 TEST PASSED: All expected output found!")
+            return True
+        else:
+            print("\n❌ TEST FAILED: Some expected output missing")
+            print(f"\nFull output received:\n{output}")
+            return False
+
     def test_login_and_hello(self):
         """Main test logic"""
         print("Starting remote serial test for SRK target device...")
@@ -96,135 +230,23 @@ class RemoteSerialTester:
             return False
 
         try:
-            # Step 1: Wait for login prompt
-            print("\n1. Waiting for login prompt...")
-            login_found = False
-            already_logged_in = False
-            combined_buffer = ""
-            start_time = time.time()
-            last_data_time = start_time
-
-            while time.time() - start_time < 90:  # 90 second timeout
-                try:
-                    data = self.output_queue.get(timeout=1.0)
-                    combined_buffer += data
-                    print(f"Received: {data.strip()}")
-                    last_data_time = time.time()
-
-                    if not login_found and "beaglebone-yocto login:" in combined_buffer:
-                        login_found = True
-                        print("✓ Login prompt detected")
-                        break
-
-                    if not already_logged_in and "beaglebone-yocto:~$" in combined_buffer:
-                        already_logged_in = True
-                        print("✓ Already logged in, shell prompt detected")
-                        break
-
-                except queue.Empty:
-                    # If no data for 5 seconds, send enter to refresh prompt
-                    if time.time() - last_data_time > 5 and not login_found and not already_logged_in:
-                        print("No activity detected, sending enter to refresh prompt...")
-                        if self.channel:
-                            self.channel.send("\n")
-                        last_data_time = time.time()
-                    continue
-
+            login_found, already_logged_in = self.wait_for_initial_prompt()
             if not login_found and not already_logged_in:
-                print("ERROR: Neither login prompt nor shell prompt found")
-                print(f"Last received data: {combined_buffer[-500:]}")  # Show last 500 chars
                 return False
 
             if already_logged_in:
                 print("Skipping login steps as system is already logged in")
             else:
-                # Step 2: Send username
-                print("\n2. Sending username 'srk'...")
-                if self.channel:
-                    self.channel.send("srk\n")
-                    print("Sent: srk")
-                    time.sleep(1)
-
-                # Step 3: Wait for password prompt or shell prompt
-                print("3. Waiting for password prompt or shell prompt...")
-                buffer = ""
-                start_time = time.time()
-                password_sent = False
-                while time.time() - start_time < 30:
-                    try:
-                        data = self.output_queue.get(timeout=0.5)
-                        buffer += data
-                        print(f"Received: {data.strip()}")
-                        if "Password:" in buffer and not password_sent:
-                            print("✓ Password prompt detected, sending empty password")
-                            if self.channel:
-                                self.channel.send("\n")
-                            password_sent = True
-                        if "beaglebone-yocto:~$" in buffer:
-                            print("✓ Shell prompt detected")
-                            break
-                    except queue.Empty:
-                        pass
-                else:
-                    print("ERROR: Timeout waiting for shell prompt")
+                if not self.perform_login():
                     return False
 
-                if "beaglebone-yocto:" not in buffer:
-                    print("ERROR: Shell prompt not found")
-                    print(f"Received data: {buffer}")
-                    return False
-
-            # Step 4: Check if hello command exists
-            print("\n4. Checking if hello command exists...")
-            self.send_command("which hello")
-            which_output = self.read_until("beaglebone-yocto:~$", timeout=10)
-            if "hello" not in which_output:
-                print("ERROR: hello command not found on target system")
-                print(f"which output: {which_output}")
+            if not self.check_hello_exists():
                 return False
-            print("✓ hello command found")
 
-            # Step 5: Run hello command
-            print("5. Running 'hello' command...")
-            self.send_command("hello")
-
-            # Step 6: Capture and verify output
-            print("6. Capturing hello command output...")
-            output = ""
-            for _ in range(10):
-                try:
-                    data = self.output_queue.get(timeout=0.5)
-                    output += data
-                    print(f"Received: {data.strip()}")
-                except queue.Empty:
-                    break
-
-            # Also try to read until we get a shell prompt to make sure command completed
-            remaining_output = self.read_until("beaglebone-yocto:~$", timeout=5)
-            output += remaining_output
-
-            expected_lines = [
-                "Hello, World! from meta-srk layer and recipes-srk V2!!!",
-                "Hello, World! 20SEP2025 07:28 !!!",
-                "Hello, World! 20SEP2025 23:50 !!!"
-            ]
-
-            print("\n7. Verifying output...")
-            success = True
-            for line in expected_lines:
-                if line in output:
-                    print(f"✓ Found: {line}")
-                else:
-                    print(f"✗ Missing: {line}")
-                    success = False
-
-            if success:
-                print("\n🎉 TEST PASSED: All expected output found!")
-                return True
-            else:
-                print("\n❌ TEST FAILED: Some expected output missing")
-                print(f"\nFull output received:\n{output}")
+            if not self.run_and_verify_hello():
                 return False
+
+            return True
 
         except Exception as e:
             print(f"ERROR during test: {e}")
