@@ -287,6 +287,14 @@ python3 test_serial_hello.py --save-report test_results.txt
 python3 test_serial_hello.py --version
 ```
 
+## Important
+
+### Yocto Best Practices
+
+- Flexibility: Images can override distro defaults when needed
+- Layered Configuration: Distro → Image → Machine → Local overrides
+- Common Pattern: Many Yocto projects do this (e.g., initramfs with busybox, rootfs with systemd)
+
 ### Test Steps
 
 The script performs the following test steps:
