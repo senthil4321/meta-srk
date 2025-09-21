@@ -4,6 +4,52 @@
 # Uses SSH alias 'p' configured in ~/.ssh/config for pi@srk.local
 # Uses SSH key-based authentication (no password required)
 
+VERSION="1.0.0"
+
+VERSION="1.0.0"
+
+print_help() {
+    cat <<EOF
+Usage: $0 <version (2 or 3)> [options]
+
+Options:
+    -V             Show version and exit
+    -h             This help
+
+Examples:
+    $0 2
+    $0 3
+
+Notes:
+    - Uses SSH alias 'p' configured in ~/.ssh/config
+    - SSH key-based authentication is used (no password required)
+
+Version: $VERSION
+EOF
+}
+
+# Parse command line arguments
+while getopts "Vh" opt; do
+    case $opt in
+        V)
+            echo "$(basename "$0") version $VERSION"
+            exit 0
+            ;;
+        h)
+            print_help
+            exit 0
+            ;;
+        *)
+            echo "Invalid option: -$OPTARG" >&2
+            print_help
+            exit 1
+            ;;
+    esac
+done
+
+# Shift parsed options
+shift $((OPTIND-1))
+
 # Check if the version argument is provided
 if [ -z "$1" ]; then
     echo "Usage: $0 <version (2 or 3)>"
@@ -12,12 +58,12 @@ if [ -z "$1" ]; then
 fi
 
 # Define the input filename based on the version argument
-VERSION="$1"
-if [[ "$VERSION" != "2" && "$VERSION" != "3" ]]; then
+INITRAMFS_VERSION="$1"
+if [[ "$INITRAMFS_VERSION" != "2" && "$INITRAMFS_VERSION" != "3" ]]; then
     echo "Invalid version. Please provide either '2' or '3'."
     exit 1
 fi
-INPUT_FILENAME="core-image-tiny-initramfs-srk-${VERSION}-beaglebone-yocto.rootfs.cpio.gz"
+INPUT_FILENAME="core-image-tiny-initramfs-srk-${INITRAMFS_VERSION}-beaglebone-yocto.rootfs.cpio.gz"
 
 # Define the source file and destination
 SOURCE_FILE="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$INPUT_FILENAME"
