@@ -2,7 +2,17 @@
 """
 Serial Test Script for SRK Target Device over Remote SSH
 Connects to remote host and accesses serial device using socat
+
+Version: 1.2.0
+Author: SRK Development Team
+Copyright (c) 2025 SRK. All rights reserved.
+License: MIT
 """
+
+__version__ = "1.2.0"
+__author__ = "SRK Development Team"
+__copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
+__license__ = "MIT"
 
 import time
 import sys
@@ -11,10 +21,7 @@ import paramiko
 import threading
 import queue
 import warnings
-
-# Suppress deprecation warnings from Paramiko
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-import warnings
+from test_report import TestReportGenerator
 
 # Suppress deprecation warnings from Paramiko
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -195,17 +202,6 @@ class RemoteSerialTester:
 
         return True
 
-    def check_hello_exists(self):
-        """Check if hello command exists on the system"""
-        print("\n4. Checking if hello command exists...")
-        self.send_command("which hello")
-        which_output = self.read_until("beaglebone-yocto:~$", timeout=10)
-        if "hello" not in which_output:
-            print("ERROR: hello command not found on target system")
-            return False
-        print("✓ hello command found")
-        return True
-
 import unittest
 
 class TestSerialHello(unittest.TestCase):
@@ -239,10 +235,10 @@ class TestSerialHello(unittest.TestCase):
             ("Check build version", lambda t: (t.send_command("uname -a"), assert_in("Linux", t.read_until("beaglebone-yocto:~$", 10)))[1]),
             ("Check BusyBox version", lambda t: (t.send_command("busybox"), assert_in("BusyBox", t.read_until("beaglebone-yocto:~$", 10)))[1]),
         ]
-        
+
         non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"]
         results = []
-        
+
         for name, func in steps:
             print(f"\n➡️ Step: {name}")
             try:
@@ -255,52 +251,25 @@ class TestSerialHello(unittest.TestCase):
                 if name not in non_blocking:
                     break  # stop on failure for strict ordering, except for non-blocking tests
 
-        # Print summary
-        print("\n" + "="*80)
-        print("TEST SUMMARY")
-        print("="*80)
-        
-        # Define colored icons
-        green_check = "\033[92m✅\033[0m"
-        red_x = "\033[91m❌\033[0m"
-        yellow_warn = "\033[93m⚠️\033[0m"
-        blue_skip = "\033[94m⏭️\033[0m"
-        
-        # Table header
-        print(f"{'#':<3} | {'Test Name':<30} | {'Status':<20} | {'Message':<40}")
-        print("-" * 97)
-        
-        counter = 1
-        for name, passed, msg in results:
-            if msg == "SKIPPED":
-                status = f"{blue_skip} SKIP"
-            elif passed:
-                status = f"{green_check} PASS"
-            else:
-                if name in non_blocking:
-                    status = f"{yellow_warn} NON-BLOCK FAIL"
-                else:
-                    status = f"{red_x} FAIL"
-            
-            # Truncate name and msg if too long
-            name_display = name[:28] + "..." if len(name) > 28 else name
-            msg_display = msg[:38] + "..." if len(msg) > 38 else msg
-            
-            print(f"{counter:<3} | {name_display:<30} | {status:<20} | {msg_display:<40}")
-            counter += 1
-        
-        print("-" * 97)
-        
-        total = len(results)
-        passed_count = sum(1 for _, p, _ in results if p)
-        failed_count = sum(1 for name, p, _ in results if not p and name not in non_blocking)
-        warning_count = sum(1 for name, p, _ in results if not p and name in non_blocking)
-        print(f"\nTotal: {total}, Passed: {passed_count}, Failed: {failed_count}, Warnings: {warning_count}")
+        # Generate and print report
+        report_generator = TestReportGenerator()
+        report_generator.print_report(results, non_blocking)
+
+        return results
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="SRK Serial Test Script")
+    parser.add_argument("--save-report", type=str, help="Save test report to specified file")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+
+    args = parser.parse_args()
+
     tester = TestSerialHello()
     tester.setUp()
     try:
-        tester.run_all_tests()
+        results = tester.run_all_tests()
+        if args.save_report:
+            report_generator = TestReportGenerator()
+            report_generator.save_report_to_file(results, args.save_report, ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"])
     finally:
         tester.tearDown()
