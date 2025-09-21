@@ -99,6 +99,7 @@ class RemoteSerialTester:
             # Step 1: Wait for login prompt
             print("\n1. Waiting for login prompt...")
             login_found = False
+            already_logged_in = False
             combined_buffer = ""
             start_time = time.time()
             last_data_time = start_time
@@ -115,35 +116,43 @@ class RemoteSerialTester:
                         print("✓ Login prompt detected")
                         break
 
+                    if not already_logged_in and "beaglebone-yocto:~$" in combined_buffer:
+                        already_logged_in = True
+                        print("✓ Already logged in, shell prompt detected")
+                        break
+
                 except queue.Empty:
-                    # If no data for 10 seconds, send enter to refresh prompt
-                    if time.time() - last_data_time > 10 and not login_found:
+                    # If no data for 5 seconds, send enter to refresh prompt
+                    if time.time() - last_data_time > 5 and not login_found and not already_logged_in:
                         print("No activity detected, sending enter to refresh prompt...")
                         if self.channel:
                             self.channel.send("\n")
                         last_data_time = time.time()
                     continue
 
-            if not login_found:
-                print("ERROR: Login prompt not found")
+            if not login_found and not already_logged_in:
+                print("ERROR: Neither login prompt nor shell prompt found")
                 print(f"Last received data: {combined_buffer[-500:]}")  # Show last 500 chars
                 return False
 
-            # Step 2: Send username
-            print("\n2. Sending username 'srk'...")
-            if self.channel:
-                self.channel.send("srk\n")
-                print("Sent: srk")
-                time.sleep(1)
+            if already_logged_in:
+                print("Skipping login steps as system is already logged in")
+            else:
+                # Step 2: Send username
+                print("\n2. Sending username 'srk'...")
+                if self.channel:
+                    self.channel.send("srk\n")
+                    print("Sent: srk")
+                    time.sleep(1)
 
-            # Step 3: Wait for shell prompt
-            print("3. Waiting for shell prompt...")
-            shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)
-            if "beaglebone-yocto:" not in shell_prompt:
-                print("ERROR: Shell prompt not found")
-                print(f"Received data: {shell_prompt}")
-                return False
-            print("✓ Shell prompt detected")
+                # Step 3: Wait for shell prompt
+                print("3. Waiting for shell prompt...")
+                shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)
+                if "beaglebone-yocto:" not in shell_prompt:
+                    print("ERROR: Shell prompt not found")
+                    print(f"Received data: {shell_prompt}")
+                    return False
+                print("✓ Shell prompt detected")
 
             # Step 4: Check if hello command exists
             print("\n4. Checking if hello command exists...")
