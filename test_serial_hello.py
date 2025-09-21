@@ -145,14 +145,34 @@ class RemoteSerialTester:
                     print("Sent: srk")
                     time.sleep(1)
 
-                # Step 3: Wait for shell prompt
-                print("3. Waiting for shell prompt...")
-                shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)
-                if "beaglebone-yocto:" not in shell_prompt:
-                    print("ERROR: Shell prompt not found")
-                    print(f"Received data: {shell_prompt}")
+                # Step 3: Wait for password prompt or shell prompt
+                print("3. Waiting for password prompt or shell prompt...")
+                buffer = ""
+                start_time = time.time()
+                password_sent = False
+                while time.time() - start_time < 30:
+                    try:
+                        data = self.output_queue.get(timeout=0.5)
+                        buffer += data
+                        print(f"Received: {data.strip()}")
+                        if "Password:" in buffer and not password_sent:
+                            print("✓ Password prompt detected, sending empty password")
+                            if self.channel:
+                                self.channel.send("\n")
+                            password_sent = True
+                        if "beaglebone-yocto:~$" in buffer:
+                            print("✓ Shell prompt detected")
+                            break
+                    except queue.Empty:
+                        pass
+                else:
+                    print("ERROR: Timeout waiting for shell prompt")
                     return False
-                print("✓ Shell prompt detected")
+
+                if "beaglebone-yocto:" not in buffer:
+                    print("ERROR: Shell prompt not found")
+                    print(f"Received data: {buffer}")
+                    return False
 
             # Step 4: Check if hello command exists
             print("\n4. Checking if hello command exists...")
