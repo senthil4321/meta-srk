@@ -14,6 +14,10 @@ import warnings
 
 # Suppress deprecation warnings from Paramiko
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+import warnings
+
+# Suppress deprecation warnings from Paramiko
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class RemoteSerialTester:
     def __init__(self, host, user, port='/dev/ttyUSB0', baudrate=115200, timeout=5):
@@ -58,6 +62,17 @@ class RemoteSerialTester:
                 data = self.channel.recv(1024).decode("utf-8", errors="ignore")
                 self.output_queue.put(data)
             time.sleep(0.1)
+
+    def get_buffer(self):
+        """Get all available data from the output queue"""
+        buffer = ""
+        while not self.output_queue.empty():
+            try:
+                data = self.output_queue.get_nowait()
+                buffer += data
+            except queue.Empty:
+                break
+        return buffer
 
     def disconnect(self):
         """Close SSH connection"""
@@ -128,7 +143,6 @@ class RemoteSerialTester:
 
         if not login_found and not already_logged_in:
             print("ERROR: Neither login prompt nor shell prompt found")
-            print(f"Last received data: {combined_buffer[-500:]}")  # Show last 500 chars
             return False, False
 
         return login_found, already_logged_in
@@ -166,7 +180,6 @@ class RemoteSerialTester:
 
         if "beaglebone-yocto:" not in buffer:
             print("ERROR: Shell prompt not found")
-            print(f"Received data: {buffer}")
             return False
 
         return True
@@ -178,7 +191,6 @@ class RemoteSerialTester:
         which_output = self.read_until("beaglebone-yocto:~$", timeout=10)
         if "hello" not in which_output:
             print("ERROR: hello command not found on target system")
-            print(f"which output: {which_output}")
             return False
         print("✓ hello command found")
         return True
@@ -218,68 +230,139 @@ class RemoteSerialTester:
                 success = False
 
         if success:
-            print("\n🎉 TEST PASSED: All expected output found!")
             return True
         else:
             print("\n❌ TEST FAILED: Some expected output missing")
-            print(f"\nFull output received:\n{output}")
             return False
 
-    def test_login_and_hello(self):
-        """Main test logic"""
-        print("Starting remote serial test for SRK target device...")
-        print("=" * 50)
+import unittest
 
-        if not self.connect():
-            return False
+class TestSerialHello(unittest.TestCase):
+    def setUp(self):
+        self.tester = RemoteSerialTester(
+            host='192.168.1.100',
+            user='pi',
+            port='/dev/ttyUSB0',
+            baudrate=115200,
+            timeout=5
+        )
+        self.assertTrue(self.tester.connect(), "Failed to establish SSH connection")
 
-        try:
-            login_found, already_logged_in = self.wait_for_initial_prompt()
-            if not login_found and not already_logged_in:
-                return False
+    def tearDown(self):
+        self.tester.disconnect()
 
-            if already_logged_in:
-                print("Skipping login steps as system is already logged in")
+    def run_all_tests(self):
+        tests = [
+            ("check_uboot_logs", self.test_00_check_uboot_logs),
+            ("check_kernel_logs", self.test_00_check_kernel_logs),
+            ("check_initramfs_logs", self.test_00_check_initramfs_logs),
+            ("wait_for_initial_prompt", self.test_01_wait_for_initial_prompt),
+            ("perform_login", self.test_02_perform_login),
+            ("check_hello_exists", self.test_03_check_hello_exists),
+            ("run_and_verify_hello", self.test_04_run_and_verify_hello),
+        ]
+        non_blocking = ["check_uboot_logs", "check_kernel_logs", "check_initramfs_logs"]
+        results = []
+        for name, func in tests:
+            print(f"\n➡️ Step: {name}")
+            try:
+                func()
+                results.append((name, True, "OK"))
+                print(f"✅ PASS: {name}")
+            except unittest.SkipTest:
+                results.append((name, True, "SKIPPED"))
+                print(f"⏭️ SKIP: {name}")
+            except Exception as e:
+                results.append((name, False, str(e)))
+                print(f"❌ FAIL: {name} - {e}")
+                if name not in non_blocking:
+                    break  # stop on failure for strict ordering, except for non-blocking tests
+
+        # Print summary
+        print("\n" + "="*80)
+        print("TEST SUMMARY")
+        print("="*80)
+        
+        # Define colored icons
+        green_check = "\033[92m✅\033[0m"
+        red_x = "\033[91m❌\033[0m"
+        yellow_warn = "\033[93m⚠️\033[0m"
+        blue_skip = "\033[94m⏭️\033[0m"
+        
+        # Table header
+        print(f"{'#':<3} | {'Test Name':<30} | {'Status':<20} | {'Message':<40}")
+        print("-" * 97)
+        
+        counter = 1
+        for name, passed, msg in results:
+            if msg == "SKIPPED":
+                status = f"{blue_skip} SKIP"
+            elif passed:
+                status = f"{green_check} PASS"
             else:
-                if not self.perform_login():
-                    return False
+                if name in non_blocking:
+                    status = f"{yellow_warn} NON-BLOCK FAIL"
+                else:
+                    status = f"{red_x} FAIL"
+            
+            # Truncate name and msg if too long
+            name_display = name[:28] + "..." if len(name) > 28 else name
+            msg_display = msg[:38] + "..." if len(msg) > 38 else msg
+            
+            print(f"{counter:<3} | {name_display:<30} | {status:<20} | {msg_display:<40}")
+            counter += 1
+        
+        print("-" * 97)
+        
+        total = len(results)
+        passed_count = sum(1 for _, p, _ in results if p)
+        failed_count = sum(1 for name, p, _ in results if not p and name not in non_blocking)
+        warning_count = sum(1 for name, p, _ in results if not p and name in non_blocking)
+        print(f"\nTotal: {total}, Passed: {passed_count}, Failed: {failed_count}, Warnings: {warning_count}")
 
-            if not self.check_hello_exists():
-                return False
+    def test_00_check_uboot_logs(self):
+        """Test for U-Boot logs in serial output"""
+        buffer = self.tester.get_buffer()
+        assert "U-Boot" in buffer, "U-Boot logs not found in serial output"
 
-            if not self.run_and_verify_hello():
-                return False
+    def test_00_check_kernel_logs(self):
+        """Test for kernel logs in serial output"""
+        buffer = self.tester.get_buffer()
+        assert "Linux version" in buffer, "Kernel logs not found in serial output"
 
-            return True
+    def test_00_check_initramfs_logs(self):
+        """Test for initramfs logs in serial output"""
+        buffer = self.tester.get_buffer()
+        assert "initramfs" in buffer, "Initramfs logs not found in serial output"
 
-        except Exception as e:
-            print(f"ERROR during test: {e}")
-            return False
-        finally:
-            self.disconnect()
+    def test_01_wait_for_initial_prompt(self):
+        """Test waiting for login or shell prompt"""
+        login_found, already_logged_in = self.tester.wait_for_initial_prompt()
+        assert login_found or already_logged_in, "Neither login prompt nor shell prompt detected"
+        self.already_logged_in = already_logged_in
 
+    def test_02_perform_login(self):
+        """Test performing login if not already logged in"""
+        if self.already_logged_in:
+            raise unittest.SkipTest("System is already logged in, skipping login test")
+        success = self.tester.perform_login()
+        assert success, "Login process failed"
 
-def main():
-    parser = argparse.ArgumentParser(description='Test SRK target device via remote SSH serial')
-    parser.add_argument('--host', default='192.168.1.100', help='Remote host IP (default: 192.168.1.100)')
-    parser.add_argument('--user', default='pi', help='SSH username (default: pi)')
-    parser.add_argument('--port', default='/dev/ttyUSB0', help='Serial port on remote host (default: /dev/ttyUSB0)')
-    parser.add_argument('--baudrate', type=int, default=115200, help='Baud rate (default: 115200)')
-    parser.add_argument('--timeout', type=int, default=5, help='Serial timeout in seconds (default: 5)')
+    def test_03_check_hello_exists(self):
+        """Test checking if hello command exists"""
+        success = self.tester.check_hello_exists()
+        assert success, "Hello command not found on the system"
 
-    args = parser.parse_args()
-
-    tester = RemoteSerialTester(
-        host=args.host,
-        user=args.user,
-        port=args.port,
-        baudrate=args.baudrate,
-        timeout=args.timeout
-    )
-
-    success = tester.test_login_and_hello()
-    sys.exit(0 if success else 1)
+    def test_04_run_and_verify_hello(self):
+        """Test running hello command and verifying output"""
+        success = self.tester.run_and_verify_hello()
+        assert success, "Hello command output verification failed"
 
 
 if __name__ == "__main__":
-    main()
+    tester = TestSerialHello()
+    tester.setUp()
+    try:
+        tester.run_all_tests()
+    finally:
+        tester.tearDown()
