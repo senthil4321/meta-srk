@@ -3,13 +3,13 @@
 Serial Test Script for SRK Target Device over Remote SSH
 Connects to remote host and accesses serial device using socat
 
-Version: 1.2.0
+Version: 1.3.0
 Author: SRK Development Team
 Copyright (c) 2025 SRK. All rights reserved.
 License: MIT
 """
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -233,6 +233,9 @@ class TestSerialHello(unittest.TestCase):
                 "Hello, World! 20SEP2025 23:50 !!!"
             ]))[2]),
             ("Check build version", lambda t: (t.send_command("uname -a"), assert_in("Linux", t.read_until("beaglebone-yocto:~$", 10)))[1]),
+            ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output))[1]),
+            ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0)[1]),
+            ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output))[1]),
             ("Check BusyBox version", lambda t: (t.send_command("busybox"), assert_in("BusyBox", t.read_until("beaglebone-yocto:~$", 10)))[1]),
         ]
 

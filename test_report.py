@@ -4,7 +4,7 @@ Test Report Generation Module
 Provides utilities for generating formatted test reports with colored output.
 """
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"

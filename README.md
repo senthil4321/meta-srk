@@ -168,9 +168,86 @@ To overwrite kernel version update the Yocot variable in custom `kernel recipe` 
 ### workflow rootfs encrypted build
 
 ```bash
+```bash
 bitbake core-image-minimal-srk
 06_created_encrypted_image.sh 4
 06_created_encrypted_image.sh 8
 06_created_encrypted_image.sh 10
 05_copy_squashfs.sh -i
+```
+
+## SRK Serial Test Script
+
+A Python-based test automation script for SRK target devices that connects via SSH and performs serial communication testing.
+
+### Version
+1.3.0
+
+### Features
+
+- **Remote Serial Testing**: Connects to target device via SSH and socat for reliable serial communication
+- **Automated Test Suite**: Runs comprehensive tests including login, command execution, and output verification
+- **Colored Report Generation**: Generates formatted test reports with color-coded status indicators
+- **Modular Design**: Separated report generation into a reusable module
+- **Command-line Interface**: Supports saving reports to files and version display
+
+### Usage
+
+#### Basic Usage
+```bash
+python3 test_serial_hello.py
+```
+
+#### Save Report to File
+```bash
+python3 test_serial_hello.py --save-report test_results.txt
+```
+
+#### Show Version
+```bash
+python3 test_serial_hello.py --version
+```
+
+### Test Steps
+
+The script performs the following test steps:
+
+1. **Check U-Boot logs** - Verifies U-Boot boot logs (non-blocking)
+2. **Check kernel logs** - Verifies Linux kernel boot logs (non-blocking)
+3. **Check initramfs logs** - Verifies initramfs boot logs (non-blocking)
+4. **Wait for initial prompt** - Waits for login or shell prompt
+5. **Perform login** - Logs into the system if not already logged in
+6. **Check hello exists** - Verifies hello command is available
+7. **Run and verify hello** - Executes hello command and verifies output
+8. **Check build version** - Verifies system build information
+9. **Check build time** - Displays kernel build timestamp from `uname -v`
+10. **Check system timestamp** - Shows system build time from `/etc/timestamp` or file modification dates
+11. **Check system uptime** - Displays how long the system has been running since last boot
+12. **Check BusyBox version** - Verifies BusyBox installation
+
+### Build Time Information
+
+The test script now includes comprehensive build time checking:
+
+- **Kernel Build Time**: Shows when the Linux kernel was compiled
+- **System Timestamp**: Displays the build timestamp from system files
+- **System Uptime**: Indicates how long the system has been running
+- **Build Version**: Shows complete system version information
+
+This information is crucial for:
+- Verifying the freshness of the build
+- Troubleshooting timing-related issues
+- Confirming the system is running the expected version
+- Performance analysis and optimization
+
+### Requirements
+
+- Python 3.8+
+- paramiko
+- SSH access to target device
+- socat installed on target device
+
+### Copyright
+
+Copyright (c) 2025 SRK. All rights reserved.
 ```
