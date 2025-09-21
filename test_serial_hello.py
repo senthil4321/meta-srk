@@ -9,7 +9,7 @@ Copyright (c) 2025 SRK. All rights reserved.
 License: MIT
 """
 
-__version__ = "1.4.0"
+__version__ = "1.6.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -237,6 +237,8 @@ class TestSerialHello(unittest.TestCase):
             ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, (output.strip().split('\n')[-1] if output.strip() else "Unknown"))[3]),
             ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), (output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown"))[3]),
             ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), (output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown"))[3]),
+            ("Check encryption support", lambda t: (t.send_command("which cryptsetup"), output1 := t.read_until("beaglebone-yocto:~$", 10), t.send_command("ls /usr/bin/srk-init 2>/dev/null"), output2 := t.read_until("beaglebone-yocto:~$", 10), True, ("Yes" if "cryptsetup" in output1 or "srk-init" in output2 else "No"))[4]),
+            ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("systemd", output) or assert_in("init", output), ("systemd" if "systemd" in output else "busybox"))[3]),
         ]
 
         non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"]
