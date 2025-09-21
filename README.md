@@ -12,8 +12,38 @@ bitbake-layers show-layers
 
 ## Important Variables
 
+```ba### Kernel Modules```
+```
+
+T```
+
+TODO
+
 ```bash
-PACKAGE_INSTALL
+### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
+```
+
+To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
+# LINUX_VERSION_EXTENSION += "-srk-trial20"bash
+### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
+```
+
+To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
+# LINUX_VERSION_EXTENSION += "-srk-trial20"``bash
+### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
+```bash
+sunrpc - Used by NFS
+xfrm - used by IPSec
+```
+
+TODO
+
+```bash
+### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
+```
+
+To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
+# LINUX_VERSION_EXTENSION += "-srk-trial20"
 IMAGE_INSTALL
 IMAGE_FSTYPES
 IMAGE_FEATURES
@@ -102,6 +132,42 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 2. Run bitbake `bitbake core-image-minimal-srk` to compile Kernel with initRamFS included
 3. Copy `zImage` using script `04_copy_zImage.sh`
 4. Deply squashfs based ROOTS to `nfs`
+
+## Initramfs Image Recipes
+
+The meta-srk layer provides several initramfs image recipes optimized for different use cases:
+
+### core-image-tiny-initramfs-srk-2 (systemd-based)
+
+* **Init System**: systemd
+* **Core Packages**: systemd, busybox, shadow, nfs-utils
+* **Features**: systemd-serialgetty, kernel-modules
+* **Use Case**: Traditional Linux initramfs with service management and NFS support
+* **Size**: Larger footprint due to full systemd inclusion
+
+### core-image-tiny-initramfs-srk-3 (busybox-based)
+
+* **Init System**: busybox (sysvinit)
+* **Core Packages**: busybox, shadow, cryptsetup, util-linux-mount, srk-init
+* **Features**: Encryption support via cryptsetup, custom srk-init for encrypted boot
+* **Use Case**: Minimal initramfs for encrypted SquashFS root filesystem booting
+* **Size**: Smaller footprint, optimized for embedded systems
+
+### Key Differences
+
+| Feature | srk-2 (systemd) | srk-3 (busybox) |
+|---------|----------------|-----------------|
+| **Init Manager** | systemd | busybox sysvinit |
+| **Encryption** | ❌ None | ✅ cryptsetup |
+| **SRK Integration** | ❌ None | ✅ srk-init |
+| **NFS Support** | ✅ Built-in | ❌ None |
+| **Services** | systemd services | Minimal busybox |
+| **Footprint** | Larger | Smaller |
+
+### Recommendation
+
+* **Use srk-2**: For general initramfs testing, NFS booting, or traditional Linux workflows
+* **Use srk-3**: For encrypted root filesystem workflows with SquashFS images
 
 ## Trial 3.1
 
