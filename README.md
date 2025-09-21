@@ -168,7 +168,6 @@ To overwrite kernel version update the Yocot variable in custom `kernel recipe` 
 ### workflow rootfs encrypted build
 
 ```bash
-```bash
 bitbake core-image-minimal-srk
 06_created_encrypted_image.sh 4
 06_created_encrypted_image.sh 8
@@ -252,4 +251,4 @@ This information is crucial for:
 ### Copyright
 
 Copyright (c) 2025 SRK. All rights reserved.
-```
+
