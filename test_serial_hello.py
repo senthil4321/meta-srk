@@ -10,6 +10,10 @@ import argparse
 import paramiko
 import threading
 import queue
+import warnings
+
+# Suppress deprecation warnings from Paramiko
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class RemoteSerialTester:
     def __init__(self, host, user, port='/dev/ttyUSB0', baudrate=115200, timeout=5):
