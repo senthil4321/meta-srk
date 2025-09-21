@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 """
 Serial Test Script for SRK Target Device over Remote SSH
-Connects to remote host and accesses serial device /dev/ttyUSB0
-Version: 1.0.0
-Author: senthil4321
-"""
-
-import time
-import sys
-import argparse
-import paramiko
-import threading
-import queue
-
-# Version information
-__version__ = "1.0.0"
-__author__ = "senthil4321"
-__version__ = "1.0.0"
-__author__ = "senthil4321"prom                  print("\n8. Verifying output...")
+Connects to remote host an            # Step 3: Wait for password             # Step 3: Wait for password prompt or shell prompt
+            print("3. Waiting for password prompt or shell prompt...")
+            password_or_shell = self.read_until("Password:", timeout=5)
+            if "Password:" in password_or_shell:
+                print("✓ Password prompt detected")
+                self.send_command("")  # Empty password for srk
+                # Wait for shell prompt after password
+                shell_prompt = self.read_until("#", timeout=10)
+                if "#" not in shell_prompt and "$" not in shell_prompt:
+                    print("ERROR: Shell prompt not found after password")
+                    return False
+            elif "#" in password_or_shell or "$" in password_or_shell:
+                print("✓ Shell prompt detected (no password required)")
+            else:
+                print("Note: No password prompt found, continuing...")
+                # Try to wait for shell prompt anyway
+                shell_prompt = self.read_until("#", timeout=10)
+                if "#" not in shell_prompt and "$" not in shell_prompt:
+                    print("ERROR: Shell prompt not found")
+                    return Falseprom                  print("\n8. Verifying output...")
             success = True
             for line in expected_lines:
                 if line in output:
@@ -136,8 +139,8 @@ class RemoteSerialTester:
             time.sleep(2)  # Increased delay to give command more time to execute
 
     def test_login_and_hello(self):
-        # """Main test logic (same as your original, adapted)"""
-        print(f"Starting remote serial test for SRK target device... (v{__version__})")
+        """Main test logic (same as your original, adapted)"""
+        print("Starting remote serial test for SRK target device...")
         print("=" * 50)
 
         if not self.connect():
@@ -182,25 +185,21 @@ class RemoteSerialTester:
             print("\n2. Sending username 'srk'...")
             self.send_command("srk")
 
-            # Step 3: Wait for password prompt
-            print("3. Waiting for password prompt...")
-            password_prompt = self.read_until("Password:")
-            if "Password:" in password_prompt:
-                print("✓ Password prompt detected")
-                self.send_command("")  # Empty password
-            else:
-                print("Note: No password prompt found, continuing...")
+            # Step 3: Send Enter to complete login (no password required)
+            print("3. Sending Enter to complete login...")
+            self.send_command("")  # Send just Enter
 
             # Step 4: Wait for shell prompt
             print("4. Waiting for shell prompt...")
-            shell_prompt = self.read_until("$", timeout=30)  # Increased timeout to 30 seconds
-            if "$" not in shell_prompt and "#" not in shell_prompt:
+            shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)  # Look for user prompt
+            if "beaglebone-yocto:~$" not in shell_prompt:
                 print("ERROR: Shell prompt not found")
+                print(f"Received data: {shell_prompt}")
                 return False
             print("✓ Shell prompt detected")
 
-            # Step 4: Check if hello command exists
-            print("\n4. Checking if hello command exists...")
+            # Step 5: Check if hello command exists
+            print("\n5. Checking if hello command exists...")
             self.send_command("which hello")
             which_output = self.read_until("#", timeout=10)
             if "hello" not in which_output:
@@ -209,12 +208,12 @@ class RemoteSerialTester:
                 return False
             print("✓ hello command found")
 
-            # Step 5: Run hello command
-            print("5. Running 'hello' command...")
+            # Step 6: Run hello command
+            print("6. Running 'hello' command...")
             self.send_command("hello")
 
-            # Step 6: Capture and verify output
-            print("6. Capturing hello command output...")
+            # Step 7: Capture and verify output
+            print("7. Capturing hello command output...")
             # Wait a bit for command to execute and collect output
             time.sleep(2)
             output = ""
@@ -237,7 +236,7 @@ class RemoteSerialTester:
                 "Hello, World! 20SEP2025 23:50 !!!"
             ]
 
-            print("\n7. Verifying output...")
+            print("\n8. Verifying output...")
             success = True
             for line in expected_lines:
                 if line in output:
@@ -268,7 +267,6 @@ def main():
     parser.add_argument('--port', default='/dev/ttyUSB0', help='Serial port on remote host (default: /dev/ttyUSB0)')
     parser.add_argument('--baudrate', type=int, default=115200, help='Baud rate (default: 115200)')
     parser.add_argument('--timeout', type=int, default=5, help='Serial timeout in seconds (default: 5)')
-    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
 
     args = parser.parse_args()
 
