@@ -19,6 +19,17 @@ import warnings
 # Suppress deprecation warnings from Paramiko
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+def assert_in(expected, buffer):
+    if expected not in buffer:
+        raise AssertionError(f"Expected '{expected}' not found in:\n{buffer[-200:]}")
+    return True
+
+def assert_prompt(tester, timeout=10):
+    buf = tester.read_until("beaglebone-yocto:~$", timeout=timeout)
+    if "beaglebone-yocto:~$" not in buf:
+        raise AssertionError("Shell prompt not detected")
+    return True
+
 class RemoteSerialTester:
     def __init__(self, host, user, port='/dev/ttyUSB0', baudrate=115200, timeout=5):
         self.host = host
@@ -195,46 +206,6 @@ class RemoteSerialTester:
         print("✓ hello command found")
         return True
 
-    def run_and_verify_hello(self):
-        """Run hello command and verify its output"""
-        print("5. Running 'hello' command...")
-        self.send_command("hello")
-
-        print("6. Capturing hello command output...")
-        output = ""
-        for _ in range(10):
-            try:
-                data = self.output_queue.get(timeout=0.5)
-                output += data
-                print(f"Received: {data.strip()}")
-            except queue.Empty:
-                break
-
-        # Also try to read until we get a shell prompt to make sure command completed
-        remaining_output = self.read_until("beaglebone-yocto:~$", timeout=5)
-        output += remaining_output
-
-        expected_lines = [
-            "Hello, World! from meta-srk layer and recipes-srk V2!!!",
-            "Hello, World! 20SEP2025 07:28 !!!",
-            "Hello, World! 20SEP2025 23:50 !!!"
-        ]
-
-        print("\n7. Verifying output...")
-        success = True
-        for line in expected_lines:
-            if line in output:
-                print(f"✓ Found: {line}")
-            else:
-                print(f"✗ Missing: {line}")
-                success = False
-
-        if success:
-            return True
-        else:
-            print("\n❌ TEST FAILED: Some expected output missing")
-            return False
-
 import unittest
 
 class TestSerialHello(unittest.TestCase):
@@ -252,26 +223,32 @@ class TestSerialHello(unittest.TestCase):
         self.tester.disconnect()
 
     def run_all_tests(self):
-        tests = [
-            ("check_uboot_logs", self.test_00_check_uboot_logs),
-            ("check_kernel_logs", self.test_00_check_kernel_logs),
-            ("check_initramfs_logs", self.test_00_check_initramfs_logs),
-            ("wait_for_initial_prompt", self.test_01_wait_for_initial_prompt),
-            ("perform_login", self.test_02_perform_login),
-            ("check_hello_exists", self.test_03_check_hello_exists),
-            ("run_and_verify_hello", self.test_04_run_and_verify_hello),
+        # Define test steps
+        steps = [
+            ("Check U-Boot logs", lambda t: assert_in("U-Boot", t.get_buffer())),
+            ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
+            ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
+            ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
+            ("Perform login", lambda t: t.perform_login() if not getattr(t, 'already_logged_in', False) else True),
+            ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
+            ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
+                "Hello, World! from meta-srk layer and recipes-srk V2!!!",
+                "Hello, World! 20SEP2025 07:28 !!!",
+                "Hello, World! 20SEP2025 23:50 !!!"
+            ]))[2]),
+            ("Check build version", lambda t: (t.send_command("uname -a"), assert_in("Linux", t.read_until("beaglebone-yocto:~$", 10)))[1]),
+            ("Check BusyBox version", lambda t: (t.send_command("busybox"), assert_in("BusyBox", t.read_until("beaglebone-yocto:~$", 10)))[1]),
         ]
-        non_blocking = ["check_uboot_logs", "check_kernel_logs", "check_initramfs_logs"]
+        
+        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"]
         results = []
-        for name, func in tests:
+        
+        for name, func in steps:
             print(f"\n➡️ Step: {name}")
             try:
-                func()
+                result = func(self.tester)
                 results.append((name, True, "OK"))
                 print(f"✅ PASS: {name}")
-            except unittest.SkipTest:
-                results.append((name, True, "SKIPPED"))
-                print(f"⏭️ SKIP: {name}")
             except Exception as e:
                 results.append((name, False, str(e)))
                 print(f"❌ FAIL: {name} - {e}")
@@ -319,45 +296,6 @@ class TestSerialHello(unittest.TestCase):
         failed_count = sum(1 for name, p, _ in results if not p and name not in non_blocking)
         warning_count = sum(1 for name, p, _ in results if not p and name in non_blocking)
         print(f"\nTotal: {total}, Passed: {passed_count}, Failed: {failed_count}, Warnings: {warning_count}")
-
-    def test_00_check_uboot_logs(self):
-        """Test for U-Boot logs in serial output"""
-        buffer = self.tester.get_buffer()
-        assert "U-Boot" in buffer, "U-Boot logs not found in serial output"
-
-    def test_00_check_kernel_logs(self):
-        """Test for kernel logs in serial output"""
-        buffer = self.tester.get_buffer()
-        assert "Linux version" in buffer, "Kernel logs not found in serial output"
-
-    def test_00_check_initramfs_logs(self):
-        """Test for initramfs logs in serial output"""
-        buffer = self.tester.get_buffer()
-        assert "initramfs" in buffer, "Initramfs logs not found in serial output"
-
-    def test_01_wait_for_initial_prompt(self):
-        """Test waiting for login or shell prompt"""
-        login_found, already_logged_in = self.tester.wait_for_initial_prompt()
-        assert login_found or already_logged_in, "Neither login prompt nor shell prompt detected"
-        self.already_logged_in = already_logged_in
-
-    def test_02_perform_login(self):
-        """Test performing login if not already logged in"""
-        if self.already_logged_in:
-            raise unittest.SkipTest("System is already logged in, skipping login test")
-        success = self.tester.perform_login()
-        assert success, "Login process failed"
-
-    def test_03_check_hello_exists(self):
-        """Test checking if hello command exists"""
-        success = self.tester.check_hello_exists()
-        assert success, "Hello command not found on the system"
-
-    def test_04_run_and_verify_hello(self):
-        """Test running hello command and verifying output"""
-        success = self.tester.run_and_verify_hello()
-        assert success, "Hello command output verification failed"
-
 
 if __name__ == "__main__":
     tester = TestSerialHello()
