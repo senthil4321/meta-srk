@@ -183,14 +183,28 @@ class RemoteSerialTester:
 
             # Step 2: Send username
             print("\n2. Sending username 'srk'...")
-            self.send_command("srk")
+            if self.channel:
+                self.channel.send("srk\n")
+                print("Sent: srk")
+                time.sleep(1)
 
             # Step 3: Send Enter to complete login (no password required)
             print("3. Sending Enter to complete login...")
-            self.send_command("")  # Send just Enter
+            if self.channel:
+                self.channel.send("\n")
+                print("Sent: [Enter]")
+                time.sleep(2)
 
             # Step 4: Wait for shell prompt
             print("4. Waiting for shell prompt...")
+            # Read some data to see what the device responds with
+            time.sleep(1)
+            try:
+                initial_response = self.output_queue.get(timeout=2.0)
+                print(f"Initial response after login: '{initial_response.strip()}'")
+            except queue.Empty:
+                print("No initial response received")
+
             shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)  # Look for user prompt
             if "beaglebone-yocto:~$" not in shell_prompt:
                 print("ERROR: Shell prompt not found")
@@ -201,7 +215,7 @@ class RemoteSerialTester:
             # Step 5: Check if hello command exists
             print("\n5. Checking if hello command exists...")
             self.send_command("which hello")
-            which_output = self.read_until("#", timeout=10)
+            which_output = self.read_until("beaglebone-yocto:~$", timeout=10)
             if "hello" not in which_output:
                 print("ERROR: hello command not found on target system")
                 print(f"which output: {which_output}")
@@ -227,7 +241,7 @@ class RemoteSerialTester:
                     break
 
             # Also try to read until we get a shell prompt to make sure command completed
-            remaining_output = self.read_until("#", timeout=5)
+            remaining_output = self.read_until("beaglebone-yocto:~$", timeout=5)
             output += remaining_output
 
             expected_lines = [
