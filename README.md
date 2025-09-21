@@ -133,6 +133,18 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 3. Copy `zImage` using script `04_copy_zImage.sh`
 4. Deply squashfs based ROOTS to `nfs`
 
+### Workflow - initramfs
+
+1. Run bitbake `bitbake core-image-tiny-initramfs-srk-3` to compile initRamFS Image with cryptsetup.
+2. Run bitbake `bitbake core-image-minimal-squashfs-srk` to compile rootfs
+3. Run `106_created_encrypted_image.sh 4`
+4. Run `06_created_encrypted_image.sh 8`
+5. Run `06_created_encrypted_image.sh 10`
+6. Run `03_copy_initramfs.sh 3`
+7. Run `05_copy_squashfs.sh -i -k` -> note order is important, as command 6 deletes entire nfs in the server.
+8. Copy `zImage` using script `04_copy_zImage.sh`
+`
+
 ## Initramfs Image Recipes
 
 The meta-srk layer provides several initramfs image recipes optimized for different use cases:
