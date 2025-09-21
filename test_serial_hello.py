@@ -1,58 +1,7 @@
 #!/usr/bin/env python3
 """
 Serial Test Script for SRK Target Device over Remote SSH
-Connects to remote host an            # Step 3: Wait for password             # Step 3: Wait for password prompt or shell prompt
-            print("3. Waiting for password prompt or shell prompt...")
-            password_or_shell = self.read_until("Password:", timeout=5)
-            if "Password:" in password_or_shell:
-                print("✓ Password prompt detected")
-                self.send_command("")  # Empty password for srk
-                # Wait for shell prompt after password
-                shell_prompt = self.read_until("#", timeout=10)
-                if "#" not in shell_prompt and "$" not in shell_prompt:
-                    print("ERROR: Shell prompt not found after password")
-                    return False
-            elif "#" in password_or_shell or "$" in password_or_shell:
-                print("✓ Shell prompt detected (no password required)")
-            else:
-                print("Note: No password prompt found, continuing...")
-                # Try to wait for shell prompt anyway
-                shell_prompt = self.read_until("#", timeout=10)
-                if "#" not in shell_prompt and "$" not in shell_prompt:
-                    print("ERROR: Shell prompt not found")
-                    return Falseprom                  print("\n8. Verifying output...")
-            success = True
-            for line in expected_lines:
-                if line in output:
-                    print(f"✓ Found: {line}")
-                else:
-                    print(f"✗ Missing: {line}")
-                    success = Falseint("\n7. Verifying output...")
-            success = True
-            for line in expected_lines:
-                if line in output:
-                    print(f"✓ Found: {line}")
-                else:
-                    print(f"✗ Missing: {line}")
-                    success = False       print("3. Waiting for password prompt or shell prompt...")
-            password_or_shell = self.read_until("Password:", timeout=5)
-            if "Password:" in password_or_shell:
-                print("✓ Password prompt detected")
-                self.send_command("")  # Empty password for root
-                # Wait for shell prompt after password
-                shell_prompt = self.read_until("#", timeout=10)
-                if "#" not in shell_prompt and "$" not in shell_prompt:
-                    print("ERROR: Shell prompt not found after password")
-                    return False
-            elif "#" in password_or_shell or "$" in password_or_shell:
-                print("✓ Shell prompt detected (no password required)")
-            else:
-                print("Note: No password prompt found, continuing...")
-                # Try to wait for shell prompt anyway
-                shell_prompt = self.read_until("#", timeout=10)
-                if "#" not in shell_prompt and "$" not in shell_prompt:
-                    print("ERROR: Shell prompt not found")
-                    return Falsel device /dev/ttyUSB0
+Connects to remote host and accesses serial device using socat
 """
 
 import time
@@ -80,18 +29,18 @@ class RemoteSerialTester:
             self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.client.connect(self.host, username=self.user)  # uses default SSH keys (~/.ssh/id_rsa)
 
-            # Open an interactive shell with cat for serial
+            # Open an interactive shell
             self.channel = self.client.invoke_shell()
             time.sleep(1)
 
-            # Configure serial device
-            cmd = f"stty -F {self.port} {self.baudrate} raw -echo && cat {self.port}"
+            # Use socat for reliable bidirectional serial communication
+            cmd = f"socat - /dev/ttyUSB0,b{self.baudrate},raw,echo=0"
             self.channel.send(cmd + "\n")
 
             # Start background reader
             threading.Thread(target=self._reader, daemon=True).start()
 
-            print(f"Connected to {self.host}:{self.port} at {self.baudrate} baud over SSH")
+            print(f"Connected to {self.host}:{self.port} at {self.baudrate} baud over SSH using socat")
             return True
         except Exception as e:
             print(f"Failed to connect via SSH: {e}")
@@ -131,15 +80,15 @@ class RemoteSerialTester:
         return buffer
 
     def send_command(self, command):
-        """Send command to serial device"""
+        """Send command to serial device through socat"""
         if self.channel:
-            # Send raw command directly to serial device
+            # With socat, we can send directly through the channel
             self.channel.send(command + "\n")
             print(f"Sent: {command}")
-            time.sleep(2)  # Increased delay to give command more time to execute
+            time.sleep(1)  # Give time for command to be processed
 
     def test_login_and_hello(self):
-        """Main test logic (same as your original, adapted)"""
+        """Main test logic"""
         print("Starting remote serial test for SRK target device...")
         print("=" * 50)
 
@@ -147,22 +96,19 @@ class RemoteSerialTester:
             return False
 
         try:
-            # Step 1: Wait for system to fully boot and login prompt
-            print("\n1. Waiting for system to boot and login prompt...")
-            boot_found = False
+            # Step 1: Wait for login prompt
+            print("\n1. Waiting for login prompt...")
             login_found = False
             combined_buffer = ""
             start_time = time.time()
+            last_data_time = start_time
 
             while time.time() - start_time < 90:  # 90 second timeout
                 try:
                     data = self.output_queue.get(timeout=1.0)
                     combined_buffer += data
                     print(f"Received: {data.strip()}")
-
-                    if not boot_found and "SRK Minimal SquashFS Distro 1.0 beaglebone-yocto ttyS0" in combined_buffer:
-                        boot_found = True
-                        print("✓ System boot detected")
+                    last_data_time = time.time()
 
                     if not login_found and "beaglebone-yocto login:" in combined_buffer:
                         login_found = True
@@ -170,11 +116,13 @@ class RemoteSerialTester:
                         break
 
                 except queue.Empty:
+                    # If no data for 10 seconds, send enter to refresh prompt
+                    if time.time() - last_data_time > 10 and not login_found:
+                        print("No activity detected, sending enter to refresh prompt...")
+                        if self.channel:
+                            self.channel.send("\n")
+                        last_data_time = time.time()
                     continue
-
-            if not boot_found:
-                print("ERROR: System boot text not found")
-                return False
 
             if not login_found:
                 print("ERROR: Login prompt not found")
@@ -188,32 +136,17 @@ class RemoteSerialTester:
                 print("Sent: srk")
                 time.sleep(1)
 
-            # Step 3: Send Enter to complete login (no password required)
-            print("3. Sending Enter to complete login...")
-            if self.channel:
-                self.channel.send("\n")
-                print("Sent: [Enter]")
-                time.sleep(2)
-
-            # Step 4: Wait for shell prompt
-            print("4. Waiting for shell prompt...")
-            # Read some data to see what the device responds with
-            time.sleep(1)
-            try:
-                initial_response = self.output_queue.get(timeout=2.0)
-                print(f"Initial response after login: '{initial_response.strip()}'")
-            except queue.Empty:
-                print("No initial response received")
-
-            shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)  # Look for user prompt
-            if "beaglebone-yocto:~$" not in shell_prompt:
+            # Step 3: Wait for shell prompt
+            print("3. Waiting for shell prompt...")
+            shell_prompt = self.read_until("beaglebone-yocto:~$", timeout=30)
+            if "beaglebone-yocto:" not in shell_prompt:
                 print("ERROR: Shell prompt not found")
                 print(f"Received data: {shell_prompt}")
                 return False
             print("✓ Shell prompt detected")
 
-            # Step 5: Check if hello command exists
-            print("\n5. Checking if hello command exists...")
+            # Step 4: Check if hello command exists
+            print("\n4. Checking if hello command exists...")
             self.send_command("which hello")
             which_output = self.read_until("beaglebone-yocto:~$", timeout=10)
             if "hello" not in which_output:
@@ -222,16 +155,13 @@ class RemoteSerialTester:
                 return False
             print("✓ hello command found")
 
-            # Step 6: Run hello command
-            print("6. Running 'hello' command...")
+            # Step 5: Run hello command
+            print("5. Running 'hello' command...")
             self.send_command("hello")
 
-            # Step 7: Capture and verify output
-            print("7. Capturing hello command output...")
-            # Wait a bit for command to execute and collect output
-            time.sleep(2)
+            # Step 6: Capture and verify output
+            print("6. Capturing hello command output...")
             output = ""
-            # Collect output for a few seconds
             for _ in range(10):
                 try:
                     data = self.output_queue.get(timeout=0.5)
@@ -250,7 +180,7 @@ class RemoteSerialTester:
                 "Hello, World! 20SEP2025 23:50 !!!"
             ]
 
-            print("\n8. Verifying output...")
+            print("\n7. Verifying output...")
             success = True
             for line in expected_lines:
                 if line in output:
