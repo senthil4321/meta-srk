@@ -1,12 +1,11 @@
-SUMMARY = "Ultra-minimal initramfs (no pivot, no extra init scripts)"
-DESCRIPTION = "BusyBox-only musl initramfs that stops at an interactive shell. (lz4 moved to srk-6 for isolated comparison)"
+SUMMARY = "Ultra-minimal initramfs (srk-6: BusyBox trimmed + lz4)"
+DESCRIPTION = "BusyBox-only musl initramfs that stops at an interactive shell. Identical to srk-5 but reintroduces lz4 compression to measure impact separately."
 LICENSE = "MIT"
 
-IMAGE_FSTYPES = "cpio.gz cpio.xz"
+IMAGE_FSTYPES = "cpio.gz cpio.xz cpio.lz4"
 
 inherit core-image
 
-# Only BusyBox (trimmed via bbappend) + minimal passwd/group
 IMAGE_INSTALL = "busybox"
 IMAGE_FEATURES = ""
 SPDX_CREATE = "0"
@@ -46,11 +45,10 @@ python create_simple_init () {
     import os, stat
     rootfs = d.getVar('IMAGE_ROOTFS')
     init_path = os.path.join(rootfs, 'init')
-    script = "#!/bin/sh\n\nmount -t proc proc /proc 2>/dev/null || true\nmount -t sysfs sysfs /sys 2>/dev/null || true\necho 'Initramfs (srk-5) shell. No pivot. (No lz4 variant) Press Ctrl-D to reboot.'\nexec /bin/sh\n"
+    script = "#!/bin/sh\n\nmount -t proc proc /proc 2>/dev/null || true\nmount -t sysfs sysfs /sys 2>/dev/null || true\necho 'Initramfs (srk-6) shell. No pivot. (lz4 enabled) Press Ctrl-D to reboot.'\nexec /bin/sh\n"
     with open(init_path, 'w') as f:
         f.write(script)
     os.chmod(init_path, 0o755)
 }
 
-# Avoid auto-switch_root by not installing systemd/sysvinit skeletons beyond busybox
 VIRTUAL-RUNTIME_init_manager = "busybox"

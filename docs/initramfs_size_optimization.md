@@ -27,7 +27,8 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 7 | Replace extrausers with custom passwd/shadow; exclude shadow; disable locales | shadow family, locales removed | 13M | 6.6M | 26,629,120 | -5,227,520 | Successful removal of shadow + locale data |
 | 8 | Switch libc glibc -> musl | (no feature change) | 13M | 6.6M | 26,633,216 | +4,096 | libc swap yielded negligible net change; further savings require dropping cryptsetup/devmapper stack |
 | 9 | Drop cryptsetup + util-linux-mount; passwordless | (no feature change) | 1.7M | 1.1M | 3,536,896 | -23,096,320 | Massive reduction: removal of cryptsetup, its deps (openssl, libdevmapper, argon2), mount util; BusyBox only |
-| 10 | srk-5: Trim BusyBox (partial), add lz4, no init pivot | (no feature change) | 1.7M | 1.1M | 3,405,312 | -131,584 | Introduced cpio.lz4 (1.9M); minor uncompressed drop from trimming applets |
+| 10 | srk-5: Trim BusyBox (partial), no init pivot (lz4 removed for isolation) | (no feature change) | 1.7M | 1.1M | 3,405,312 | -131,584 | lz4 moved to Step 11 to isolate compression impact; minor uncompressed drop from trimming applets |
+| 11 | srk-6: Reintroduce lz4 (same content as srk-5) | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | Adds cpio.lz4 (1.9M); gz 1,698,462 B vs 1,698,467 B (srk-5), xz 1,089,252 B vs 1,089,188 B (insignificant variance) |
 
 ## Current Image State
 
@@ -35,7 +36,7 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 - Latest minimal variant (srk-5): BusyBox only, passwordless root/srk, simple `/init` shell (no pivot / mount of real rootfs).
 - Prior variants kept for comparison: srk-4-nocrypt (no cryptsetup) and srk-3 (with cryptsetup).
 - DISTRO_FEATURES (observed minimal): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
-- Compression (srk-5): gzip 1.7M, xz 1.1M, lz4 1.9M. (xz smallest, lz4 fastest expected runtime decompression.)
+- Compression (srk-5): gzip 1.7M, xz 1.1M. (lz4 measured separately in srk-6 ~1.9M expected; xz smallest, lz4 fastest expected runtime decompression.)
 - Net savings dominated by dropping cryptsetup stack; BusyBox trimming yielded modest additional ~130 KB uncompressed.
 
 ## Key Savings Sources
