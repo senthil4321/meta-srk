@@ -30,6 +30,7 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 10 | srk-5: Trim BusyBox (partial), no init pivot (lz4 removed for isolation) | (no feature change) | 1.7M | 1.1M | 3,405,312 | -131,584 | lz4 moved to Step 11 to isolate compression impact; minor uncompressed drop from trimming applets |
 | 11 | srk-6: Reintroduce lz4 (same content as srk-5) | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | Adds cpio.lz4 (1.9M); gz 1,698,462 B vs 1,698,467 B (srk-5), xz 1,089,252 B vs 1,089,188 B (insignificant variance) |
 | 12 | srk-7-sizeopt: Global size CFLAGS/LDFLAGS (-Os, gc-sections) | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | No measurable content reduction (same uncompressed bytes); compression variance only (gz 1,698,465 B, xz 1,089,416 B, lz4 1,954,348 B) |
+| 13 | srk-8-nonet: Remove BusyBox networking applets | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | No change: networking applets already pruned or negligible; compressed sizes within variance (gz 1,698,463 B, xz 1,089,248 B, lz4 1,954,348 B) |
 
 ## Current Image State
 

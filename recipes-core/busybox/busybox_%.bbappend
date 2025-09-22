@@ -9,6 +9,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/busybox-config:"
 
 SRC_URI:append = " file://defconfig-fragment.cfg"
 
+# For srk-8 (no networking) include additional fragment
+SRC_URI:append:pn-busybox += " ${@' file://defconfig-fragment-nonet.cfg' if d.getVar('IMAGE_BASENAME') == 'core-image-tiny-initramfs-srk-8-nonet' else ''}"
+
 do_configure:append() {
     if [ -f ${WORKDIR}/defconfig-fragment.cfg ]; then
         # Apply fragment: disable listed symbols
@@ -20,5 +23,16 @@ do_configure:append() {
                 echo "$line" >> .config
             fi
         done < ${WORKDIR}/defconfig-fragment.cfg
+    fi
+
+    # Apply non-network fragment if present
+    if [ -f ${WORKDIR}/defconfig-fragment-nonet.cfg ]; then
+        while IFS= read -r line; do
+            opt=$(echo "$line" | sed -n 's/^# \(CONFIG_[A-Z0-9_]*\) is not set/\1/p')
+            if [ -n "$opt" ]; then
+                sed -i "/^$opt=/d" .config || true
+                echo "$line" >> .config
+            fi
+        done < ${WORKDIR}/defconfig-fragment-nonet.cfg
     fi
 }
