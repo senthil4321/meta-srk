@@ -1,8 +1,8 @@
 # core-image-tiny-initramfs-srk-3 Composition
 
-This document visualizes what *Poky base* (via `core-image-tiny-initramfs.bb`) brings in and what the `srk-3` customization (as expressed in `local.conf`) removes or overrides for the `core-image-tiny-initramfs-srk-3` build.
+This document visualizes what *Poky base* (via `core-image-tiny-initramfs.bb`) brings in and what the `srk-3` customization (as expressed in `local.conf`) removes or overrides for the `core-image-tiny-initramfs` build.
 
-> NOTE: There is currently no dedicated `.bb` image recipe named `core-image-tiny-initramfs-srk-3` in the layer. The customization is driven from `local.conf` (see the `# srk-3` section). If you later create a dedicated image recipe, you can migrate the deltas there.
+> NOTE: There is currently no dedicated `.bb` image recipe named `core-image-tiny-initramfs-srk-3` in the layer. The customization is driven from `local.conf` (see the `# srk-3` section). If you later formalize a recipe, update this document accordingly.
 
 ## 1. Base Reference: `core-image-tiny-initramfs.bb`
 
@@ -37,16 +37,31 @@ From `local.conf` (comment block `# srk-3`):
 ## 3. High-Level Flow Diagram
 
 ```mermaid
-graph TD
-  A[Poky Base Layers<br/>meta + meta-poky + meta-oe] --> B[core-image-tiny-initramfs.bb]
-  B -->|PACKAGE_INSTALL| C[Base Packages<br/>initramfs-live-boot-tiny<br/>packagegroup-core-boot<br/>dropbear<br/>busybox / mdev<br/>base-passwd]
-  B --> D[Initramfs Artifacts<br/>INITRAMFS_FSTYPES]
-  subgraph SRK-3 Overrides (local.conf)
-    E[Unset virtual/kernel]
-    F[Unset virtual/bootloader]
-    G[Future (optional)<br/>remove kernel & bootloader in IMAGE_INSTALL]
+flowchart TD
+  subgraph PokyBase ["Poky Base Layers"]
+    A1["meta"]
+    A2["meta-poky"]
+    A3["meta-oe"]
   end
-  C --> H[Effective Minimal Rootfs]
+
+  PokyBase --> B["core-image-tiny-initramfs.bb"]
+  B -->|PACKAGE_INSTALL| C["Base Packages
+initramfs-live-boot-tiny
+packagegroup-core-boot
+dropbear
+busybox / mdev
+base-passwd"]
+  B --> D["Initramfs Artifacts
+INITRAMFS_FSTYPES"]
+
+  subgraph SRK3Overrides ["SRK-3 Overrides (local.conf)"]
+    E["Unset virtual/kernel"]
+    F["Unset virtual/bootloader"]
+    G["Future (optional):
+remove kernel & bootloader in IMAGE_INSTALL"]
+  end
+
+  C --> H["Effective Minimal Rootfs"]
   E --> H
   F --> H
   G --> H
@@ -66,7 +81,7 @@ graph TD
 
 ## 5. Risks / Considerations
 
-- Clearing `PREFERRED_PROVIDER_virtual/kernel` & `virtual/bootloader` means the build won’t produce a deployable boot stack; ensure you have an external kernel + boot artifacts (e.g., prebuilt kernel, bootloader in board flash, or combined artifact elsewhere).
+- Clearing `PREFERRED_PROVIDER_virtual/kernel` & `virtual/bootloader` means the build won’t produce a deployable boot stack; ensure you have an external kernel + boot artifacts (e.g., prebuilt kernel Image, DTB, bootloader).
 - Some recipes might still assume kernel headers or modules; validate that no package pulls them in indirectly.
 - If you later create a squashed rootfs or overlay, ensure the kernel’s expected initramfs format matches what you produce here.
 
