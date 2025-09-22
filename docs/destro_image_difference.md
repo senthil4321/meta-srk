@@ -18,8 +18,9 @@ flowchart TD
         F
     end
 
-    A:::distroStyle
-    D:::imageStyle
+    class A distroStyle
+    class D imageStyle
 
-    classDef distroStyle fill=#4CAF50,stroke=#2E7D32,color=white
-    classDef imageStyle fill=#2196F3,stroke=#0D47A1,color=white
+    classDef distroStyle fill=#2196f3,stroke=#1976d2,color=#fff; /* Material Blue */
+    classDef imageStyle fill=#e91e63,stroke=#ad1457,color=#fff; /* Material Pink */
+```
