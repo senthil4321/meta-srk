@@ -26,14 +26,16 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 6 | Exclude shadow (BAD_RECOMMENDATIONS) & strip locales (attempt) | — | (build failed) | — | — | — | DNF error: shadow explicitly required (extrausers) |
 | 7 | Replace extrausers with custom passwd/shadow; exclude shadow; disable locales | shadow family, locales removed | 13M | 6.6M | 26,629,120 | -5,227,520 | Successful removal of shadow + locale data |
 | 8 | Switch libc glibc -> musl | (no feature change) | 13M | 6.6M | 26,633,216 | +4,096 | libc swap yielded negligible net change; further savings require dropping cryptsetup/devmapper stack |
+| 9 | Drop cryptsetup + util-linux-mount; passwordless | (no feature change) | 1.7M | 1.1M | 3,536,896 | -23,096,320 | Massive reduction: removal of cryptsetup, its deps (openssl, libdevmapper, argon2), mount util; BusyBox only |
 
 ## Current Image State
 
 - Libc: musl
-- Packages: busybox(+udhcpc), cryptsetup, util-linux-mount, srk-init (custom), minimal passwd/group files.
-- DISTRO_FEATURES (observed): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
-- Compression: both gzip (13M) and xz (6.6M) provided.
-- Note: Musl did not reduce size materially while cryptsetup + its dependencies remain.
+- Variant (-4-nocrypt) Packages: busybox(+udhcpc), srk-init only (passwordless root & srk), minimal passwd/group.
+- Previous (-3) still exists with cryptsetup for comparison.
+- DISTRO_FEATURES (observed minimal): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
+- Compression: gzip 1.7M, xz 1.1M (vs previous 13M / 6.6M with cryptsetup).
+- Size driver removed: cryptsetup stack (openssl, libdevmapper, libargon2) and util-linux-mount.
 
 ## Key Savings Sources
 
@@ -55,13 +57,12 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 
 Ordered by expected impact (musl already applied in Step 8):
 
-1. Reassess need for `cryptsetup` in initramfs; if not needed at early boot, remove it (drops openssl + devmapper + libargon2 stack).
-2. Replace `util-linux-mount` if BusyBox mount covers required flags; confirm via runtime test.
-3. Provide a trimmed BusyBox config (disable unused applets) via bbappend or custom recipe (expect tens to hundreds of KB savings compressed).
-4. Consider `cpio.lz4` (if supported by boot chain) for faster decompression vs xz (trade size for boot time).
-5. Enable additional size flags globally: `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"` and ensure `LDFLAGS:append = " -Wl,--gc-sections"` where safe.
-6. Audit for any residual locale/charset or timezone data pulled indirectly (e.g., tzdata) and remove if not required.
-7. Investigate static linking of a minimal init helper (if cryptsetup removed) to potentially drop dynamic loader + unused musl components (advanced; measure carefully).
+1. Provide a trimmed BusyBox config (disable unused applets) via bbappend or custom recipe (further 100–300 KB uncompressed possible).
+2. Consider `cpio.lz4` (if supported by boot chain) for faster decompression (slightly larger than xz, faster boot).
+3. Global size flags: `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"`, `LDFLAGS:append = " -Wl,--gc-sections"`; verify no functional regressions.
+4. Evaluate dropping remaining rarely-used BusyBox applets (network extras, vi) depending on debug needs.
+5. Investigate static linking of a micro-init (shell script + busybox may already suffice; only do if dynamic loader removal yields measurable savings).
+6. Confirm no stray timezone / locale / cert bundles (run du on /usr/share if re-added later).
 
 ## Risks / Considerations
 
