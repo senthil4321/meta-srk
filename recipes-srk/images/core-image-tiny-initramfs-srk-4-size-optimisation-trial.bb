@@ -1,5 +1,3 @@
-PN = "core-image-tiny-initramfs-srk-4-size-optimisation-trial"
-PV = "1.0"
 SUMMARY = "Tiny image capable of booting a device."
 DESCRIPTION = "Tiny image capable of booting a device."
 

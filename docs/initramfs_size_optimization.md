@@ -25,12 +25,15 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 5 | Add nfs to removals | nfs | 14M | 7.4M | 31,856,640 | 0 | nfs not contributing packages in this set |
 | 6 | Exclude shadow (BAD_RECOMMENDATIONS) & strip locales (attempt) | — | (build failed) | — | — | — | DNF error: shadow explicitly required (extrausers) |
 | 7 | Replace extrausers with custom passwd/shadow; exclude shadow; disable locales | shadow family, locales removed | 13M | 6.6M | 26,629,120 | -5,227,520 | Successful removal of shadow + locale data |
+| 8 | Switch libc glibc -> musl | (no feature change) | 13M | 6.6M | 26,633,216 | +4,096 | libc swap yielded negligible net change; further savings require dropping cryptsetup/devmapper stack |
 
 ## Current Image State
 
+- Libc: musl
 - Packages: busybox(+udhcpc), cryptsetup, util-linux-mount, srk-init (custom), minimal passwd/group files.
-- DISTRO_FEATURES (final observed): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
+- DISTRO_FEATURES (observed): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
 - Compression: both gzip (13M) and xz (6.6M) provided.
+- Note: Musl did not reduce size materially while cryptsetup + its dependencies remain.
 
 ## Key Savings Sources
 
@@ -50,15 +53,15 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 
 ## Recommended Next Optimization Steps
 
-Ordered by expected impact:
+Ordered by expected impact (musl already applied in Step 8):
 
-1. Switch glibc -> musl (`TCLIBC = "musl"` in `local.conf`): large libc footprint reduction.
-2. Reassess need for `cryptsetup` in initramfs; if not needed at early boot, remove it (drops openssl+devmapper stack).
-3. Replace `util-linux-mount` if busybox mount fully suffices; confirm needed options.
-4. Provide a trimmed BusyBox config (disable unused applets) via bbappend or custom recipe.
-5. Consider `cpio.lz4` (if supported by boot chain) for faster decompression vs xz.
-6. Enable size optimization globally: `TUNE_FEATURES:append = " optimize-size"` or per-package CFLAGS `-Os -fdata-sections -ffunction-sections` with `INHIBIT_PACKAGE_STRIP = "0"` (strip already default, ensure not disabled).
-7. Audit for any remaining locale or charset files (e.g., `/usr/lib/locale/`, `i18n` directories) and remove if safe.
+1. Reassess need for `cryptsetup` in initramfs; if not needed at early boot, remove it (drops openssl + devmapper + libargon2 stack).
+2. Replace `util-linux-mount` if BusyBox mount covers required flags; confirm via runtime test.
+3. Provide a trimmed BusyBox config (disable unused applets) via bbappend or custom recipe (expect tens to hundreds of KB savings compressed).
+4. Consider `cpio.lz4` (if supported by boot chain) for faster decompression vs xz (trade size for boot time).
+5. Enable additional size flags globally: `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"` and ensure `LDFLAGS:append = " -Wl,--gc-sections"` where safe.
+6. Audit for any residual locale/charset or timezone data pulled indirectly (e.g., tzdata) and remove if not required.
+7. Investigate static linking of a minimal init helper (if cryptsetup removed) to potentially drop dynamic loader + unused musl components (advanced; measure carefully).
 
 ## Risks / Considerations
 
@@ -76,7 +79,7 @@ Ordered by expected impact:
 
 ## Appendix: Possible Config Snippets
 
-- musl switch: `echo 'TCLIBC = "musl"' >> build/conf/local.conf`
+- musl switch (completed): `echo 'TCLIBC = "musl"' >> build/conf/local.conf`
 - Drop cryptsetup: remove it from `IMAGE_INSTALL` in image recipe.
 - Force size flags example:
   `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"`
