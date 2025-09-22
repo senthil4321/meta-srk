@@ -38,15 +38,15 @@ From `local.conf` (comment block `# srk-3`):
 
 ```mermaid
 graph TD
-  A[Poky Base Layer<br/>meta, meta-poky, meta-oe...] --> B(core-image-tiny-initramfs.bb)
-  B -->|PACKAGE_INSTALL| C[Base Packages\n(initramfs-live-boot-tiny, packagegroup-core-boot, dropbear, busybox, mdev, base-passwd,...)]
-  B --> D[Initramfs Artifacts\n(${INITRAMFS_FSTYPES})]
-  subgraph Local Customization (srk-3 via local.conf)
-    E[Unset virtual/kernel provider]
-    F[Unset virtual/bootloader provider]
-    G[(Optional future removals\nimage removes virtual/kernel & bootloader)]
+  A[Poky Base Layers<br/>meta + meta-poky + meta-oe] --> B[core-image-tiny-initramfs.bb]
+  B -->|PACKAGE_INSTALL| C[Base Packages<br/>initramfs-live-boot-tiny<br/>packagegroup-core-boot<br/>dropbear<br/>busybox / mdev<br/>base-passwd]
+  B --> D[Initramfs Artifacts<br/>INITRAMFS_FSTYPES]
+  subgraph SRK-3 Overrides (local.conf)
+    E[Unset virtual/kernel]
+    F[Unset virtual/bootloader]
+    G[Future (optional)<br/>remove kernel & bootloader in IMAGE_INSTALL]
   end
-  C --> H[Reduced Image Dependency Graph]
+  C --> H[Effective Minimal Rootfs]
   E --> H
   F --> H
   G --> H
