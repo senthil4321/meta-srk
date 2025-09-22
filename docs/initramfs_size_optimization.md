@@ -29,6 +29,7 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 9 | Drop cryptsetup + util-linux-mount; passwordless | (no feature change) | 1.7M | 1.1M | 3,536,896 | -23,096,320 | Massive reduction: removal of cryptsetup, its deps (openssl, libdevmapper, argon2), mount util; BusyBox only |
 | 10 | srk-5: Trim BusyBox (partial), no init pivot (lz4 removed for isolation) | (no feature change) | 1.7M | 1.1M | 3,405,312 | -131,584 | lz4 moved to Step 11 to isolate compression impact; minor uncompressed drop from trimming applets |
 | 11 | srk-6: Reintroduce lz4 (same content as srk-5) | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | Adds cpio.lz4 (1.9M); gz 1,698,462 B vs 1,698,467 B (srk-5), xz 1,089,252 B vs 1,089,188 B (insignificant variance) |
+| 12 | srk-7-sizeopt: Global size CFLAGS/LDFLAGS (-Os, gc-sections) | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | No measurable content reduction (same uncompressed bytes); compression variance only (gz 1,698,465 B, xz 1,089,416 B, lz4 1,954,348 B) |
 
 ## Current Image State
 
@@ -36,7 +37,7 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 - Latest minimal variant (srk-5): BusyBox only, passwordless root/srk, simple `/init` shell (no pivot / mount of real rootfs).
 - Prior variants kept for comparison: srk-4-nocrypt (no cryptsetup) and srk-3 (with cryptsetup).
 - DISTRO_FEATURES (observed minimal): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
-- Compression (srk-5): gzip 1.7M, xz 1.1M. (lz4 measured separately in srk-6 ~1.9M expected; xz smallest, lz4 fastest expected runtime decompression.)
+- Compression (srk-5/6/7): gzip ~1.7M (±5B variance), xz ~1.1M (±~250B variance), lz4 ~1.95M. (All three share identical payload size from Step 10 onward.)
 - Net savings dominated by dropping cryptsetup stack; BusyBox trimming yielded modest additional ~130 KB uncompressed.
 
 ## Key Savings Sources
@@ -61,7 +62,7 @@ Ordered by expected impact (musl already applied in Step 8):
 
 1. Further BusyBox minimization: generate full custom defconfig (strip networking tools if not needed at early boot, consider removing shell history/editing entirely — editing already disabled).
 2. Benchmark decompression time: compare gz vs xz vs lz4 on target to choose optimal boot trade-off.
-3. Apply global size flags: `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"`, with `LDFLAGS:append = " -Wl,--gc-sections"`; validate no regressions.
+3. (Done Step 12) Global size flags showed no additional reduction at current minimal content; revisit only after further BusyBox pruning or adding new code.
 4. Explore static BusyBox build vs dynamic (measure: potential removal of ld-musl + libc pieces vs larger monolithic binary) — only if net win.
 5. Confirm absence of extraneous data: run `du -a` in `/usr/share` & `/lib/modules` (should be minimal) to detect accidental growth.
 6. Optional: integrate initramfs signing or hash measurement (boot integrity) now that size is stable.
