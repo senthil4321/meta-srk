@@ -10,7 +10,12 @@ VERSION="1.0.0"
 
 print_help() {
     cat <<EOF
-Usage: $0 <version (2 or 3)> [options]
+Usage: $0 <version> [options]
+
+<version> can be one of:
+    2              -> core-image-tiny-initramfs-srk-2
+    3              -> core-image-tiny-initramfs-srk-3
+    9              -> core-image-tiny-initramfs-srk-9-nobusybox (BusyBox removed)
 
 Options:
     -V             Show version and exit
@@ -19,6 +24,7 @@ Options:
 Examples:
     $0 2
     $0 3
+    $0 9
 
 Notes:
     - Uses SSH alias 'p' configured in ~/.ssh/config
@@ -52,18 +58,27 @@ shift $((OPTIND-1))
 
 # Check if the version argument is provided
 if [ -z "$1" ]; then
-    echo "Usage: $0 <version (2 or 3)>"
-    echo "Uses SSH key-based authentication (no password required)"
+    echo "Missing version argument. See --help (-h) for options."
     exit 1
 fi
 
 # Define the input filename based on the version argument
 INITRAMFS_VERSION="$1"
-if [[ "$INITRAMFS_VERSION" != "2" && "$INITRAMFS_VERSION" != "3" ]]; then
-    echo "Invalid version. Please provide either '2' or '3'."
-    exit 1
-fi
-INPUT_FILENAME="core-image-tiny-initramfs-srk-${INITRAMFS_VERSION}-beaglebone-yocto.rootfs.cpio.gz"
+case "$INITRAMFS_VERSION" in
+    2|3)
+        IMAGE_BASE="core-image-tiny-initramfs-srk-${INITRAMFS_VERSION}"
+        ;;
+    9)
+        # New no-busybox minimal image
+        IMAGE_BASE="core-image-tiny-initramfs-srk-9-nobusybox"
+        ;;
+    *)
+        echo "Invalid version '$INITRAMFS_VERSION'. Supported: 2, 3, 9" >&2
+        exit 1
+        ;;
+esac
+
+INPUT_FILENAME="${IMAGE_BASE}-beaglebone-yocto.rootfs.cpio.gz"
 
 # Define the source file and destination
 SOURCE_FILE="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$INPUT_FILENAME"
