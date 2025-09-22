@@ -27,15 +27,16 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 7 | Replace extrausers with custom passwd/shadow; exclude shadow; disable locales | shadow family, locales removed | 13M | 6.6M | 26,629,120 | -5,227,520 | Successful removal of shadow + locale data |
 | 8 | Switch libc glibc -> musl | (no feature change) | 13M | 6.6M | 26,633,216 | +4,096 | libc swap yielded negligible net change; further savings require dropping cryptsetup/devmapper stack |
 | 9 | Drop cryptsetup + util-linux-mount; passwordless | (no feature change) | 1.7M | 1.1M | 3,536,896 | -23,096,320 | Massive reduction: removal of cryptsetup, its deps (openssl, libdevmapper, argon2), mount util; BusyBox only |
+| 10 | srk-5: Trim BusyBox (partial), add lz4, no init pivot | (no feature change) | 1.7M | 1.1M | 3,405,312 | -131,584 | Introduced cpio.lz4 (1.9M); minor uncompressed drop from trimming applets |
 
 ## Current Image State
 
 - Libc: musl
-- Variant (-4-nocrypt) Packages: busybox(+udhcpc), srk-init only (passwordless root & srk), minimal passwd/group.
-- Previous (-3) still exists with cryptsetup for comparison.
+- Latest minimal variant (srk-5): BusyBox only, passwordless root/srk, simple `/init` shell (no pivot / mount of real rootfs).
+- Prior variants kept for comparison: srk-4-nocrypt (no cryptsetup) and srk-3 (with cryptsetup).
 - DISTRO_FEATURES (observed minimal): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
-- Compression: gzip 1.7M, xz 1.1M (vs previous 13M / 6.6M with cryptsetup).
-- Size driver removed: cryptsetup stack (openssl, libdevmapper, libargon2) and util-linux-mount.
+- Compression (srk-5): gzip 1.7M, xz 1.1M, lz4 1.9M. (xz smallest, lz4 fastest expected runtime decompression.)
+- Net savings dominated by dropping cryptsetup stack; BusyBox trimming yielded modest additional ~130 KB uncompressed.
 
 ## Key Savings Sources
 
@@ -57,12 +58,12 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 
 Ordered by expected impact (musl already applied in Step 8):
 
-1. Provide a trimmed BusyBox config (disable unused applets) via bbappend or custom recipe (further 100–300 KB uncompressed possible).
-2. Consider `cpio.lz4` (if supported by boot chain) for faster decompression (slightly larger than xz, faster boot).
-3. Global size flags: `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"`, `LDFLAGS:append = " -Wl,--gc-sections"`; verify no functional regressions.
-4. Evaluate dropping remaining rarely-used BusyBox applets (network extras, vi) depending on debug needs.
-5. Investigate static linking of a micro-init (shell script + busybox may already suffice; only do if dynamic loader removal yields measurable savings).
-6. Confirm no stray timezone / locale / cert bundles (run du on /usr/share if re-added later).
+1. Further BusyBox minimization: generate full custom defconfig (strip networking tools if not needed at early boot, consider removing shell history/editing entirely — editing already disabled).
+2. Benchmark decompression time: compare gz vs xz vs lz4 on target to choose optimal boot trade-off.
+3. Apply global size flags: `TARGET_CFLAGS:append = " -Os -fdata-sections -ffunction-sections"`, with `LDFLAGS:append = " -Wl,--gc-sections"`; validate no regressions.
+4. Explore static BusyBox build vs dynamic (measure: potential removal of ld-musl + libc pieces vs larger monolithic binary) — only if net win.
+5. Confirm absence of extraneous data: run `du -a` in `/usr/share` & `/lib/modules` (should be minimal) to detect accidental growth.
+6. Optional: integrate initramfs signing or hash measurement (boot integrity) now that size is stable.
 
 ## Risks / Considerations
 
