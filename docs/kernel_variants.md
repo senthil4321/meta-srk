@@ -225,4 +225,5 @@ The srk-10-selinux initramfs includes proper console device setup:
 - [SELinux Project](https://selinuxproject.org/)
 - [BeagleBone Black Documentation](https://beagleboard.org/black)
 - [SRK Initramfs Documentation](./initramfs_size_optimization.md)
+- [SELinux Commands Guide](./selinux_commands_guide.md)
 <parameter name="filePath">/home/srk2cob/project/poky/meta-srk/docs/kernel_variants.md

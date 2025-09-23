@@ -16,6 +16,7 @@ Usage: $0 <version> [options]
     2              -> core-image-tiny-initramfs-srk-2
     3              -> core-image-tiny-initramfs-srk-3
     9              -> core-image-tiny-initramfs-srk-9-nobusybox (BusyBox removed)
+    10             -> core-image-tiny-initramfs-srk-10-selinux (SELinux enabled)
 
 Options:
     -V             Show version and exit
@@ -25,6 +26,7 @@ Examples:
     $0 2
     $0 3
     $0 9
+    $0 10
 
 Notes:
     - Uses SSH alias 'p' configured in ~/.ssh/config
@@ -72,8 +74,12 @@ case "$INITRAMFS_VERSION" in
         # New no-busybox minimal image
         IMAGE_BASE="core-image-tiny-initramfs-srk-9-nobusybox"
         ;;
+    10)
+        # SELinux-enabled image
+        IMAGE_BASE="core-image-tiny-initramfs-srk-10-selinux"
+        ;;
     *)
-        echo "Invalid version '$INITRAMFS_VERSION'. Supported: 2, 3, 9" >&2
+        echo "Invalid version '$INITRAMFS_VERSION'. Supported: 2, 3, 9, 10" >&2
         exit 1
         ;;
 esac
