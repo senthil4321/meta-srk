@@ -69,6 +69,16 @@ python create_selinux_init () {
     script = """#!/bin/sh
 mount -t proc proc /proc 2>/dev/null || true
 mount -t sysfs sysfs /sys 2>/dev/null || true
+# Create basic /dev structure if needed
+if [ ! -d /dev ]; then
+    mkdir -p /dev
+fi
+# Mount devtmpfs to provide device nodes
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
+# Create console device if it doesn't exist
+if [ ! -c /dev/console ]; then
+    mknod /dev/console c 5 1 2>/dev/null || true
+fi
 mount -t selinuxfs selinuxfs /sys/fs/selinux 2>/dev/null || echo 'WARN: selinuxfs mount failed'
 echo 'Loading SELinux policy (if present)...'
 if command -v load_policy >/dev/null 2>&1; then
@@ -78,7 +88,8 @@ if command -v setenforce >/dev/null 2>&1; then
     setenforce 0 2>/dev/null || true
 fi
 echo 'SELinux trial environment (srk-10-selinux). Type exit or Ctrl-D to reboot.'
-exec /bin/sh
+# Set up console for interactive shell
+exec /bin/sh < /dev/console > /dev/console 2>&1
 """
     with open(init_path, 'w') as f:
         f.write(script)
