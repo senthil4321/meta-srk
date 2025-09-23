@@ -32,17 +32,20 @@ Uncompressed size measured via: `gunzip -c <file>.cpio.gz | wc -c` (and equivale
 | 12 | srk-7-sizeopt: Global size CFLAGS/LDFLAGS (-Os, gc-sections) | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | No measurable content reduction (same uncompressed bytes); compression variance only (gz 1,698,465 B, xz 1,089,416 B, lz4 1,954,348 B) |
 | 13 | srk-8-nonet: Remove BusyBox networking applets | (no feature change) | 1.7M | 1.1M | 3,405,312 | 0 | No change: networking applets already pruned or negligible; compressed sizes within variance (gz 1,698,463 B, xz 1,089,248 B, lz4 1,954,348 B) |
 | 14 | srk-9-nobusybox: Remove BusyBox entirely; single static /init (helloloop) | (no feature change) | 88B | 88B | 553,630 | -2,851,682 | Compressed sizes appear extremely small due to high compressor efficiency on large zero/pattern regions of static binary; verify with 'stat' for exact bytes. Main binary 516,656 B static musl-linked. |
+| 15 | srk-10-selinux: Add SELinux support (libs, policy, tools) to srk-9-nobusybox | selinux | 16M | 9.8M | 34,134,528 | +33,580,898 | SELinux adds ~33.5 MB uncompressed due to libraries, policy files, and tools; compressed xz ~9.8M (best ratio). Includes libselinux, libsepol, libsemanage, refpolicy-targeted, policycoreutils tools. |
 
 ## Current Image State
 
 - Libc: musl
 - Latest minimal variant (srk-9-nobusybox): BusyBox removed; only a single statically linked binary `helloloop` installed and symlinked as `/init`.
+- SELinux variant (srk-10-selinux): Based on srk-9-nobusybox but adds SELinux libraries, policy, and tools for security experimentation.
 - Previous minimal (srk-5..8): BusyBox only, passwordless root/srk, simple `/init` shell (no pivot / mount of real rootfs).
 - Prior variants kept for comparison: srk-4-nocrypt (no cryptsetup) and srk-3 (with cryptsetup).
 - DISTRO_FEATURES (observed minimal): `acl ext2 ipv4 xattr vfat seccomp multiarch sysvinit ldconfig`
 - Compression (srk-5/6/7/8): gzip ~1.7M (±5B variance), xz ~1.1M (±~250B variance), lz4 ~1.95M.
 - Compression (srk-9-nobusybox): reported cpio sizes gzip 88B, xz 88B, lz4 89B (artifact file lengths). These reflect the compressed archive objects; confirm with decompression if anomalous (likely due to tool/reporting of very small archive metadata when payload is highly repetitive). Uncompressed extracted rootfs directory: 553,630 bytes.
-- Net savings dominated by dropping cryptsetup stack; BusyBox trimming yielded modest additional ~130 KB uncompressed.
+- Compression (srk-10-selinux): gzip 16M, xz 9.8M, lz4 16M. Uncompressed: 34,134,528 bytes (~34 MB).
+- Net savings dominated by dropping cryptsetup stack; BusyBox trimming yielded modest additional ~130 KB uncompressed. SELinux adds ~33.5 MB for security features.
 
 ## Key Savings Sources
 
@@ -71,11 +74,10 @@ Ordered by expected impact (musl already applied in Step 8):
 1. Optionally switch to a tiny printf (e.g. `-Wl,--wrap=printf` with minimalist implementation) to cut libc usage.
 1. Benchmark decompression time: compare gz vs xz vs lz4 on target to choose optimal boot trade-off (re-order after libc/runtime decisions).
 1. Integrate reproducible build flags to ensure stable binary hash for measurement / potential attestation.
-2. Benchmark decompression time: compare gz vs xz vs lz4 on target to choose optimal boot trade-off.
-3. (Done Step 12) Global size flags showed no additional reduction at current minimal content; revisit only after further BusyBox pruning or adding new code.
-4. Explore static BusyBox build vs dynamic (measure: potential removal of ld-musl + libc pieces vs larger monolithic binary) — only if net win.
-5. Confirm absence of extraneous data: run `du -a` in `/usr/share` & `/lib/modules` (should be minimal) to detect accidental growth.
-6. Optional: integrate initramfs signing or hash measurement (boot integrity) now that size is stable.
+1. (Done Step 12) Global size flags showed no additional reduction at current minimal content; revisit only after further BusyBox pruning or adding new code.
+1. Explore static BusyBox build vs dynamic (measure: potential removal of ld-musl + libc pieces vs larger monolithic binary) — only if net win.
+1. Confirm absence of extraneous data: run `du -a` in `/usr/share` & `/lib/modules` (should be minimal) to detect accidental growth.
+1. Optional: integrate initramfs signing or hash measurement (boot integrity) now that size is stable.
 
 ## Risks / Considerations
 
@@ -87,10 +89,11 @@ Ordered by expected impact (musl already applied in Step 8):
 
 ## How to Reproduce Current Build
 
-1. Ensure layer `meta-srk` is in `bblayers.conf`.
-2. Build target:
-   `bitbake core-image-tiny-initramfs-srk-3`
-3. Artifacts: `tmp/deploy/images/beaglebone-yocto/core-image-tiny-initramfs-srk-3-beaglebone-yocto.rootfs-*.cpio.{gz,xz}`
+1. Ensure layers `meta-srk`, `meta-selinux`, `meta-openembedded/meta-oe`, `meta-openembedded/meta-python` are in `bblayers.conf`.
+2. Build targets:
+   - `bitbake core-image-tiny-initramfs-srk-9-nobusybox` (minimal static binary)
+   - `bitbake core-image-tiny-initramfs-srk-10-selinux` (SELinux-enabled variant)
+3. Artifacts: `tmp/deploy/images/beaglebone-yocto/core-image-tiny-initramfs-srk-{9-nobusybox,10-selinux}-beaglebone-yocto.rootfs-*.cpio.{gz,xz}`
 
 ## Appendix: Possible Config Snippets
 
