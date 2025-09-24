@@ -8,3 +8,5 @@ SRC_URI += "file://defconfig"
 KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto"
+
+INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-3"
