@@ -1,0 +1,59 @@
+#
+# Minimal BeagleBone Hello-World Kernel Config
+#
+
+CONFIG_LOCALVERSION="-yocto-hello"
+CONFIG_LOCALVERSION_AUTO=n
+
+# --- Platform (AM335x) ---
+CONFIG_ARCH_OMAP2PLUS=y
+CONFIG_SOC_AM33XX=y
+
+# --- Boot options ---
+CONFIG_EXPERT=y
+CONFIG_INIT_ENV_ARG_LIMIT=4
+CONFIG_BLK_DEV_INITRD=y
+# CONFIG_INITRAMFS_SOURCE="rootfs.cpio"
+
+# --- Memory / devtmpfs ---
+CONFIG_DEVTMPFS=y
+CONFIG_DEVTMPFS_MOUNT=y
+CONFIG_TMPFS=y
+
+# --- Console ---
+CONFIG_PRINTK=y
+CONFIG_EARLY_PRINTK=y
+CONFIG_SERIAL_8250=y
+CONFIG_SERIAL_8250_CONSOLE=y
+CONFIG_SERIAL_8250_OMAP=y
+
+# --- Filesystems ---
+CONFIG_EXT2_FS=y
+CONFIG_EXT4_FS is not set
+CONFIG_BTRFS_FS is not set
+CONFIG_FAT_FS is not set
+CONFIG_NFS_FS is not set
+CONFIG_CIFS is not set
+CONFIG_FUSE_FS is not set
+
+# --- Disable networking ---
+CONFIG_NET is not set
+
+# --- Disable USB / storage / multimedia ---
+CONFIG_USB is not set
+CONFIG_SOUND is not set
+CONFIG_DRM is not set
+CONFIG_MMC is not set
+
+# --- Disable security / crypto / namespaces ---
+CONFIG_SECURITY is not set
+CONFIG_KEYS is not set
+CONFIG_CRYPTO is not set
+CONFIG_NAMESPACES is not set
+CONFIG_CGROUPS is not set
+CONFIG_BPF_SYSCALL is not set
+
+# --- Debugging (optional, can disable later) ---
+CONFIG_DEBUG_KERNEL=y
+CONFIG_KALLSYMS=y
+CONFIG_EARLY_PRINTK=y

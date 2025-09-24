@@ -6,6 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/linux-yocto-srk-selinux:"
 # Reuse existing defconfig from baseline kernel
 SRC_URI += "file://defconfig"
 SRC_URI += "file://selinux.cfg"
+SRC_URI += "file://localversion.cfg"
 
 KCONFIG_MODE = "alldefconfig"
 
