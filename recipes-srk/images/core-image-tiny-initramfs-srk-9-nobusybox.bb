@@ -21,20 +21,24 @@ DISTRO_FEATURES:remove = " x11 wayland opengl vulkan bluetooth wifi usbhost usbg
 ROOTFS_POSTPROCESS_COMMAND += "install_minimal_init; create_minimal_devnodes; "
 
 python install_minimal_init () {
+    bb.warn("Running install_minimal_init")
     import os
     rootfs = d.getVar('IMAGE_ROOTFS')
     target_rel = 'sbin/helloloop'
     helloloop_path = os.path.join(rootfs, target_rel)
     if not os.path.exists(helloloop_path):
         bb.error("helloloop binary not found at %s" % helloloop_path)
-    # Ensure /init is a symlink to /sbin/helloloop
-    init_symlink = os.path.join(rootfs, 'init')
-    if os.path.islink(init_symlink) or os.path.exists(init_symlink):
+    # Copy helloloop to /init
+    init_path = os.path.join(rootfs, 'init')
+    if os.path.islink(init_path) or os.path.exists(init_path):
         try:
-            os.remove(init_symlink)
+            os.remove(init_path)
         except OSError as e:
             bb.warn("Failed removing existing /init: %s" % e)
-    os.symlink('/' + target_rel, init_symlink)
+    import shutil
+    shutil.copy2(helloloop_path, init_path)
+    os.chmod(init_path, 0o755)
+    bb.warn("Copied helloloop to /init")
     # Provide /sbin/init symlink too (kernel fallback search path)
     sbin_init = os.path.join(rootfs, 'sbin', 'init')
     if os.path.islink(sbin_init) or os.path.exists(sbin_init):
@@ -43,6 +47,7 @@ python install_minimal_init () {
         except OSError as e:
             bb.warn("Failed removing existing /sbin/init: %s" % e)
     os.symlink('helloloop', sbin_init)  # relative inside /sbin
+    bb.warn("Created /sbin/init symlink")
 }
 
 python create_minimal_devnodes () {

@@ -9,4 +9,8 @@ KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto"
 
-INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-3"
+INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox"
+INITRAMFS_IMAGE_BUNDLE = "1"
+INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-beaglebone-yocto.rootfs"
+
+INSANE_SKIP:kernel-dev = "buildpaths"
