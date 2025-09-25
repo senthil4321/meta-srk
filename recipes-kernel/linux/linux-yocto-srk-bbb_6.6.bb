@@ -4,7 +4,8 @@ DESCRIPTION = "Custom Linux kernel for BeagleBone Black based on linux-yocto fro
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://defconfig \
-            file://bbb-eeprom.cfg"
+            file://bbb-eeprom.cfg \
+            file://bbb-led.cfg"
 
 KCONFIG_MODE = "alldefconfig"
 
