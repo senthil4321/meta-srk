@@ -1,9 +1,7 @@
 {
     "python.autoComplete.extraPaths": [
         "${workspaceFolder}/sources/poky/bitbake/lib",
-        "${workspaceFolder}\\sources\\poky\\meta\\lib",
-        "/lib",
-        "../meta/lib"
+        "${workspaceFolder}\\sources\\poky\\meta\\lib"
     ],
     "python.analysis.extraPaths": [
         "${workspaceFolder}/sources/poky/bitbake/lib",
@@ -13,14 +11,5 @@
         "*.conf": "bitbake",
         "*.inc": "bitbake"
     },
-    "bitbake.sdkImage": "core-image-minimal",
-    "python.testing.unittestArgs": [
-        "-v",
-        "-s",
-        ".",
-        "-p",
-        "*test.py"
-    ],
-    "python.testing.pytestEnabled": false,
-    "python.testing.unittestEnabled": true
+    "bitbake.sdkImage": "core-image-minimal"
 }
