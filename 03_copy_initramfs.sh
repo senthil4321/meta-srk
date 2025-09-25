@@ -17,6 +17,8 @@ Usage: $0 <version> [options]
     3              -> core-image-tiny-initramfs-srk-3
     9              -> core-image-tiny-initramfs-srk-9-nobusybox (BusyBox removed)
     10             -> core-image-tiny-initramfs-srk-10-selinux (SELinux enabled)
+    <number>       -> core-image-tiny-initramfs-srk-<number> (generic format)
+    <number>-<suffix> -> core-image-tiny-initramfs-srk-<number>-<suffix> (with suffix)
 
 Options:
     -V             Show version and exit
@@ -27,6 +29,8 @@ Examples:
     $0 3
     $0 9
     $0 10
+    $0 11
+    $0 11-bbb-examples
 
 Notes:
     - Uses SSH alias 'p' configured in ~/.ssh/config
@@ -78,8 +82,14 @@ case "$INITRAMFS_VERSION" in
         # SELinux-enabled image
         IMAGE_BASE="core-image-tiny-initramfs-srk-10-selinux"
         ;;
+    [0-9]*)
+        # Generic case: number followed by optional hyphenated suffix
+        # Examples: "11" -> "core-image-tiny-initramfs-srk-11"
+        #          "11-bbb-examples" -> "core-image-tiny-initramfs-srk-11-bbb-examples"
+        IMAGE_BASE="core-image-tiny-initramfs-srk-${INITRAMFS_VERSION}"
+        ;;
     *)
-        echo "Invalid version '$INITRAMFS_VERSION'. Supported: 2, 3, 9, 10" >&2
+        echo "Invalid version '$INITRAMFS_VERSION'. Supported: 2, 3, 9, 10, or generic format like '11' or '11-bbb-examples'" >&2
         exit 1
         ;;
 esac
