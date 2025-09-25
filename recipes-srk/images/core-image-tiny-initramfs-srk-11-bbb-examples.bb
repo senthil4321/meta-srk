@@ -111,3 +111,5 @@ python create_minimal_devnodes () {
     mknod(ttyS0, 0o620, os.makedev(4,64))  # ttyS0 major=4, minor=64
     bb.warn("Created minimal device nodes: console, null, ttyS0")
 }
+# Compatible Kernel Recipe
+PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-bbb"
