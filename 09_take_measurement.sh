@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BACKUP_DIR_SHORT=~/project/srk-linux/beaglebone/backup
+BACKUP_DIR_SHORT=~/project/linux/beaglebone/backup
 
 show_menu() {
     echo "Select an option:"
