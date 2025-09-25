@@ -2,6 +2,7 @@
 """
 Serial Test Script for SRK Target Device over Remote SSH
 Connects to remote host and accesses serial device using socat
+Tests include hello application, system info, LED control, and EEPROM access
 
 Version: 1.4.0
 Author: SRK Development Team
@@ -9,7 +10,7 @@ Copyright (c) 2025 SRK. All rights reserved.
 License: MIT
 """
 
-__version__ = "1.6.0"
+__version__ = "1.7.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -21,6 +22,7 @@ import paramiko
 import threading
 import queue
 import warnings
+import subprocess
 from test_report import TestReportGenerator
 
 # Suppress deprecation warnings from Paramiko
@@ -31,11 +33,27 @@ def assert_in(expected, buffer):
         raise AssertionError(f"Expected '{expected}' not found in:\n{buffer[-200:]}")
     return True
 
-def assert_prompt(tester, timeout=10):
-    buf = tester.read_until("beaglebone-yocto:~$", timeout=timeout)
-    if "beaglebone-yocto:~$" not in buf:
-        raise AssertionError("Shell prompt not detected")
-    return True
+def reset_bbb():
+    """Reset the BeagleBone Black using the remote reset script"""
+    try:
+        print("🔄 Resetting BBB before starting tests...")
+        result = subprocess.run(['./13_remote_reset_bbb.sh'], capture_output=True, text=True, timeout=30)
+        if result.returncode == 0:
+            print("✅ BBB reset successful")
+            time.sleep(10)  # Wait for BBB to reboot
+            return True
+        else:
+            print(f"❌ BBB reset failed: {result.stderr}")
+            return False
+    except subprocess.TimeoutExpired:
+        print("❌ BBB reset timed out")
+        return False
+    except FileNotFoundError:
+        print("❌ Reset script not found. Please ensure 13_remote_reset_bbb.sh exists")
+        return False
+    except Exception as e:
+        print(f"❌ BBB reset error: {e}")
+        return False
 
 class RemoteSerialTester:
     def __init__(self, host, user, port='/dev/ttyUSB0', baudrate=115200, timeout=5):
@@ -206,6 +224,10 @@ import unittest
 
 class TestSerialHello(unittest.TestCase):
     def setUp(self):
+        # Reset BBB before starting tests
+        if not reset_bbb():
+            self.fail("BBB reset failed, cannot proceed with tests")
+
         self.tester = RemoteSerialTester(
             host='192.168.1.100',
             user='pi',
@@ -226,6 +248,10 @@ class TestSerialHello(unittest.TestCase):
             ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
             ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
             ("Perform login", lambda t: t.perform_login() if not getattr(t, 'already_logged_in', False) else True),
+            ("Check LED support", lambda t: (t.send_command("ls /sys/class/leds/"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("beaglebone", output), ("LEDs found" if "beaglebone" in output else "No LEDs"))[3]),
+            ("Test LED control", lambda t: (t.send_command("echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), time.sleep(1), t.send_command("cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("1", output), ("LED control OK" if "1" in output else "LED control failed"))[5]),
+            ("Check EEPROM support", lambda t: (t.send_command("ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, ("EEPROM device found" if output.strip() else "No EEPROM device"))[3]),
+            ("Test EEPROM read", lambda t: (t.send_command("hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 10, ("EEPROM readable" if len(output.strip()) > 10 else "EEPROM read failed"))[3]),
             ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
             ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
                 "Hello, World! from meta-srk layer and recipes-srk V2!!!",
@@ -241,7 +267,7 @@ class TestSerialHello(unittest.TestCase):
             ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("systemd", output) or assert_in("init", output), ("systemd" if "systemd" in output else "busybox"))[3]),
         ]
 
-        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"]
+        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read"]
         results = []
 
         for name, func in steps:
@@ -279,6 +305,6 @@ if __name__ == "__main__":
         results = tester.run_all_tests()
         if args.save_report:
             report_generator = TestReportGenerator()
-            report_generator.save_report_to_file(results, args.save_report, ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs"])
+            report_generator.save_report_to_file(results, args.save_report, ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read"])
     finally:
         tester.tearDown()
