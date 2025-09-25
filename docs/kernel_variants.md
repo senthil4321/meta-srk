@@ -8,6 +8,7 @@ The SRK project maintains multiple kernel variants optimized for different use c
 
 - **linux-yocto-srk**: Base custom kernel with minimal configuration
 - **linux-yocto-srk-selinux**: SELinux-enabled variant for security experimentation
+- **linux-yocto-srk-tiny**: Tiny kernel optimized for no-busybox initramfs
 
 All kernels are based on Linux 6.6 LTS with Yocto Project integration.
 
@@ -19,17 +20,19 @@ All kernels are based on Linux 6.6 LTS with Yocto Project integration.
 **Description**: Minimal custom kernel optimized for initramfs usage
 **Base**: linux-yocto 6.6 from Yocto Project
 
-#### Configuration
+#### Base Kernel Configuration
 
 - **defconfig**: Custom minimal configuration in `recipes-kernel/linux/linux-yocto-srk/defconfig`
+- **bbb-eeprom.cfg**: BBB EEPROM and I2C support configuration
 - **KCONFIG_MODE**: alldefconfig
 - **Machine**: beaglebone-yocto
 
-#### Features
+#### Base Kernel Features
 
 - Optimized for embedded systems
 - Minimal feature set for initramfs
 - BeagleBone Black support
+- **BBB EEPROM Support**: I2C and AT24 EEPROM drivers enabled for board identification
 - Standard Yocto kernel configuration approach
 
 ### linux-yocto-srk-selinux (SELinux Kernel)
@@ -67,13 +70,36 @@ CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE=0
 - **AVC Statistics**: Access Vector Cache statistics collection
 - **Check Request Protection**: Set to 0 (strict checking)
 
+### linux-yocto-srk-tiny (No-BusyBox Kernel)
+
+**Recipe**: `linux-yocto-srk-tiny_6.6.bb`
+**Description**: Ultra-minimal kernel optimized for no-busybox initramfs
+**Base**: linux-yocto 6.6 with minimal configuration
+
+#### Tiny Kernel Configuration
+
+- **defconfig**: Custom minimal configuration in `recipes-kernel/linux/linux-yocto-srk-tiny/defconfig`
+- **KCONFIG_MODE**: alldefconfig
+- **Machine**: beaglebone-yocto
+- **INITRAMFS_IMAGE**: core-image-tiny-initramfs-srk-9-nobusybox
+- **INITRAMFS_IMAGE_BUNDLE**: 1 (built-in initramfs)
+
+#### Tiny Kernel Features
+
+- Built-in initramfs bundle
+- Optimized for BusyBox-free environments
+- Minimal kernel footprint
+- BeagleBone Black support
+
 ## Build Information
 
 ### Current Build Status
 
 - **Kernel Version**: 6.6.52+git (latest stable)
-- **Build Date**: September 23, 2025
+- **Build Date**: September 25, 2025
 - **Git Commit**: 5cefbe3e27_01b1f32be4
+- **Last Build**: linux-yocto-srk (successful)
+- **Last Deployment**: September 25, 2025 (via 04_copy_zImage.sh)
 
 ### Artifact Sizes (SELinux Kernel)
 
@@ -119,8 +145,17 @@ Use the provided deployment scripts:
 #### Copy Kernel Image
 
 ```bash
+# Copy regular kernel (default)
 ./04_copy_zImage.sh
+
+# Copy initramfs-embedded kernel (when available)
+./04_copy_zImage.sh -i
+
+# Copy with verbose output
+./04_copy_zImage.sh -i -v
 ```
+
+**Last Deployment**: linux-yocto-srk kernel and am335x-boneblack.dtb successfully copied to TFTP server on September 25, 2025.
 
 #### Copy Kernel Modules (if needed)
 
@@ -143,8 +178,9 @@ When booting with SELinux kernel, you can control SELinux behavior:
 
 The kernels are designed to work with SRK initramfs variants:
 
-- **linux-yocto-srk**: Compatible with all SRK images (srk-3 through srk-10)
+- **linux-yocto-srk**: Compatible with all SRK images (srk-3 through srk-11-bbb-examples)
 - **linux-yocto-srk-selinux**: Optimized for srk-10-selinux (includes SELinux userspace)
+- **linux-yocto-srk-tiny**: Bundled with srk-9-nobusybox (built-in initramfs)
 
 ### Initramfs Loading
 
@@ -226,4 +262,3 @@ The srk-10-selinux initramfs includes proper console device setup:
 - [BeagleBone Black Documentation](https://beagleboard.org/black)
 - [SRK Initramfs Documentation](./initramfs_size_optimization.md)
 - [SELinux Commands Guide](./selinux_commands_guide.md)
-<parameter name="filePath">/home/srk2cob/project/poky/meta-srk/docs/kernel_variants.md

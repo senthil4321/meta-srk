@@ -15,6 +15,16 @@ This program reads and displays the contents of the BeagleBone Black's EEPROM, w
 - EEPROM device accessible at `/sys/bus/i2c/devices/0-0050/eeprom`
 - `at24` kernel module loaded (run `modprobe at24` if needed)
 
+## Setup
+
+If the EEPROM device is not automatically detected, run the setup script:
+
+```bash
+setup-eeprom.sh
+```
+
+This script will instantiate the EEPROM device on the I2C bus.
+
 ## Usage
 
 After building and installing the package, run:
@@ -63,4 +73,5 @@ bitbake bbb-eeprom
 
 ## Installation
 
-The program installs to `/usr/bin/bbb-eeprom`.
+The program installs to `/usr/bin/bbb-01-eeprom`.
+The setup script installs to `/usr/bin/setup-eeprom.sh`.

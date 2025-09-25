@@ -5,7 +5,8 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 SRC_URI = "file://bbb-01-eeprom.c \
            file://Makefile \
-           file://README.md"
+           file://README.md \
+           file://setup-eeprom.sh"
 
 S = "${WORKDIR}/sources"
 UNPACKDIR = "${S}"
@@ -18,6 +19,8 @@ do_compile() {
 
 do_install() {
     oe_runmake install DESTDIR=${D}
+    install -d ${D}/usr/bin
+    install -m 0755 ${UNPACKDIR}/setup-eeprom.sh ${D}/usr/bin/setup-eeprom.sh
 }
 
-FILES:${PN} = "/usr/bin/bbb-01-eeprom"
+FILES:${PN} = "/usr/bin/bbb-01-eeprom /usr/bin/setup-eeprom.sh"

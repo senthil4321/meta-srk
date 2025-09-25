@@ -11,7 +11,7 @@ IMAGE_INSTALL = "busybox bbb-01-eeprom"
 IMAGE_INSTALL += "base-files base-passwd"
 
 # Networking (optional, for testing)
-IMAGE_INSTALL += "netbase"
+IMAGE_INSTALL += "netbase i2c-tools"
 
 # Don't pull in unnecessary packages
 IMAGE_FEATURES = ""
