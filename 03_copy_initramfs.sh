@@ -97,7 +97,31 @@ esac
 INPUT_FILENAME="${IMAGE_BASE}-beaglebone-yocto.rootfs.cpio.gz"
 
 # Define the source file and destination
-SOURCE_FILE="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/$INPUT_FILENAME"
+SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
+SOURCE_FILE="${SOURCE_DIR}${INPUT_FILENAME}"
+
+# Check if the expected file exists, if not try to find a matching file with suffix
+if [ ! -f "$SOURCE_FILE" ]; then
+    echo "Expected file $INPUT_FILENAME not found, looking for files with suffix..."
+    
+    # Extract the base pattern (e.g., "11" from "core-image-tiny-initramfs-srk-11")
+    BASE_PATTERN=$(echo "$IMAGE_BASE" | sed 's/core-image-tiny-initramfs-srk-//')
+    
+    # Look for files matching the pattern with suffix
+    CANDIDATE_FILES=$(find "$SOURCE_DIR" -name "core-image-tiny-initramfs-srk-${BASE_PATTERN}*-beaglebone-yocto.rootfs.cpio.gz" -type l 2>/dev/null)
+    
+    if [ -n "$CANDIDATE_FILES" ]; then
+        # Use the first candidate file found
+        ACTUAL_FILE=$(echo "$CANDIDATE_FILES" | head -n1)
+        INPUT_FILENAME=$(basename "$ACTUAL_FILE")
+        SOURCE_FILE="$ACTUAL_FILE"
+        echo "Found matching file: $INPUT_FILENAME"
+    else
+        echo "Error: No matching initramfs file found for pattern: core-image-tiny-initramfs-srk-${BASE_PATTERN}*-beaglebone-yocto.rootfs.cpio.gz" >&2
+        exit 1
+    fi
+fi
+
 DESTINATION="p:/tmp/"
 
 # Copy the file using scp
