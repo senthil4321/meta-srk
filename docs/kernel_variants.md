@@ -152,6 +152,9 @@ saveenv
 
 This bypasses the calibration process and uses the pre-calculated value for better boot performance.
 
+**Boot Time Reduction via Device Tree:**
+Disabling unused pinmux nodes or modules in the device tree can shave off additional boot delay. The tiny kernel includes a device tree overlay (`bbb-disable-unneeded.dtbo`) that disables unnecessary peripherals and pin configurations to optimize boot time.
+
 ## Build Information
 
 ### Current Build Status
