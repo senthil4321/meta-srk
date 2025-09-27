@@ -297,13 +297,11 @@ def run_generic_test(tester, test_config):
                 time.sleep(0.5)
             return failure_msg
 
-        elif test_type == "CONDITIONAL_SEND":
-            # Send command only if condition is met
-            condition_func = kwargs.get('condition_func')
-            if condition_func and condition_func(tester):
-                tester.send_command(command)
-                return "Command sent conditionally"
-            return "Condition not met"
+        elif test_type == "RESET_TARGET":
+            # Reset the target device
+            if reset_bbb():
+                return "Target reset successful"
+            return failure_msg
 
         elif test_type == "HARDWARE_CHECK":
             # Check hardware availability
@@ -348,6 +346,9 @@ def run_generic_test(tester, test_config):
 DEFAULT_TEST_SUITE = [
     # [test_type, command, expected_value, failure_message, kwargs]
 
+    # Reset BBB before starting tests
+    ["RESET_TARGET", None, None, "Target reset failed"],
+
     # Base system checks
     ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
     ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
@@ -385,6 +386,9 @@ DEFAULT_TEST_SUITE = [
 IMAGE_11_TEST_SUITE = [
     # [test_type, command, expected_value, failure_message, kwargs]
 
+    # Reset BBB before starting tests
+    ["RESET_TARGET", None, None, "Target reset failed"],
+
     # Detailed login steps - simplified for generic format
     ["SEND_COMMAND", "", None, "Password sent"],
     ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
@@ -416,10 +420,6 @@ class TestSerialHello(unittest.TestCase):
         self.image_type = None
 
     def setUp(self):
-        # Reset BBB before starting tests
-        if not reset_bbb():
-            self.fail("BBB reset failed, cannot proceed with tests")
-
         # Determine prompt based on image type (passed via command line)
         prompt = "#" if self.image_type == "11" else "beaglebone-yocto:~$"
 
@@ -473,6 +473,8 @@ class TestSerialHello(unittest.TestCase):
                 name = f"Hardware check: {command}"
             elif test_type == "HARDWARE_TEST":
                 name = f"Hardware test: {command}"
+            elif test_type == "RESET_TARGET":
+                name = "Reset Target Device"
             else:
                 name = f"{test_type}: {command or 'N/A'}"
 
@@ -493,7 +495,7 @@ class TestSerialHello(unittest.TestCase):
 
         # Generate and print report
         report_generator = TestReportGenerator()
-        non_blocking_names = [name for name, _, _ in results if any(nb in name for nb in ["Check for", "Hardware check", "Wait for"])]
+        non_blocking_names = [name for name, _, _ in results if any(nb in name for nb in ["Check for", "Hardware check", "Wait for", "Reset"])]
         report_generator.print_report(results, non_blocking_names)
         return results
 
