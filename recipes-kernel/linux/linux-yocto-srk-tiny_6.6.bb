@@ -14,3 +14,9 @@ INITRAMFS_IMAGE_BUNDLE = "1"
 INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-beaglebone-yocto.rootfs"
 
 INSANE_SKIP:kernel-dev = "buildpaths"
+
+#How to build: change local.conf to use this kernel:
+# PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-tiny"
+# bitbake bitbake linux-yocto-srk-tiny
+# bitbake core-image-tiny-initramfs-srk-9-nobusybox - not tested yet
+
