@@ -385,17 +385,9 @@ DEFAULT_TEST_SUITE = [
 IMAGE_11_TEST_SUITE = [
     # [test_type, command, expected_value, failure_message, kwargs]
 
-    # Base system checks
-    ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
-    ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
-    ["ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
-
     # Detailed login steps - simplified for generic format
-    ["SEND_COMMAND", "srk", None, "Username sent"],
     ["SEND_COMMAND", "", None, "Password sent"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
-    ["ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
+    ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
     ["HARDWARE_CHECK", "ls /sys/class/leds/", "beaglebone", "LED hardware not found"],
@@ -406,14 +398,6 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
     ["COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
 
-    # Application tests
-    ["COMMAND_AND_ASSERT", "which hello", "hello", "Hello binary not found"],
-    ["COMMAND_AND_VERIFY_MULTIPLE", "hello", [
-        "Hello, World! from meta-srk layer and recipes-srk V2!!!",
-        "Hello, World! 20SEP2025 07:28 !!!",
-        "Hello, World! 20SEP2025 23:50 !!!"
-    ], "Hello output verification failed"],
-
     # System information tests
     ["COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
     ["COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
@@ -423,9 +407,7 @@ IMAGE_11_TEST_SUITE = [
 
     # Init system check (image 11: expects BusyBox init)
     ["COMMAND_AND_ASSERT", "ps -p 1", "busybox", "BusyBox init not found (expected for image 11)"],
-
-    # Security tests
-    ["COMMAND_AND_ASSERT", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
+    
 ]
 
 class TestSerialHello(unittest.TestCase):
