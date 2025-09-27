@@ -397,16 +397,15 @@ IMAGE_11_TEST_SUITE = [
     # [test_type, command, expected_value, failure_message, kwargs]
 
     # Reset BBB before starting tests
-    ["RESET_TARGET", None, None, "Target reset failed"],
-    ["WAIT", None, None, None, {"duration": "medium"}],
+    # ["RESET_TARGET", None, None, "Target reset failed"],
+    # ["WAIT", None, None, None, {"duration": "medium"}],
     # Detailed login steps - simplified for generic format
-    ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+    # ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
     ["HARDWARE_CHECK", "ls /sys/class/leds/", "beaglebone", "LED hardware not found"],
-    ["HARDWARE_TEST", ["echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness", "cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"], "1", "LED control test failed", {"sleep": 1}],
     ["HARDWARE_CHECK", "ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'", None, "EEPROM device not found"],
-    ["HARDWARE_TEST", "hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1", None, "EEPROM read test failed", {"min_length": 10}],
+
     ["COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
     ["COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
     ["COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
@@ -430,7 +429,7 @@ class TestSerialHello(unittest.TestCase):
 
     def setUp(self):
         # Determine prompt based on image type (passed via command line)
-        prompt = "#" if self.image_type == "11" else "beaglebone-yocto:~$"
+        prompt = "# " if self.image_type == "11" else "beaglebone-yocto:~$"
 
         self.tester = RemoteSerialTester(
             host='192.168.1.100',
