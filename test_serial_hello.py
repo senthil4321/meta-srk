@@ -6,7 +6,7 @@ Tests include hello application, system info, LED control, EEPROM access, and RT
 
 """
 
-__version__ = "1.8.0"
+__version__ = "1.9.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
