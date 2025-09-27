@@ -259,11 +259,11 @@ import unittest
 def run_generic_test(tester, test_config):
     """
     Generic test runner that handles different test types
-    test_config format: [description, test_type, command, expected_value, failure_message, **kwargs]
+    test_config format: [test_type, description, command, expected_value, failure_message, **kwargs]
     Returns: (success: bool, message: str)
     """
-    description = test_config[0] if len(test_config) > 0 else "Unknown test"
-    test_type = test_config[1] if len(test_config) > 1 else None
+    test_type = test_config[0] if len(test_config) > 0 else None
+    description = test_config[1] if len(test_config) > 1 else "Unknown test"
     command = test_config[2] if len(test_config) > 2 else None
     expected = test_config[3] if len(test_config) > 3 else None
     failure_msg = test_config[4] if len(test_config) > 4 else "Test failed"
@@ -433,65 +433,65 @@ def run_generic_test(tester, test_config):
 
 # Define test suites with generic format
 DEFAULT_TEST_SUITE = [
-    # [description, test_type, command, expected_value, failure_message, kwargs]
+    # [test_type, description, command, expected_value, failure_message, kwargs]
 
     # Reset BBB before starting tests
-    ["Reset BBB", "RESET_TARGET", None, None, "Target reset failed"],
+    ["RESET_TARGET", "Reset BBB", None, None, "Target reset failed"],
 
     # Base system checks
-    ["Check U-Boot logs", "ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
-    ["Check kernel logs", "ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
-    ["Check initramfs logs", "ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
-    ["Wait for login prompt", "WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
+    ["ASSERT_IN_BUFFER", "Check U-Boot logs", None, "U-Boot", "U-Boot not found in logs"],
+    ["ASSERT_IN_BUFFER", "Check kernel logs", None, "Linux version", "Kernel logs not found"],
+    ["ASSERT_IN_BUFFER", "Check initramfs logs", None, "initramfs", "Initramfs logs not found"],
+    ["WAIT_FOR_CONDITION", "Wait for login prompt", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
 
     # Detailed login steps - simplified for generic format
-    ["Send username", "SEND_COMMAND", "srk", None, "Username sent"],
-    ["Send password", "SEND_COMMAND", "", None, "Password sent"],
-    ["Wait for shell prompt", "WAIT_FOR_CONDITION", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
-    ["Verify login", "ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
+    ["SEND_COMMAND", "Send username", "srk", None, "Username sent"],
+    ["SEND_COMMAND", "Send password", "", None, "Password sent"],
+    ["WAIT_FOR_CONDITION", "Wait for shell prompt", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+    ["ASSERT_IN_BUFFER", "Verify login", None, "beaglebone-yocto:", "Login verification failed"],
 
     # Application tests
-    ["Check hello binary", "COMMAND_AND_ASSERT", "which hello", "hello", "Hello binary not found"],
-    ["Test hello output", "COMMAND_AND_VERIFY_MULTIPLE", "hello", [
+    ["COMMAND_AND_ASSERT", "Check hello binary", "which hello", "hello", "Hello binary not found"],
+    ["COMMAND_AND_VERIFY_MULTIPLE", "Test hello output", "hello", [
         "Hello, World! from meta-srk layer and recipes-srk V2!!!",
         "Hello, World! 20SEP2025 07:28 !!!",
         "Hello, World! 20SEP2025 23:50 !!!"
     ], "Hello output verification failed"],
 
     # System information tests
-    ["Check kernel version", "COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
-    ["Check build time", "COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
-    ["Check timestamp", "COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
-    ["Check uptime", "COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
-    ["Check BusyBox", "COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
+    ["COMMAND_AND_EXTRACT", "Check kernel version", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
+    ["COMMAND_AND_EXTRACT", "Check build time", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
+    ["COMMAND_AND_EXTRACT", "Check timestamp", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
+    ["COMMAND_AND_EXTRACT", "Check uptime", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["COMMAND_AND_EXTRACT", "Check BusyBox", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 
     # Init system check (default: expects systemd or init)
-    ["Check init system", "COMMAND_AND_ASSERT", "ps -p 1", "systemd", "Init system check failed"],
+    ["COMMAND_AND_ASSERT", "Check init system", "ps -p 1", "systemd", "Init system check failed"],
 
     # Security tests
-    ["Check encryption support", "COMMAND_AND_ASSERT", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
+    ["COMMAND_AND_ASSERT", "Check encryption support", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
 ]
 
 IMAGE_11_TEST_SUITE = [
-    # [description, test_type, command, expected_value, failure_message, kwargs]
+    # [test_type, description, command, expected_value, failure_message, kwargs]
 
     # Reset BBB before starting tests
-    # ["Reset BBB", "RESET_TARGET", None, None, "Target reset failed"],
-    # ["Wait after reset", "WAIT", None, None, None, {"duration": "medium"}],
+    # ["RESET_TARGET", "Reset BBB", None, None, "Target reset failed"],
+    # ["WAIT", "Wait after reset", None, None, None, {"duration": "medium"}],
     # Detailed login steps - simplified for generic format
-    # ["Wait for shell prompt", "WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+    # ["WAIT_FOR_CONDITION", "Wait for shell prompt", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
-    ["Check RTC binary", "COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
-    ["Test RTC read", "COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
-    ["Test RTC info", "COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
+    ["COMMAND_AND_ASSERT", "Check RTC binary", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
+    ["COMMAND_AND_ASSERT", "Test RTC read", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
+    ["COMMAND_AND_ASSERT", "Test RTC info", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
 
     # System information tests
-    ["Check kernel version", "COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
-    ["Check build time", "COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
-    ["Check timestamp", "COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
-    ["Check uptime", "COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
-    ["Check BusyBox", "COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
+    ["COMMAND_AND_EXTRACT", "Check kernel version", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
+    ["COMMAND_AND_EXTRACT", "Check build time", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
+    ["COMMAND_AND_EXTRACT", "Check timestamp", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
+    ["COMMAND_AND_EXTRACT", "Check uptime", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["COMMAND_AND_EXTRACT", "Check BusyBox", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 ]
 
 class TestSerialHello(unittest.TestCase):
@@ -529,9 +529,9 @@ class TestSerialHello(unittest.TestCase):
         results = []
 
         for i, test_config in enumerate(steps):
-            # Get description from test config
-            description = test_config[0] if len(test_config) > 0 else "Unknown test"
-            test_type = test_config[1] if len(test_config) > 1 else "UNKNOWN"
+            # Get description from test config (now at index 1)
+            description = test_config[1] if len(test_config) > 1 else "Unknown test"
+            test_type = test_config[0] if len(test_config) > 0 else "UNKNOWN"
             
             # Use description as the test name
             name = description
