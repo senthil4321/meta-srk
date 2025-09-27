@@ -67,6 +67,7 @@ class RemoteSerialTester:
         self.client = None
         self.channel = None
         self.output_queue = queue.Queue()
+        self.last_command = None
 
     def connect(self):
         """Establish SSH connection and configure serial"""
@@ -129,6 +130,12 @@ class RemoteSerialTester:
                 data = self.output_queue.get(timeout=0.5)
                 buffer += data
                 print(f"Received: {data.strip()}")
+                # Strip echoed command if present
+                if self.last_command and buffer.strip().startswith(self.last_command):
+                    cmd_end = buffer.find('\n', len(self.last_command))
+                    if cmd_end != -1:
+                        buffer = buffer[cmd_end + 1:]
+                        self.last_command = None  # Clear after stripping
                 if expected_text in buffer:
                     return buffer
             except queue.Empty:
@@ -140,7 +147,8 @@ class RemoteSerialTester:
         """Send command to serial device through socat"""
         if self.channel:
             # With socat, we can send directly through the channel
-            self.channel.send(command + "\n")
+            self.channel.send(command)
+            self.last_command = command.strip()
             print(f"Sent: {command}")
             time.sleep(1)  # Give time for command to be processed
 
@@ -249,12 +257,12 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "SEND_COMMAND":
             # Send a command without expecting specific output
-            tester.send_command(command)
+            tester.send_command(command + "\n")
             return "Command sent"
 
         elif test_type == "COMMAND_AND_ASSERT":
             # Send command and check for expected string in response
-            tester.send_command(command)
+            tester.send_command(command + "\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if assert_in(expected, output):
@@ -263,7 +271,7 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "COMMAND_AND_VERIFY_MULTIPLE":
             # Send command and verify multiple expected strings
-            tester.send_command(command)
+            tester.send_command(command + "\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             expected_lines = expected if isinstance(expected, list) else [expected]
@@ -273,7 +281,7 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "COMMAND_AND_EXTRACT":
             # Send command and extract specific information
-            tester.send_command(command)
+            tester.send_command(command + "\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if expected and assert_in(expected, output):
@@ -315,7 +323,7 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "HARDWARE_CHECK":
             # Check hardware availability
-            tester.send_command(command)
+            tester.send_command(command + "\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if expected:
@@ -329,7 +337,7 @@ def run_generic_test(tester, test_config):
             if isinstance(command, list):
                 # Multiple commands for hardware test
                 for cmd in command:
-                    tester.send_command(cmd)
+                    tester.send_command(cmd + "\n")
                     if 'sleep' in kwargs:
                         time.sleep(kwargs['sleep'])
                 timeout = kwargs.get('timeout', 10)
@@ -339,7 +347,7 @@ def run_generic_test(tester, test_config):
                 return failure_msg
             else:
                 # Single command hardware test
-                tester.send_command(command)
+                tester.send_command(command + "\n")
                 timeout = kwargs.get('timeout', 10)
                 output = tester.read_until(tester.prompt, timeout)
                 if expected and assert_in(expected, output):
