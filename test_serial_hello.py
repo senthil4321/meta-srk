@@ -684,7 +684,7 @@ IMAGE_11_TEST_SUITE = [
         "capture_name": "root-shell-boot",
         "reset_before": True
     }],
-    ["CAPTURE_LOG_ASSERT", "Verify root shell boot message", None, "Dropping into root shell...", "Root shell message not found", {"capture_name": "root-shell-boot"}],
+    ["CAPTURE_LOG_ASSERT", "Verify boot message", None, "Dropping into root shell...", "Message not found", {"capture_name": "root-shell-boot"}],
 
 ]
 
