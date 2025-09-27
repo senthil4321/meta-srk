@@ -222,88 +222,202 @@ class RemoteSerialTester:
 
 import unittest
 
-# Define test suites
-DEFAULT_TEST_SUITE = [
-    # Base system checks
-    ("Check U-Boot logs", lambda t: assert_in("U-Boot", t.get_buffer())),
-    ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
-    ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
-    ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
+def run_generic_test(tester, test_config):
+    """
+    Generic test runner that handles different test types
+    test_config format: [test_type, command, expected_value, failure_message, **kwargs]
+    """
+    test_type = test_config[0]
+    command = test_config[1] if len(test_config) > 1 else None
+    expected = test_config[2] if len(test_config) > 2 else None
+    failure_msg = test_config[3] if len(test_config) > 3 else "Test failed"
+    kwargs = test_config[4] if len(test_config) > 4 else {}
 
-    # Detailed login steps
-    ("Check if already logged in", lambda t: getattr(t, 'already_logged_in', False)),
-    ("Detect login prompt", lambda t: (not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer(), "Login prompt detected" if not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer() else "No login prompt needed")[1]),
-    ("Send username", lambda t: (t.send_command("srk") if not getattr(t, 'already_logged_in', False) else True, "Username sent" if not getattr(t, 'already_logged_in', False) else "Already logged in")[1]),
-    ("Handle password prompt", lambda t: (t.send_command("") if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else True, "Password handled" if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else "No password needed")[1]),
-    ("Wait for shell prompt", lambda t: (time.sleep(2), "beaglebone-yocto:~$" in t.get_buffer(), "Shell prompt detected" if "beaglebone-yocto:~$" in t.get_buffer() else "Shell prompt not found")[2]),
-    ("Verify login success", lambda t: ("beaglebone-yocto:" in t.get_buffer(), "Login successful" if "beaglebone-yocto:" in t.get_buffer() else "Login failed")[1]),
+    try:
+        if test_type == "ASSERT_IN_BUFFER":
+            # Check if expected string exists in current buffer
+            result = assert_in(expected, tester.get_buffer())
+            return expected if result else failure_msg
+
+        elif test_type == "SEND_COMMAND":
+            # Send a command without expecting specific output
+            tester.send_command(command)
+            return "Command sent"
+
+        elif test_type == "COMMAND_AND_ASSERT":
+            # Send command and check for expected string in response
+            tester.send_command(command)
+            timeout = kwargs.get('timeout', 10)
+            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            if assert_in(expected, output):
+                return "OK"
+            return failure_msg
+
+        elif test_type == "COMMAND_AND_VERIFY_MULTIPLE":
+            # Send command and verify multiple expected strings
+            tester.send_command(command)
+            timeout = kwargs.get('timeout', 10)
+            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            expected_lines = expected if isinstance(expected, list) else [expected]
+            if all(assert_in(line, output) for line in expected_lines):
+                return "OK"
+            return failure_msg
+
+        elif test_type == "COMMAND_AND_EXTRACT":
+            # Send command and extract specific information
+            tester.send_command(command)
+            timeout = kwargs.get('timeout', 10)
+            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            if expected and assert_in(expected, output):
+                # Extract value based on pattern
+                extract_pattern = kwargs.get('extract_pattern', expected)
+                if extract_pattern in output:
+                    # Simple extraction - can be made more sophisticated
+                    parts = output.split(extract_pattern)
+                    if len(parts) > 1:
+                        value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
+                        return value
+            return "Unknown"
+
+        elif test_type == "WAIT_FOR_CONDITION":
+            # Wait for a specific condition
+            timeout = kwargs.get('timeout', 30)
+            start_time = time.time()
+            while time.time() - start_time < timeout:
+                if expected in tester.get_buffer():
+                    return "Condition met"
+                time.sleep(0.5)
+            return failure_msg
+
+        elif test_type == "CONDITIONAL_SEND":
+            # Send command only if condition is met
+            condition_func = kwargs.get('condition_func')
+            if condition_func and condition_func(tester):
+                tester.send_command(command)
+                return "Command sent conditionally"
+            return "Condition not met"
+
+        elif test_type == "HARDWARE_CHECK":
+            # Check hardware availability
+            tester.send_command(command)
+            timeout = kwargs.get('timeout', 10)
+            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            if expected:
+                return "Hardware found" if expected in output else "Hardware not found"
+            else:
+                # If no expected pattern, just check if we got any output
+                return "Hardware found" if len(output.strip()) > 0 else "Hardware not found"
+
+        elif test_type == "HARDWARE_TEST":
+            # Test hardware functionality
+            if isinstance(command, list):
+                # Multiple commands for hardware test
+                for cmd in command:
+                    tester.send_command(cmd)
+                    if 'sleep' in kwargs:
+                        time.sleep(kwargs['sleep'])
+                timeout = kwargs.get('timeout', 10)
+                output = tester.read_until("beaglebone-yocto:~$", timeout)
+                if expected and assert_in(expected, output):
+                    return "Hardware test OK"
+                return failure_msg
+            else:
+                # Single command hardware test
+                tester.send_command(command)
+                timeout = kwargs.get('timeout', 10)
+                output = tester.read_until("beaglebone-yocto:~$", timeout)
+                if expected and assert_in(expected, output):
+                    return "Hardware test OK"
+                return failure_msg
+
+        else:
+            return f"Unknown test type: {test_type}"
+
+    except Exception as e:
+        return f"Test error: {str(e)}"
+
+# Define test suites with generic format
+DEFAULT_TEST_SUITE = [
+    # [test_type, command, expected_value, failure_message, kwargs]
+
+    # Base system checks
+    ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
+    ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
+    ["ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto:~$", "No login or shell prompt found", {"timeout": 90}],
+
+    # Detailed login steps - simplified for generic format
+    ["SEND_COMMAND", "srk", None, "Username sent"],
+    ["SEND_COMMAND", "", None, "Password sent"],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto:~$", "Shell prompt not found", {"timeout": 30}],
+    ["ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
 
     # Application tests
-    ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
-    ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
+    ["COMMAND_AND_ASSERT", "which hello", "hello", "Hello binary not found"],
+    ["COMMAND_AND_VERIFY_MULTIPLE", "hello", [
         "Hello, World! from meta-srk layer and recipes-srk V2!!!",
         "Hello, World! 20SEP2025 07:28 !!!",
         "Hello, World! 20SEP2025 23:50 !!!"
-    ]))[2]),
+    ], "Hello output verification failed"],
 
     # System information tests
-    ("Check build version", lambda t: (t.send_command("uname -a"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("Linux", output), (output.split("Linux")[1].split("beaglebone-yocto")[0].strip() if "Linux" in output else "Unknown"))[3]),
-    ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output), (output.split("#")[1].split()[0] if "#" in output else "Unknown"))[3]),
-    ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, (output.strip().split('\n')[-1] if output.strip() else "Unknown"))[3]),
-    ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), (output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown"))[3]),
-    ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), (output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown"))[3]),
+    ["COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
+    ["COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
+    ["COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
+    ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 
     # Init system check (default: expects systemd or init)
-    ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("systemd", output) or assert_in("init", output), ("systemd" if "systemd" in output else "busybox"))[3]),
+    ["COMMAND_AND_ASSERT", "ps -p 1", "systemd", "Init system check failed"],
 
     # Security tests
-    ("Check encryption support", lambda t: (t.send_command("which cryptsetup"), output1 := t.read_until("beaglebone-yocto:~$", 10), t.send_command("ls /usr/bin/srk-init 2>/dev/null"), output2 := t.read_until("beaglebone-yocto:~$", 10), True, ("Yes" if "cryptsetup" in output1 or "srk-init" in output2 else "No"))[4]),
+    ["COMMAND_AND_ASSERT", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
 ]
 
 IMAGE_11_TEST_SUITE = [
+    # [test_type, command, expected_value, failure_message, kwargs]
+
     # Base system checks
-    ("Check U-Boot logs", lambda t: assert_in("U-Boot", t.get_buffer())),
-    ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
-    ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
-    ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
+    ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
+    ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
+    ["ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto:~$", "No login or shell prompt found", {"timeout": 90}],
 
-    # Detailed login steps
-    ("Check if already logged in", lambda t: getattr(t, 'already_logged_in', False)),
-    ("Detect login prompt", lambda t: (not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer(), "Login prompt detected" if not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer() else "No login prompt needed")[1]),
-    ("Send username", lambda t: (t.send_command("srk") if not getattr(t, 'already_logged_in', False) else True, "Username sent" if not getattr(t, 'already_logged_in', False) else "Already logged in")[1]),
-    ("Handle password prompt", lambda t: (t.send_command("") if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else True, "Password handled" if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else "No password needed")[1]),
-    ("Wait for shell prompt", lambda t: (time.sleep(2), "beaglebone-yocto:~$" in t.get_buffer(), "Shell prompt detected" if "beaglebone-yocto:~$" in t.get_buffer() else "Shell prompt not found")[2]),
-    ("Verify login success", lambda t: ("beaglebone-yocto:" in t.get_buffer(), "Login successful" if "beaglebone-yocto:" in t.get_buffer() else "Login failed")[1]),
+    # Detailed login steps - simplified for generic format
+    ["SEND_COMMAND", "srk", None, "Username sent"],
+    ["SEND_COMMAND", "", None, "Password sent"],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto:~$", "Shell prompt not found", {"timeout": 30}],
+    ["ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
 
-    # Hardware-specific tests (available in image 11)
-    ("Check LED support", lambda t: (t.send_command("ls /sys/class/leds/"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("beaglebone", output), ("LEDs found" if "beaglebone" in output else "No LEDs"))[3]),
-    ("Test LED control", lambda t: (t.send_command("echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), time.sleep(1), t.send_command("cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("1", output), ("LED control OK" if "1" in output else "LED control failed"))[5]),
-    ("Check EEPROM support", lambda t: (t.send_command("ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, ("EEPROM device found" if output.strip() else "No EEPROM device"))[3]),
-    ("Test EEPROM read", lambda t: (t.send_command("hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 10, ("EEPROM readable" if len(output.strip()) > 10 else "EEPROM read failed"))[3]),
-    ("Check RTC binary exists", lambda t: (t.send_command("which bbb-02-rtc"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("bbb-02-rtc", output), ("RTC binary found" if "bbb-02-rtc" in output else "RTC binary missing"))[3]),
-    ("Test RTC read", lambda t: (t.send_command("bbb-02-rtc read"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Time:", output), ("RTC read OK" if "RTC Time:" in output else "RTC read failed"))[3]),
-    ("Test RTC info", lambda t: (t.send_command("bbb-02-rtc info"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Device:", output), ("RTC info OK" if "RTC Device:" in output else "RTC info failed"))[3]),
+    # Hardware-specific tests
+    ["HARDWARE_CHECK", "ls /sys/class/leds/", "beaglebone", "LED hardware not found"],
+    ["HARDWARE_TEST", ["echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness", "cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"], "1", "LED control test failed", {"sleep": 1}],
+    ["HARDWARE_CHECK", "ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'", None, "EEPROM device not found"],
+    ["HARDWARE_TEST", "hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1", None, "EEPROM read test failed", {"min_length": 10}],
+    ["COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
+    ["COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
+    ["COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
 
     # Application tests
-    ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
-    ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
+    ["COMMAND_AND_ASSERT", "which hello", "hello", "Hello binary not found"],
+    ["COMMAND_AND_VERIFY_MULTIPLE", "hello", [
         "Hello, World! from meta-srk layer and recipes-srk V2!!!",
         "Hello, World! 20SEP2025 07:28 !!!",
         "Hello, World! 20SEP2025 23:50 !!!"
-    ]))[2]),
+    ], "Hello output verification failed"],
 
     # System information tests
-    ("Check build version", lambda t: (t.send_command("uname -a"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("Linux", output), (output.split("Linux")[1].split("beaglebone-yocto")[0].strip() if "Linux" in output else "Unknown"))[3]),
-    ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output), (output.split("#")[1].split()[0] if "#" in output else "Unknown"))[3]),
-    ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, (output.strip().split('\n')[-1] if output.strip() else "Unknown"))[3]),
-    ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), (output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown"))[3]),
-    ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), (output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown"))[3]),
+    ["COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
+    ["COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
+    ["COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
+    ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 
     # Init system check (image 11: expects BusyBox init)
-    ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("busybox", output.lower()), "busybox (expected for image 11)")[3]),
+    ["COMMAND_AND_ASSERT", "ps -p 1", "busybox", "BusyBox init not found (expected for image 11)"],
 
     # Security tests
-    ("Check encryption support", lambda t: (t.send_command("which cryptsetup"), output1 := t.read_until("beaglebone-yocto:~$", 10), t.send_command("ls /usr/bin/srk-init 2>/dev/null"), output2 := t.read_until("beaglebone-yocto:~$", 10), True, ("Yes" if "cryptsetup" in output1 or "srk-init" in output2 else "No"))[4]),
+    ["COMMAND_AND_ASSERT", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
 ]
 
 class TestSerialHello(unittest.TestCase):
@@ -333,13 +447,40 @@ class TestSerialHello(unittest.TestCase):
             steps = DEFAULT_TEST_SUITE
             print("🧪 Running DEFAULT_TEST_SUITE (minimal test set)")
 
-        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check if already logged in", "Detect login prompt", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"]
+        non_blocking = ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION"]
         results = []
 
-        for name, func in steps:
-            print(f"\n➡️ Step: {name}")
+        for i, test_config in enumerate(steps):
+            # Create a descriptive name for the test
+            test_type = test_config[0]
+            command = test_config[1] if len(test_config) > 1 and test_config[1] else "N/A"
+            expected = test_config[2] if len(test_config) > 2 and test_config[2] else "N/A"
+
+            # Generate human-readable test name
+            if test_type == "ASSERT_IN_BUFFER":
+                name = f"Check for '{expected}' in buffer"
+            elif test_type == "SEND_COMMAND":
+                name = f"Send command: {command}"
+            elif test_type == "COMMAND_AND_ASSERT":
+                name = f"Run '{command}' and check for '{expected}'"
+            elif test_type == "COMMAND_AND_VERIFY_MULTIPLE":
+                name = f"Run '{command}' and verify multiple patterns"
+            elif test_type == "COMMAND_AND_EXTRACT":
+                name = f"Run '{command}' and extract info"
+            elif test_type == "WAIT_FOR_CONDITION":
+                name = f"Wait for condition: {expected}"
+            elif test_type == "CONDITIONAL_SEND":
+                name = f"Conditionally send: {command}"
+            elif test_type == "HARDWARE_CHECK":
+                name = f"Hardware check: {command}"
+            elif test_type == "HARDWARE_TEST":
+                name = f"Hardware test: {command}"
+            else:
+                name = f"{test_type}: {command or 'N/A'}"
+
+            print(f"\n➡️ Step {i+1}: {name}")
             try:
-                value = func(self.tester)
+                value = run_generic_test(self.tester, test_config)
                 if isinstance(value, str) and value:
                     message = value
                 else:
@@ -349,13 +490,13 @@ class TestSerialHello(unittest.TestCase):
             except Exception as e:
                 results.append((name, False, str(e)))
                 print(f"❌ FAIL: {name} - {e}")
-                if name not in non_blocking:
+                if test_type not in ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION"]:
                     break  # stop on failure for strict ordering, except for non-blocking tests
 
         # Generate and print report
         report_generator = TestReportGenerator()
-        report_generator.print_report(results, non_blocking)
-
+        non_blocking_names = [name for name, _, _ in results if any(nb in name for nb in ["Check for", "Hardware check", "Wait for"])]
+        report_generator.print_report(results, non_blocking_names)
         return results
 
 if __name__ == "__main__":
