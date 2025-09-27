@@ -7,6 +7,7 @@ SRC_URI += "file://defconfig \
             file://printk_time.cfg \
             file://disable_scsi_debug.cfg \
             file://patches/disable-audio.patch \
+            file://patches/disable-peripherals.patch \
            "
 
 KCONFIG_MODE = "alldefconfig"

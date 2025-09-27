@@ -1,0 +1,128 @@
+Upstream-Status: Inappropriate [disable unused peripherals for faster boot]
+
+diff --git a/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi b/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi
+index 96451c8a815c..260a92360053 100644
+--- a/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi
++++ b/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi
+@@ -192,16 +192,18 @@ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_pins>;
+ 
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &usb0 {
++	status = "disabled";
+ 	dr_mode = "peripheral";
+ 	interrupts-extended = <&intc 18 &tps 0>;
+ 	interrupt-names = "mc", "vbus";
+ };
+ 
+ &usb1 {
++	status = "disabled";
+ 	dr_mode = "host";
+ };
+ 
+@@ -209,7 +211,7 @@ &i2c0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c0_pins>;
+ 
+-	status = "okay";
++	status = "disabled";
+ 	clock-frequency = <400000>;
+ 
+ 	tps: tps@24 {
+@@ -233,7 +235,7 @@ &i2c2 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c2_pins>;
+ 
+-	status = "okay";
++	status = "disabled";
+ 	clock-frequency = <100000>;
+ 
+ 	cape_eeprom0: cape_eeprom0@54 {
+@@ -305,11 +307,11 @@ &tps {
+ 	ti,pmic-shutdown-controller;
+ 
+ 	charger {
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	pwrbutton {
+-		status = "okay";
++		status = "disabled";
+ 	};
+ 
+ 	regulators {
+@@ -359,6 +361,7 @@ ldo4_reg: regulator@6 {
+ };
+ 
+ &cpsw_port1 {
++	status = "disabled";
+ 	phy-handle = <&ethphy0>;
+ 	phy-mode = "mii";
+ 	ti,dual-emac-pvid = <1>;
+@@ -372,10 +375,11 @@ &mac_sw {
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&cpsw_default>;
+ 	pinctrl-1 = <&cpsw_sleep>;
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &davinci_mdio_sw {
++	status = "disabled";
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&davinci_mdio_default>;
+ 	pinctrl-1 = <&davinci_mdio_sleep>;
+@@ -390,7 +394,7 @@ ethphy0: ethernet-phy@0 {
+ };
+ 
+ &mmc1 {
+-	status = "okay";
++	status = "disabled";
+ 	bus-width = <0x4>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&mmc1_pins>;
+@@ -398,11 +402,11 @@ &mmc1 {
+ };
+ 
+ &aes {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &sham {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &rtc {
+@@ -412,7 +416,7 @@ &rtc {
+ };
+ 
+ &pruss_tm {
+-	status = "okay";
++	status = "disabled";
+ };
+ 
+ &wkup_m3_ipc {
+diff --git a/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi b/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
+index a7a8c61ef9b2..b2e49e155c26 100644
+--- a/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
++++ b/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
+@@ -10,10 +10,12 @@ &ldo3_reg {
+ };
+ 
+ &mmc1 {
++	status = "disabled";
+ 	vmmc-supply = <&vmmcsd_fixed>;
+ };
+ 
+ &mmc2 {
++	status = "disabled";
+ 	vmmc-supply = <&vmmcsd_fixed>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&emmc_pins>;
