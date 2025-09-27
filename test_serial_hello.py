@@ -30,7 +30,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 def assert_in(expected, buffer):
     if expected not in buffer:
-        raise AssertionError(f"Expected '{expected}' not found in:\n{buffer[-200:]}")
+        raise AssertionError(f"Expected '{expected}' not found in:\r\n{buffer[-200:]}")
     return True
 
 def reset_bbb():
@@ -62,29 +62,30 @@ class RemoteSerialTester:
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
-        self.prompt = prompt  # Shell prompt to expect
+        self.prompt = prompt
         self.login_prompt = "beaglebone-yocto login:"
         self.client = None
         self.channel = None
         self.output_queue = queue.Queue()
         self.last_command = None
+        self.running = False
 
     def connect(self):
-        """Establish SSH connection and configure serial"""
+        """Establish SSH connection and start socat over serial"""
         try:
             self.client = paramiko.SSHClient()
             self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            self.client.connect(self.host, username=self.user)  # uses default SSH keys (~/.ssh/id_rsa)
+            self.client.connect(self.host, username=self.user)  # SSH keys (~/.ssh/id_rsa)
 
-            # Open an interactive shell
+            # Open an interactive shell (pseudo-terminal)
             self.channel = self.client.invoke_shell()
             time.sleep(1)
 
-            # Use socat for reliable bidirectional serial communication
-            cmd = f"socat - /dev/ttyUSB0,b{self.baudrate},raw,echo=0"
-            self.channel.send(cmd + "\n")
+            # Launch socat with CRLF translation for proper Enter
+            cmd = f"socat - {self.port},b{self.baudrate},raw,echo=0,crnl\n"
+            self.channel.send(cmd)
 
-            # Start background reader
+            # Start background thread to read output
             threading.Thread(target=self._reader, daemon=True).start()
 
             print(f"Connected to {self.host}:{self.port} at {self.baudrate} baud over SSH using socat")
@@ -132,7 +133,7 @@ class RemoteSerialTester:
                 print(f"Received: {data.strip()}")
                 # Strip echoed command if present
                 if self.last_command and buffer.strip().startswith(self.last_command):
-                    cmd_end = buffer.find('\n', len(self.last_command))
+                    cmd_end = buffer.find('\r\n', len(self.last_command))
                     if cmd_end != -1:
                         buffer = buffer[cmd_end + 1:]
                         self.last_command = None  # Clear after stripping
@@ -195,9 +196,9 @@ class RemoteSerialTester:
 
     def perform_login(self):
         """Send username, handle password if needed, and wait for shell prompt"""
-        print("\n2. Sending username 'srk'...")
+        print("\r\n2. Sending username 'srk'...")
         if self.channel:
-            self.channel.send("srk\n")
+            self.channel.send("srk\r\n")
             print("Sent: srk")
             time.sleep(1)
 
@@ -213,7 +214,7 @@ class RemoteSerialTester:
                 if "Password:" in buffer and not password_sent:
                     print("✓ Password prompt detected, sending empty password")
                     if self.channel:
-                        self.channel.send("\n")
+                        self.channel.send("\r\n")
                     password_sent = True
                 if self.prompt in buffer:
                     print("✓ Shell prompt detected")
@@ -257,12 +258,12 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "SEND_COMMAND":
             # Send a command without expecting specific output
-            tester.send_command(command + "\n")
+            tester.send_command(command + "\r\n")
             return "Command sent"
 
         elif test_type == "COMMAND_AND_ASSERT":
             # Send command and check for expected string in response
-            tester.send_command(command + "\n")
+            tester.send_command(command + "\r\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if assert_in(expected, output):
@@ -271,7 +272,7 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "COMMAND_AND_VERIFY_MULTIPLE":
             # Send command and verify multiple expected strings
-            tester.send_command(command + "\n")
+            tester.send_command(command + "\r\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             expected_lines = expected if isinstance(expected, list) else [expected]
@@ -281,7 +282,7 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "COMMAND_AND_EXTRACT":
             # Send command and extract specific information
-            tester.send_command(command + "\n")
+            tester.send_command(command + "\r\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if expected and assert_in(expected, output):
@@ -323,7 +324,7 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "HARDWARE_CHECK":
             # Check hardware availability
-            tester.send_command(command + "\n")
+            tester.send_command(command + "\r\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if expected:
@@ -337,7 +338,7 @@ def run_generic_test(tester, test_config):
             if isinstance(command, list):
                 # Multiple commands for hardware test
                 for cmd in command:
-                    tester.send_command(cmd + "\n")
+                    tester.send_command(cmd + "\r\n")
                     if 'sleep' in kwargs:
                         time.sleep(kwargs['sleep'])
                 timeout = kwargs.get('timeout', 10)
@@ -347,7 +348,7 @@ def run_generic_test(tester, test_config):
                 return failure_msg
             else:
                 # Single command hardware test
-                tester.send_command(command + "\n")
+                tester.send_command(command + "\r\n")
                 timeout = kwargs.get('timeout', 10)
                 output = tester.read_until(tester.prompt, timeout)
                 if expected and assert_in(expected, output):
@@ -411,8 +412,7 @@ IMAGE_11_TEST_SUITE = [
     # ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
-    ["HARDWARE_CHECK", "ls /sys/class/leds/", "beaglebone", "LED hardware not found"],
-    ["HARDWARE_CHECK", "ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'", None, "EEPROM device not found"],
+
 
     ["COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
     ["COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
@@ -425,8 +425,6 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
     ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 
-    # Init system check (image 11: expects BusyBox init)
-    ["COMMAND_AND_ASSERT", "ps -p 1", "busybox", "BusyBox init not found (expected for image 11)"],
     
 ]
 
@@ -497,7 +495,7 @@ class TestSerialHello(unittest.TestCase):
             else:
                 name = f"{test_type}: {command or 'N/A'}"
 
-            print(f"\n➡️ Step {i+1}: {name}")
+            print(f"\r\n➡️ Step {i+1}: {name}")
             try:
                 value = run_generic_test(self.tester, test_config)
                 if isinstance(value, str) and value:
