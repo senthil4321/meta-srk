@@ -10,7 +10,7 @@ SRC_URI += "file://defconfig \
             file://am335x-yocto-srk-tiny.dts;subdir=git/arch/arm/boot/dts/ti/omap \
            "
 
-KCONFIG_MODE = "alldefconfig"
+KCONFIG_MODE = "defconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto-srk-tiny"
 

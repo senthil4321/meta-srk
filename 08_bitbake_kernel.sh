@@ -49,6 +49,7 @@ show_menu() {
     else
         echo "=== STANDARD KERNEL MODE ==="
     fi
+    echo "Work Flow 2, 3, 10 --- Run 2. menuconfig.  3. diffconfig and 10. Print fragment.cfg file contents ---"
     echo "Select an option:"
     echo "0. bitbake virtual/kernel "
     echo "1. bitbake $KERNEL_NAME -c kernel_configme -f"
@@ -115,7 +116,7 @@ execute_option() {
             fi
             ;;
         11)
-            echo "Run 2. menuconfig.  3. diffconfig and view the fragment.cfg file using 10. Print fragment.cfg file contents"
+            echo "Run 2. menuconfig.  3. diffconfig and 10. Print fragment.cfg file contents"
             ;;
         12)
             show_help

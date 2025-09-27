@@ -45,6 +45,9 @@ CONFIG_EXT2_FS=y
 # CONFIG_DRM is not set
 # CONFIG_MMC is not set
 
+# --- Explicitly disable SCSI and related options ---
+# CONFIG_SCSI is not set
+
 # --- Disable security / crypto / namespaces ---
 # CONFIG_SECURITY is not set
 # CONFIG_KEYS is not set
@@ -56,6 +59,3 @@ CONFIG_EXT2_FS=y
 # --- Debugging (optional, can disable later) ---
 CONFIG_DEBUG_KERNEL=y
 CONFIG_KALLSYMS=y
-CONFIG_EARLY_PRINTK=y
-CONFIG_SCSI_DEBUG=n
-# CONFIG_SCSI is not set
