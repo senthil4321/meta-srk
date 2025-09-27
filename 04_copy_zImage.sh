@@ -123,8 +123,15 @@ for INPUT_FILENAME in "${INPUT_FILES[@]}"; do
             ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/$ZIMAGE_TARGET"
             TARGET_NAME="$ZIMAGE_TARGET"
         else
-            ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/"
-            TARGET_NAME="$INPUT_FILENAME"
+            # For tiny DTB, rename to standard name as workaround
+            if [ "$USE_TINY" = true ] && [ "$INPUT_FILENAME" = "am335x-yocto-srk-tiny.dtb" ]; then
+                ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/am335x-boneblack.dtb"
+                TARGET_NAME="am335x-boneblack.dtb"
+                echo "4. Renamed $INPUT_FILENAME to am335x-boneblack.dtb as workaround"
+            else
+                ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/"
+                TARGET_NAME="$INPUT_FILENAME"
+            fi
         fi
         if [ $? -eq 0 ]; then
             echo "3. $INPUT_FILENAME moved successfully to /srv/tftp/ as $TARGET_NAME"
