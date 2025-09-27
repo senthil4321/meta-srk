@@ -624,8 +624,6 @@ def run_generic_test(tester, test_config):
 DEFAULT_TEST_SUITE = [
     # [test_type, description, command, expected_value, failure_message, kwargs]
 
-    # Reset BBB before starting tests
-    ["RESET_TARGET", "Reset BBB", None, None, "Target reset failed"],
 
     # Base system checks
     ["ASSERT_IN_BUFFER", "Check U-Boot logs", None, "U-Boot", "U-Boot not found in logs"],
@@ -681,6 +679,15 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_EXTRACT", "Check timestamp", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
     ["COMMAND_AND_EXTRACT", "Check uptime", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
     ["COMMAND_AND_EXTRACT", "Check BusyBox", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
+    # Reset and capture serial boot logs; ensure root shell message appears
+    ["LOG_CAPTURE", "Reset and capture boot serial logs", None, "Dropping into root shell...", "Boot logs missing root shell message", {
+        "capture_name": "root-shell-boot",
+        "timeout": 90,
+        "wait_for_all": True,
+        "reset_before": True
+    }],
+    ["CAPTURE_ASSERT", "Verify root shell boot message", None, "Dropping into root shell...", "Root shell message not found", {"capture_name": "root-shell-boot"}],
+
 ]
 
 class TestSerialHello(unittest.TestCase):
