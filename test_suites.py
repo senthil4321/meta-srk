@@ -75,3 +75,23 @@ IMAGE_11_TEST_SUITE = [
     ["CAPTURE_LOG_ASSERT", "Verify boot message", None, "Dropping into root shell...", "Message not found", {"capture_name": "root-shell-boot"}],
 
 ]
+
+IMAGE_11_TEST_SUITE_TINY = [
+    # [test_type, description, command, expected_value, failure_message, kwargs]
+
+    # Reset BBB before starting tests
+    # ["RESET_TARGET", "Reset BBB", None, None, "Target reset failed"],
+    # ["WAIT", "Wait after reset", None, None, None, {"duration": "medium"}],
+    # Detailed login steps - simplified for generic format
+    # ["WAIT_FOR_CONDITION", "Wait for shell prompt", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+
+
+    ["CAPTURE_LOG", "Capture boot serial logs", None, None, "Error Capturing Log", {
+        "capture_name": "root-shell-boot",
+        "reset_before": True,
+        "timeout": 10,
+        "end_conditions": ["Hello World"]
+    }],
+    ["CAPTURE_LOG_ASSERT", "Verify boot message", None, "Hello World", "Message not found", {"capture_name": "root-shell-boot"}],
+
+]

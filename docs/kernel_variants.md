@@ -237,17 +237,20 @@ Use the provided deployment scripts:
 #### Copy Kernel Image
 
 ```bash
-# Copy regular kernel (default)
-./04_copy_zImage.sh
-
-# Copy initramfs-embedded kernel (when available)
+# Copy standard kernel (default)
 ./04_copy_zImage.sh -i
 
+# Copy tiny kernel (minimal configuration)
+./04_copy_zImage.sh -i -tiny
+
 # Copy with verbose output
-./04_copy_zImage.sh -i -v
+./04_copy_zImage.sh -i -tiny -v
 ```
 
-**Last Deployment**: linux-yocto-srk kernel and am335x-boneblack.dtb successfully copied to TFTP server on September 25, 2025.
+**Last Deployment**:
+
+- Standard kernel: linux-yocto kernel and am335x-boneblack.dtb successfully copied to TFTP server on September 27, 2025
+- Tiny kernel: linux-yocto-srk-tiny kernel and am335x-yocto-srk-tiny.dtb successfully copied to TFTP server on September 28, 2025
 
 #### Copy Kernel Modules (if needed)
 

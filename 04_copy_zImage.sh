@@ -3,6 +3,7 @@
 # Copy zImage and DTB files to target device
 # Uses SSH alias 'p' configured in ~/.ssh/config for pi@srk.local
 # Uses SSH key-based authentication (no password required)
+# Supports both standard and tiny kernel configurations
 
 VERSION="1.0.0"
 
@@ -13,28 +14,29 @@ Usage: $0 [options]
 Copy zImage and device tree files to the target device for TFTP boot.
 
 Options:
-    -i             Use initramfs-embedded zImage (zImage-initramfs-beaglebone-yocto.bin)
+    -i             Use initramfs-embedded zImage
+    -tiny          Use tiny kernel configuration (beaglebone-yocto-srk-tiny)
     -v             Verbose output
     -V             Show version and exit
     -h             This help
 
 Examples:
-    $0
-    $0 -i
-    $0 -i -v
+    $0 -i                    # Standard kernel with initramfs
+    $0 -i -tiny              # Tiny kernel with initramfs
+    $0 -i -tiny -v           # Tiny kernel with initramfs and verbose output
 
 Notes:
     - Uses SSH alias 'p' configured in ~/.ssh/config
     - SSH key-based authentication is used (no password required)
     - By default, uses regular zImage if available, otherwise initramfs version
+    - Default: standard beaglebone-yocto machine with am335x-boneblack.dtb
+    - With -tiny: beaglebone-yocto-srk-tiny machine with am335x-yocto-srk-tiny.dtb
 
 Version: $VERSION
 EOF
 }
 
 # Define the input filenames and destination
-INPUT_FILES=("am335x-boneblack.dtb")
-SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
 USERNAME="pi"
 HOSTNAME="srk.local"
 SERVER_NAME="$USERNAME@$HOSTNAME"
@@ -42,12 +44,14 @@ DESTINATION="$SERVER_NAME:/tmp/"
 
 # Initialize variables
 USE_INITRAMFS=false
+USE_TINY=false
 VERBOSE=""
 
 # Parse command line arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -i) USE_INITRAMFS=true ;;
+        -tiny) USE_TINY=true ;;
         -v) VERBOSE="-v" ;;
         -V)
             echo "$(basename "$0") version $VERSION"
@@ -62,14 +66,29 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
+# Set configuration based on -tiny flag
+if [ "$USE_TINY" = true ]; then
+    INPUT_FILES=("am335x-yocto-srk-tiny.dtb")
+    SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto-srk-tiny/"
+    MACHINE_SUFFIX="-srk-tiny"
+    DTB_NAME="am335x-yocto-srk-tiny.dtb"
+    echo "Using tiny kernel configuration (beaglebone-yocto-srk-tiny)"
+else
+    INPUT_FILES=("am335x-boneblack.dtb")
+    SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
+    MACHINE_SUFFIX=""
+    DTB_NAME="am335x-boneblack.dtb"
+    echo "Using standard kernel configuration (beaglebone-yocto)"
+fi
+
 # Determine which zImage to use based on -i flag
 if [ "$USE_INITRAMFS" = true ]; then
-    if [ -f "${SOURCE_DIR}zImage-initramfs-beaglebone-yocto.bin" ]; then
-        ZIMAGE_FILE="zImage-initramfs-beaglebone-yocto.bin"
+    if [ -f "${SOURCE_DIR}zImage-initramfs-beaglebone-yocto${MACHINE_SUFFIX}.bin" ]; then
+        ZIMAGE_FILE="zImage-initramfs-beaglebone-yocto${MACHINE_SUFFIX}.bin"
         ZIMAGE_TARGET="zImage"
         echo "Using embedded initramfs zImage: $ZIMAGE_FILE"
     else
-        echo "Error: Initramfs zImage not found: ${SOURCE_DIR}zImage-initramfs-beaglebone-yocto.bin"
+        echo "Error: Initramfs zImage not found: ${SOURCE_DIR}zImage-initramfs-beaglebone-yocto${MACHINE_SUFFIX}.bin"
         exit 1
     fi
 else
@@ -78,8 +97,8 @@ else
         ZIMAGE_FILE="zImage"
         ZIMAGE_TARGET="zImage"
         echo "Using regular zImage: $ZIMAGE_FILE"
-    elif [ -f "${SOURCE_DIR}zImage-initramfs-beaglebone-yocto.bin" ]; then
-        ZIMAGE_FILE="zImage-initramfs-beaglebone-yocto.bin"
+    elif [ -f "${SOURCE_DIR}zImage-initramfs-beaglebone-yocto${MACHINE_SUFFIX}.bin" ]; then
+        ZIMAGE_FILE="zImage-initramfs-beaglebone-yocto${MACHINE_SUFFIX}.bin"
         ZIMAGE_TARGET="zImage"
         echo "Using embedded initramfs zImage (fallback): $ZIMAGE_FILE"
     else

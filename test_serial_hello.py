@@ -21,7 +21,8 @@ import warnings
 import subprocess
 import copy
 import json
-from test_suites import DEFAULT_TEST_SUITE, IMAGE_11_TEST_SUITE
+from test_suites import DEFAULT_TEST_SUITE, IMAGE_11_TEST_SUITE, IMAGE_11_TEST_SUITE_TINY
+from test_report import TestReportGenerator
 
 # Suppress deprecation warnings from Paramiko
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -38,7 +39,7 @@ def reset_bbb():
         result = subprocess.run(['./13_remote_reset_bbb.sh'], capture_output=True, text=True, timeout=30)
         if result.returncode == 0:
             print("✅ BBB reset successful")
-            time.sleep(10)  # Wait for BBB to reboot
+            time.sleep(2)  # Wait for BBB to reboot
             return True
         else:
             print(f"❌ BBB reset failed: {result.stderr}")
@@ -619,8 +620,8 @@ class TestSerialHello(unittest.TestCase):
     def tearDown(self):
         self.tester.disconnect()
 
-    def run_all_tests(self, image_type=None, test_suite_file=None):
-        # Select test suite based on image type or file
+    def run_all_tests(self, image_type=None, test_suite_file=None, test_suite=None):
+        # Select test suite based on parameters
         if test_suite_file:
             try:
                 with open(test_suite_file, 'r') as f:
@@ -629,12 +630,19 @@ class TestSerialHello(unittest.TestCase):
             except Exception as e:
                 print(f"❌ Error loading test suite from {test_suite_file}: {e}")
                 return []
-        elif image_type == "11":
+        elif test_suite == "image_11_tiny":
+            steps = IMAGE_11_TEST_SUITE_TINY
+            print("🧪 Running IMAGE_11_TEST_SUITE_TINY (tiny image boot verification)")
+        elif test_suite == "image_11":
             steps = IMAGE_11_TEST_SUITE
             print("🧪 Running IMAGE_11_TEST_SUITE (includes hardware tests)")
-        else:
+        elif test_suite == "default":
             steps = DEFAULT_TEST_SUITE
             print("🧪 Running DEFAULT_TEST_SUITE (minimal test set)")
+        elif test_suite == "kernel_boot":
+            # For kernel_boot, use a minimal set or just boot verification
+            steps = DEFAULT_TEST_SUITE  # Could define a separate KERNEL_BOOT_TEST_SUITE if needed
+            print("🧪 Running KERNEL_BOOT_TEST_SUITE (boot verification only)")
 
 
         non_blocking = ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION", "WAIT"]
@@ -667,19 +675,20 @@ class TestSerialHello(unittest.TestCase):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SRK Serial Test Script")
     parser.add_argument("--save-report", type=str, help="Save test report to specified file")
-    parser.add_argument("--image-type", type=str, help="Image type (e.g., 11 for bbb-examples, affects test selection)")
+    parser.add_argument("--test-suite", type=str, choices=["kernel_boot", "default", "image_11", "image_11_tiny"], 
+                       help="Built-in test suite to run")
     parser.add_argument("--test-suite-file", type=str, help="Load test suite from JSON file")
 
     args = parser.parse_args()
 
     tester = TestSerialHello()
-    if not args.test_suite_file and not args.image_type:
-        print("Error: Please specify --test-suite-file or --image-type to select a test suite.")
+    if not args.test_suite_file and not args.test_suite:
+        print("Error: Please specify --test-suite-file or --test-suite to select a test suite.")
         sys.exit(1)
-    tester.image_type = args.image_type  # Set image type before setup
+    tester.image_type = args.test_suite  # Set image type before setup
     tester.setUp()
     try:
-        results = tester.run_all_tests(args.image_type, args.test_suite_file)
+        results = tester.run_all_tests(args.test_suite, args.test_suite_file, args.test_suite)
         if args.save_report:
             report_generator = TestReportGenerator()
             report_generator.save_report_to_file(results, args.save_report, ["Check for", "Hardware check", "Wait for", "Wait"])
