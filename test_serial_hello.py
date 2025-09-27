@@ -2,7 +2,7 @@
 """
 Serial Test Script for SRK Target Device over Remote SSH
 Connects to remote host and accesses serial device using socat
-Tests include hello application, system info, LED control, and EEPROM access
+Tests include hello application, system info, LED control, EEPROM access, and RTC functionality
 
 Version: 1.4.0
 Author: SRK Development Team
@@ -10,7 +10,7 @@ Copyright (c) 2025 SRK. All rights reserved.
 License: MIT
 """
 
-__version__ = "1.7.0"
+__version__ = "1.8.0"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -252,6 +252,9 @@ class TestSerialHello(unittest.TestCase):
             ("Test LED control", lambda t: (t.send_command("echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), time.sleep(1), t.send_command("cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("1", output), ("LED control OK" if "1" in output else "LED control failed"))[5]),
             ("Check EEPROM support", lambda t: (t.send_command("ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, ("EEPROM device found" if output.strip() else "No EEPROM device"))[3]),
             ("Test EEPROM read", lambda t: (t.send_command("hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 10, ("EEPROM readable" if len(output.strip()) > 10 else "EEPROM read failed"))[3]),
+            ("Check RTC binary exists", lambda t: (t.send_command("which bbb-02-rtc"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("bbb-02-rtc", output), ("RTC binary found" if "bbb-02-rtc" in output else "RTC binary missing"))[3]),
+            ("Test RTC read", lambda t: (t.send_command("bbb-02-rtc read"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Time:", output), ("RTC read OK" if "RTC Time:" in output else "RTC read failed"))[3]),
+            ("Test RTC info", lambda t: (t.send_command("bbb-02-rtc info"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Device:", output), ("RTC info OK" if "RTC Device:" in output else "RTC info failed"))[3]),
             ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
             ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
                 "Hello, World! from meta-srk layer and recipes-srk V2!!!",
@@ -267,7 +270,7 @@ class TestSerialHello(unittest.TestCase):
             ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("systemd", output) or assert_in("init", output), ("systemd" if "systemd" in output else "busybox"))[3]),
         ]
 
-        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read"]
+        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"]
         results = []
 
         for name, func in steps:
@@ -305,6 +308,6 @@ if __name__ == "__main__":
         results = tester.run_all_tests()
         if args.save_report:
             report_generator = TestReportGenerator()
-            report_generator.save_report_to_file(results, args.save_report, ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read"])
+            report_generator.save_report_to_file(results, args.save_report, ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"])
     finally:
         tester.tearDown()
