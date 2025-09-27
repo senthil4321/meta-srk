@@ -19,6 +19,14 @@ source oe-init-build-env build
 bitbake linux-yocto-srk-tiny -c cleansstate
 
 # Build the kernel
-bitbake linux-yocto-srk-tiny
-
-echo "Kernel build completed successfully. Patch test passed."
+if bitbake linux-yocto-srk-tiny; then
+    echo "Kernel build completed successfully. Patch test passed."
+    echo "Note: CONFIG_* warnings are normal and don't indicate patch issues."
+else
+    echo "Error: Kernel build failed. Check the patch for issues."
+    echo "Common issues:"
+    echo "  - Patch syntax errors"
+    echo "  - DTS compilation failures"
+    echo "  - Missing dependencies"
+    exit 1
+fi

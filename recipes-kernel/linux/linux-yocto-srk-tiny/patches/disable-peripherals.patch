@@ -1,30 +1,10 @@
 Upstream-Status: Inappropriate [disable unused peripherals for faster boot]
 
 diff --git a/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi b/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi
-index 96451c8a815c..260a92360053 100644
+index 96451c8a815c..f924c5230e3f 100644
 --- a/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi
 +++ b/arch/arm/boot/dts/ti/omap/am335x-bone-common.dtsi
-@@ -192,16 +192,18 @@ &uart0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&uart0_pins>;
- 
--	status = "okay";
-+	status = "disabled";
- };
- 
- &usb0 {
-+	status = "disabled";
- 	dr_mode = "peripheral";
- 	interrupts-extended = <&intc 18 &tps 0>;
- 	interrupt-names = "mc", "vbus";
- };
- 
- &usb1 {
-+	status = "disabled";
- 	dr_mode = "host";
- };
- 
-@@ -209,7 +211,7 @@ &i2c0 {
+@@ -209,7 +209,7 @@ &i2c0 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c0_pins>;
  
@@ -33,7 +13,7 @@ index 96451c8a815c..260a92360053 100644
  	clock-frequency = <400000>;
  
  	tps: tps@24 {
-@@ -233,7 +235,7 @@ &i2c2 {
+@@ -233,7 +233,7 @@ &i2c2 {
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c2_pins>;
  
@@ -42,21 +22,7 @@ index 96451c8a815c..260a92360053 100644
  	clock-frequency = <100000>;
  
  	cape_eeprom0: cape_eeprom0@54 {
-@@ -305,11 +307,11 @@ &tps {
- 	ti,pmic-shutdown-controller;
- 
- 	charger {
--		status = "okay";
-+		status = "disabled";
- 	};
- 
- 	pwrbutton {
--		status = "okay";
-+		status = "disabled";
- 	};
- 
- 	regulators {
-@@ -359,6 +361,7 @@ ldo4_reg: regulator@6 {
+@@ -359,6 +359,7 @@ ldo4_reg: regulator@6 {
  };
  
  &cpsw_port1 {
@@ -64,12 +30,7 @@ index 96451c8a815c..260a92360053 100644
  	phy-handle = <&ethphy0>;
  	phy-mode = "mii";
  	ti,dual-emac-pvid = <1>;
-@@ -372,10 +375,11 @@ &mac_sw {
- 	pinctrl-names = "default", "sleep";
- 	pinctrl-0 = <&cpsw_default>;
- 	pinctrl-1 = <&cpsw_sleep>;
--	status = "okay";
-+	status = "disabled";
+@@ -376,6 +377,7 @@ &mac_sw {
  };
  
  &davinci_mdio_sw {
@@ -77,16 +38,7 @@ index 96451c8a815c..260a92360053 100644
  	pinctrl-names = "default", "sleep";
  	pinctrl-0 = <&davinci_mdio_default>;
  	pinctrl-1 = <&davinci_mdio_sleep>;
-@@ -390,7 +394,7 @@ ethphy0: ethernet-phy@0 {
- };
- 
- &mmc1 {
--	status = "okay";
-+	status = "disabled";
- 	bus-width = <0x4>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&mmc1_pins>;
-@@ -398,11 +402,11 @@ &mmc1 {
+@@ -398,11 +400,11 @@ &mmc1 {
  };
  
  &aes {
@@ -100,7 +52,7 @@ index 96451c8a815c..260a92360053 100644
  };
  
  &rtc {
-@@ -412,7 +416,7 @@ &rtc {
+@@ -412,7 +414,7 @@ &rtc {
  };
  
  &pruss_tm {
@@ -109,20 +61,3 @@ index 96451c8a815c..260a92360053 100644
  };
  
  &wkup_m3_ipc {
-diff --git a/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi b/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
-index a7a8c61ef9b2..b2e49e155c26 100644
---- a/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
-+++ b/arch/arm/boot/dts/ti/omap/am335x-boneblack-common.dtsi
-@@ -10,10 +10,12 @@ &ldo3_reg {
- };
- 
- &mmc1 {
-+	status = "disabled";
- 	vmmc-supply = <&vmmcsd_fixed>;
- };
- 
- &mmc2 {
-+	status = "disabled";
- 	vmmc-supply = <&vmmcsd_fixed>;
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&emmc_pins>;
