@@ -4,7 +4,7 @@ This recipe provides a simple LED blinking application for the BeagleBone Black 
 
 ## What it does
 
-The `bbb-led-blink` program blinks all 4 user LEDs on the BeagleBone Black in sequence:
+The `bbb-02-led-blink` program blinks all 4 user LEDs on the BeagleBone Black in sequence:
 - LED0 (USR0) - Green
 - LED1 (USR1) - Green
 - LED2 (USR2) - Green
@@ -14,12 +14,12 @@ Each LED turns on for 1 second, then the next LED in sequence turns on, creating
 
 ## Building the Recipe
 
-The recipe is named `bbb-01-led-blink.bb` and follows the BBB example naming convention.
+The recipe is named `bbb-02-led-blink.bb` and follows the BBB example naming convention.
 
 To build just this recipe:
 
 ```bash
-bitbake bbb-01-led-blink
+bitbake bbb-02-led-blink
 ```
 
 ## Including in the Image
@@ -34,10 +34,10 @@ bitbake core-image-tiny-initramfs-srk-11-bbb-examples
 
 After booting the BeagleBone Black with the initramfs image:
 
-1. The program will be installed at `/usr/bin/bbb-led-blink`
+1. The program will be installed at `/usr/bin/bbb-02-led-blink`
 2. Run it with:
    ```bash
-   bbb-led-blink
+   bbb-02-led-blink
    ```
 
 3. You should see all 4 user LEDs blinking in sequence
@@ -65,6 +65,6 @@ If LEDs don't blink:
 
 ## Files
 
-- `bbb-01-led-blink.bb` - The recipe file
-- `files/bbb-led-blink.c` - Main C program
+- `bbb-02-led-blink.bb` - The recipe file
+- `files/bbb-led-blink.c` - Main C program (compiled to bbb-02-led-blink)
 - `files/Makefile` - Build configuration

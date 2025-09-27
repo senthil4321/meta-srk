@@ -15,5 +15,5 @@ do_compile() {
 
 do_install() {
     install -d ${D}${bindir}
-    install -m 0755 bbb-led-blink ${D}${bindir}/
+    install -m 0755 bbb-02-led-blink ${D}${bindir}/
 }
