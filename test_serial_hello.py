@@ -680,10 +680,8 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_EXTRACT", "Check uptime", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
     ["COMMAND_AND_EXTRACT", "Check BusyBox", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
     # Reset and capture serial boot logs; ensure root shell message appears
-    ["LOG_CAPTURE", "Reset and capture boot serial logs", None, "Dropping into root shell...", "Boot logs missing root shell message", {
+    ["LOG_CAPTURE", "Capture boot serial logs", None, None, "Error Capturing Log", {
         "capture_name": "root-shell-boot",
-        "timeout": 90,
-        "wait_for_all": True,
         "reset_before": True
     }],
     ["CAPTURE_ASSERT", "Verify root shell boot message", None, "Dropping into root shell...", "Root shell message not found", {"capture_name": "root-shell-boot"}],
