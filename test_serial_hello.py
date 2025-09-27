@@ -12,16 +12,22 @@ Cop        elif test_type == "COMMAND_AND_EXTRACT":
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             try:
-                if expected and assert_in(expected, output):
-                    # Extract value based on pattern
-                    extract_pattern = kwargs.get('extract_pattern', expected)
-                    if extract_pattern in output:
-                        # Simple extraction - can be made more sophisticated
-                        parts = output.split(extract_pattern)
-                        if len(parts) > 1:
-                            value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
-                            return (True, value)
-                return (False, "Unknown")
+                if expected:
+                    if assert_in(expected, output):
+                        # Extract value based on pattern
+                        extract_pattern = kwargs.get('extract_pattern', expected)
+                        if extract_pattern in output:
+                            # Simple extraction - can be made more sophisticated
+                            parts = output.split(extract_pattern)
+                            if len(parts) > 1:
+                                value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
+                                return (True, value)
+                    return (False, "Unknown")
+                else:
+                    # If no expected pattern, just check if command produced output
+                    if len(output.strip()) > 0:
+                        return (True, "Command executed successfully")
+                    return (False, "No output from command")
             except AssertionError:
                 return (False, "Unknown") SRK. All rights reserved.
 License: MIT
@@ -253,14 +259,15 @@ import unittest
 def run_generic_test(tester, test_config):
     """
     Generic test runner that handles different test types
-    test_config format: [test_type, command, expected_value, failure_message, **kwargs]
+    test_config format: [description, test_type, command, expected_value, failure_message, **kwargs]
     Returns: (success: bool, message: str)
     """
-    test_type = test_config[0]
-    command = test_config[1] if len(test_config) > 1 else None
-    expected = test_config[2] if len(test_config) > 2 else None
-    failure_msg = test_config[3] if len(test_config) > 3 else "Test failed"
-    kwargs = test_config[4] if len(test_config) > 4 else {}
+    description = test_config[0] if len(test_config) > 0 else "Unknown test"
+    test_type = test_config[1] if len(test_config) > 1 else None
+    command = test_config[2] if len(test_config) > 2 else None
+    expected = test_config[3] if len(test_config) > 3 else None
+    failure_msg = test_config[4] if len(test_config) > 4 else "Test failed"
+    kwargs = test_config[5] if len(test_config) > 5 else {}
 
     # Replace {PROMPT} placeholder with actual prompt
     if expected and isinstance(expected, str):
@@ -400,7 +407,12 @@ def run_generic_test(tester, test_config):
 
         elif test_type == "RESET_TARGET":
             # Reset the target device
+            print("🔄 Resetting target device...")
             if reset_bbb():
+                print("✅ Target reset completed, waiting for system to reboot...")
+                # After reset, we need to wait for the system to come back up
+                # The serial connection might be lost, so we'll wait a bit longer
+                time.sleep(15)  # Additional wait beyond the 10s in reset_bbb
                 return (True, "Target reset successful")
             return (False, failure_msg)
 
@@ -412,65 +424,65 @@ def run_generic_test(tester, test_config):
 
 # Define test suites with generic format
 DEFAULT_TEST_SUITE = [
-    # [test_type, command, expected_value, failure_message, kwargs]
+    # [description, test_type, command, expected_value, failure_message, kwargs]
 
     # Reset BBB before starting tests
-    ["RESET_TARGET", None, None, "Target reset failed"],
+    ["Reset BBB", "RESET_TARGET", None, None, "Target reset failed"],
 
     # Base system checks
-    ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
-    ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
-    ["ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
+    ["Check U-Boot logs", "ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
+    ["Check kernel logs", "ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
+    ["Check initramfs logs", "ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
+    ["Wait for login prompt", "WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
 
     # Detailed login steps - simplified for generic format
-    ["SEND_COMMAND", "srk", None, "Username sent"],
-    ["SEND_COMMAND", "", None, "Password sent"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
-    ["ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
+    ["Send username", "SEND_COMMAND", "srk", None, "Username sent"],
+    ["Send password", "SEND_COMMAND", "", None, "Password sent"],
+    ["Wait for shell prompt", "WAIT_FOR_CONDITION", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+    ["Verify login", "ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
 
     # Application tests
-    ["COMMAND_AND_ASSERT", "which hello", "hello", "Hello binary not found"],
-    ["COMMAND_AND_VERIFY_MULTIPLE", "hello", [
+    ["Check hello binary", "COMMAND_AND_ASSERT", "which hello", "hello", "Hello binary not found"],
+    ["Test hello output", "COMMAND_AND_VERIFY_MULTIPLE", "hello", [
         "Hello, World! from meta-srk layer and recipes-srk V2!!!",
         "Hello, World! 20SEP2025 07:28 !!!",
         "Hello, World! 20SEP2025 23:50 !!!"
     ], "Hello output verification failed"],
 
     # System information tests
-    ["COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
-    ["COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
-    ["COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
-    ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
-    ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
+    ["Check kernel version", "COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
+    ["Check build time", "COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
+    ["Check timestamp", "COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
+    ["Check uptime", "COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["Check BusyBox", "COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 
     # Init system check (default: expects systemd or init)
-    ["COMMAND_AND_ASSERT", "ps -p 1", "systemd", "Init system check failed"],
+    ["Check init system", "COMMAND_AND_ASSERT", "ps -p 1", "systemd", "Init system check failed"],
 
     # Security tests
-    ["COMMAND_AND_ASSERT", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
+    ["Check encryption support", "COMMAND_AND_ASSERT", "which cryptsetup", "cryptsetup", "Encryption support check failed"],
 ]
 
 IMAGE_11_TEST_SUITE = [
-    # [test_type, command, expected_value, failure_message, kwargs]
+    # [description, test_type, command, expected_value, failure_message, kwargs]
 
     # Reset BBB before starting tests
-    # ["RESET_TARGET", None, None, "Target reset failed"],
-    # ["WAIT", None, None, None, {"duration": "medium"}],
+    ["Reset BBB", "RESET_TARGET", None, None, "Target reset failed"],
+    # ["Wait after reset", "WAIT", None, None, None, {"duration": "medium"}],
     # Detailed login steps - simplified for generic format
-    # ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+    ["Wait for shell prompt", "WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
-    ["COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
-    ["COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
-    ["COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
+    ["Check RTC binary", "COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
+    ["Test RTC read", "COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
+    ["Test RTC info", "COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
 
     # System information tests
-    ["COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
-    ["COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
-    ["COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
-    ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
-    ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
+    ["Check kernel version", "COMMAND_AND_EXTRACT", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],
+    ["Check build time", "COMMAND_AND_EXTRACT", "uname -v", "#", "Build time check failed", {"extract_pattern": "#"}],
+    ["Check timestamp", "COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
+    ["Check uptime", "COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["Check BusyBox", "COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 ]
 
 class TestSerialHello(unittest.TestCase):
@@ -508,37 +520,12 @@ class TestSerialHello(unittest.TestCase):
         results = []
 
         for i, test_config in enumerate(steps):
-            # Create a descriptive name for the test
-            test_type = test_config[0]
-            command = test_config[1] if len(test_config) > 1 and test_config[1] else "N/A"
-            expected = test_config[2] if len(test_config) > 2 and test_config[2] else "N/A"
-
-            # Generate human-readable test name
-            if test_type == "ASSERT_IN_BUFFER":
-                name = f"Check for '{expected}' in buffer"
-            elif test_type == "SEND_COMMAND":
-                name = f"Send command: {command}"
-            elif test_type == "COMMAND_AND_ASSERT":
-                name = f"Run '{command}' and check for '{expected}'"
-            elif test_type == "COMMAND_AND_VERIFY_MULTIPLE":
-                name = f"Run '{command}' and verify multiple patterns"
-            elif test_type == "COMMAND_AND_EXTRACT":
-                name = f"Run '{command}' and extract info"
-            elif test_type == "WAIT_FOR_CONDITION":
-                name = f"Wait for condition: {expected}"
-            elif test_type == "CONDITIONAL_SEND":
-                name = f"Conditionally send: {command}"
-            elif test_type == "HARDWARE_CHECK":
-                name = f"Hardware check: {command}"
-            elif test_type == "HARDWARE_TEST":
-                name = f"Hardware test: {command}"
-            elif test_type == "RESET_TARGET":
-                name = "Reset Target Device"
-            elif test_type == "WAIT":
-                duration = test_config[4].get('duration', 'short') if len(test_config) > 4 and test_config[4] else 'short'
-                name = f"Wait {duration}"
-            else:
-                name = f"{test_type}: {command or 'N/A'}"
+            # Get description from test config
+            description = test_config[0] if len(test_config) > 0 else "Unknown test"
+            test_type = test_config[1] if len(test_config) > 1 else "UNKNOWN"
+            
+            # Use description as the test name
+            name = description
 
             print(f"\r\n➡️ Step {i+1}: {name}")
             success, message = run_generic_test(self.tester, test_config)
