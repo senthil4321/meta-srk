@@ -487,7 +487,7 @@ def run_generic_test(tester, test_config):
                 else:
                     return (True, "Hardware test completed")
 
-        elif test_type == "LOG_CAPTURE":
+        elif test_type == "CAPTURE_LOG":
             capture_name = kwargs.get("capture_name") or description.replace(" ", "_").lower()
             end_conditions = []
             if expected:
@@ -554,7 +554,7 @@ def run_generic_test(tester, test_config):
                 tester.stop_capture(capture_name)
                 return (False, f"Capture error: {exc}")
 
-        elif test_type == "CAPTURE_ASSERT":
+        elif test_type == "CAPTURE_LOG_ASSERT":
             capture_name = kwargs.get('capture_name', 'default')
             capture_data = tester.get_capture_data(capture_name)
             if capture_data is None:
@@ -680,11 +680,11 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_EXTRACT", "Check uptime", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
     ["COMMAND_AND_EXTRACT", "Check BusyBox", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
     # Reset and capture serial boot logs; ensure root shell message appears
-    ["LOG_CAPTURE", "Capture boot serial logs", None, None, "Error Capturing Log", {
+    ["CAPTURE_LOG", "Capture boot serial logs", None, None, "Error Capturing Log", {
         "capture_name": "root-shell-boot",
         "reset_before": True
     }],
-    ["CAPTURE_ASSERT", "Verify root shell boot message", None, "Dropping into root shell...", "Root shell message not found", {"capture_name": "root-shell-boot"}],
+    ["CAPTURE_LOG_ASSERT", "Verify root shell boot message", None, "Dropping into root shell...", "Root shell message not found", {"capture_name": "root-shell-boot"}],
 
 ]
 

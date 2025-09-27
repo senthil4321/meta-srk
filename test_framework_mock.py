@@ -232,7 +232,7 @@ def run_mock_tests():
         ["HARDWARE_TEST", "Test hardware functionality", "bbb-02-rtc read", "RTC Time:", "Hardware test failed"],
 
         # Log capture tests
-        ["LOG_CAPTURE", "Capture mock boot logs", None, "mock login:", "Failed to capture boot logs", {
+        ["CAPTURE_LOG", "Capture mock boot logs", None, "mock login:", "Failed to capture boot logs", {
             "capture_name": "boot",
             "timeout": 3,
             "wait_for_all": True,
@@ -242,7 +242,7 @@ def run_mock_tests():
                 "mock login:\n"
             ]
         }],
-        ["CAPTURE_ASSERT", "Verify boot log contains network driver", None, "Initializing network driver", "Network driver not loaded", {"capture_name": "boot"}],
+        ["CAPTURE_LOG_ASSERT", "Verify boot log contains network driver", None, "Initializing network driver", "Network driver not loaded", {"capture_name": "boot"}],
         ["CAPTURE_CHECK_DURATION", "Boot completes within 30s", None, "mock login:", "Kernel boot exceeded time", {
             "capture_name": "boot",
             "max_seconds": 30,
