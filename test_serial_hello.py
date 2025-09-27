@@ -247,7 +247,16 @@ class TestSerialHello(unittest.TestCase):
             ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
             ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
             ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
-            ("Perform login", lambda t: t.perform_login() if not getattr(t, 'already_logged_in', False) else True),
+        ]
+
+        # Detailed login steps
+        login_steps = [
+            ("Check if already logged in", lambda t: getattr(t, 'already_logged_in', False)),
+            ("Detect login prompt", lambda t: (not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer(), "Login prompt detected" if not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer() else "No login prompt needed")[1]),
+            ("Send username", lambda t: (t.send_command("srk") if not getattr(t, 'already_logged_in', False) else True, "Username sent" if not getattr(t, 'already_logged_in', False) else "Already logged in")[1]),
+            ("Handle password prompt", lambda t: (t.send_command("") if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else True, "Password handled" if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else "No password needed")[1]),
+            ("Wait for shell prompt", lambda t: (time.sleep(2), "beaglebone-yocto:~$" in t.get_buffer(), "Shell prompt detected" if "beaglebone-yocto:~$" in t.get_buffer() else "Shell prompt not found")[2]),
+            ("Verify login success", lambda t: ("beaglebone-yocto:" in t.get_buffer(), "Login successful" if "beaglebone-yocto:" in t.get_buffer() else "Login failed")[1]),
         ]
 
         # Hardware-specific tests (available in image 11)
@@ -296,12 +305,12 @@ class TestSerialHello(unittest.TestCase):
         # Combine all steps based on image type
         if image_type == "11":
             # Image 11 (bbb-examples) includes hardware tests
-            steps = base_steps + hardware_steps + app_steps + system_steps + [init_step] + security_steps
+            steps = base_steps + login_steps + hardware_steps + app_steps + system_steps + [init_step] + security_steps
         else:
             # Other images - minimal test set
-            steps = base_steps + app_steps + system_steps + [init_step] + security_steps
+            steps = base_steps + login_steps + app_steps + system_steps + [init_step] + security_steps
 
-        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"]
+        non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check if already logged in", "Detect login prompt", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"]
         results = []
 
         for name, func in steps:
