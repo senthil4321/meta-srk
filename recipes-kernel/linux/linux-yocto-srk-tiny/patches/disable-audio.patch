@@ -1,0 +1,46 @@
+From: srk <srk@example.com>
+Date: Fri, 27 Sep 2025 15:00:00 +0200
+Subject: Disable audio in BeagleBone Black HDMI DTS
+
+Upstream-Status: Inappropriate [disable audio for faster boot]
+
+diff --git a/arch/arm/boot/dts/ti/omap/am335x-boneblack-hdmi.dtsi b/arch/arm/boot/dts/ti/omap/am335x-boneblack-hdmi.dtsi
+index 109f08fd174d..532fa5b98c52 100644
+--- a/arch/arm/boot/dts/ti/omap/am335x-boneblack-hdmi.dtsi
++++ b/arch/arm/boot/dts/ti/omap/am335x-boneblack-hdmi.dtsi
+@@ -127,20 +127,20 @@ clk_mcasp0: clk_mcasp0 {
+ 		enable-gpios = <&gpio1 27 0>; /* BeagleBone Black Clk enable on GPIO1_27 */
+ 	};
+ 
+-	sound {
+-		compatible = "simple-audio-card";
+-		simple-audio-card,name = "TI BeagleBone Black";
+-		simple-audio-card,format = "i2s";
+-		simple-audio-card,bitclock-master = <&dailink0_master>;
+-		simple-audio-card,frame-master = <&dailink0_master>;
+-
+-		dailink0_master: simple-audio-card,cpu {
+-			sound-dai = <&mcasp0>;
+-			clocks = <&clk_mcasp0>;
+-		};
+-
+-		simple-audio-card,codec {
+-			sound-dai = <&tda19988>;
+-		};
++//	sound {
++//		compatible = "simple-audio-card";
++//		simple-audio-card,name = "TI BeagleBone Black";
++//		simple-audio-card,format = "i2s";
++//		simple-audio-card,bitclock-master = <&dailink0_master>;
++//		simple-audio-card,frame-master = <&dailink0_master>;
++//
++//		dailink0_master: simple-audio-card,cpu {
++//			sound-dai = <&mcasp0>;
++//			clocks = <&clk_mcasp0>;
++//		};
++
++//		simple-audio-card,codec {
++//			sound-dai = <&tda19988>;
++//		};
+ 	};
+ };
