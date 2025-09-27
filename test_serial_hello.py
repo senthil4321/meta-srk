@@ -6,7 +6,24 @@ Tests include hello application, system info, LED control, EEPROM access, and RT
 
 Version: 1.4.0
 Author: SRK Development Team
-Copyright (c) 2025 SRK. All rights reserved.
+Cop        elif test_type == "COMMAND_AND_EXTRACT":
+            # Send command and extract specific information
+            tester.send_command(command + "\r\n")
+            timeout = kwargs.get('timeout', 10)
+            output = tester.read_until(tester.prompt, timeout)
+            try:
+                if expected and assert_in(expected, output):
+                    # Extract value based on pattern
+                    extract_pattern = kwargs.get('extract_pattern', expected)
+                    if extract_pattern in output:
+                        # Simple extraction - can be made more sophisticated
+                        parts = output.split(extract_pattern)
+                        if len(parts) > 1:
+                            value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
+                            return (True, value)
+                return (False, "Unknown")
+            except AssertionError:
+                return (False, "Unknown") SRK. All rights reserved.
 License: MIT
 """
 
@@ -237,6 +254,7 @@ def run_generic_test(tester, test_config):
     """
     Generic test runner that handles different test types
     test_config format: [test_type, command, expected_value, failure_message, **kwargs]
+    Returns: (success: bool, message: str)
     """
     test_type = test_config[0]
     command = test_config[1] if len(test_config) > 1 else None
@@ -253,22 +271,27 @@ def run_generic_test(tester, test_config):
     try:
         if test_type == "ASSERT_IN_BUFFER":
             # Check if expected string exists in current buffer
-            result = assert_in(expected, tester.get_buffer())
-            return expected if result else failure_msg
+            try:
+                assert_in(expected, tester.get_buffer())
+                return (True, expected)
+            except AssertionError:
+                return (False, failure_msg)
 
         elif test_type == "SEND_COMMAND":
             # Send a command without expecting specific output
             tester.send_command(command + "\r\n")
-            return "Command sent"
+            return (True, "Command sent")
 
         elif test_type == "COMMAND_AND_ASSERT":
             # Send command and check for expected string in response
             tester.send_command(command + "\r\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
-            if assert_in(expected, output):
-                return "OK"
-            return failure_msg
+            try:
+                assert_in(expected, output)
+                return (True, "OK")
+            except AssertionError:
+                return (False, failure_msg)
 
         elif test_type == "COMMAND_AND_VERIFY_MULTIPLE":
             # Send command and verify multiple expected strings
@@ -276,9 +299,12 @@ def run_generic_test(tester, test_config):
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             expected_lines = expected if isinstance(expected, list) else [expected]
-            if all(assert_in(line, output) for line in expected_lines):
-                return "OK"
-            return failure_msg
+            try:
+                for line in expected_lines:
+                    assert_in(line, output)
+                return (True, "OK")
+            except AssertionError:
+                return (False, failure_msg)
 
         elif test_type == "COMMAND_AND_EXTRACT":
             # Send command and extract specific information
@@ -293,8 +319,8 @@ def run_generic_test(tester, test_config):
                     parts = output.split(extract_pattern)
                     if len(parts) > 1:
                         value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
-                        return value
-            return "Unknown"
+                        return (True, value)
+            return (False, "Unknown")
 
         elif test_type == "WAIT_FOR_CONDITION":
             # Wait for a specific condition
@@ -302,9 +328,9 @@ def run_generic_test(tester, test_config):
             start_time = time.time()
             while time.time() - start_time < timeout:
                 if expected in tester.get_buffer():
-                    return "Condition met"
+                    return (True, "Condition met")
                 time.sleep(0.5)
-            return failure_msg
+            return (False, failure_msg)
 
         elif test_type == "WAIT":
             # Wait for a specified duration
@@ -320,7 +346,7 @@ def run_generic_test(tester, test_config):
             
             print(f"⏳ Waiting {wait_duration} ({wait_time}s)...")
             time.sleep(wait_time)
-            return f"Waited {wait_duration} ({wait_time}s)"
+            return (True, f"Waited {wait_duration} ({wait_time}s)")
 
         elif test_type == "HARDWARE_CHECK":
             # Check hardware availability
@@ -328,10 +354,17 @@ def run_generic_test(tester, test_config):
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
             if expected:
-                return "Hardware found" if expected in output else "Hardware not found"
+                try:
+                    assert_in(expected, output)
+                    return (True, "Hardware found")
+                except AssertionError:
+                    return (False, "Hardware not found")
             else:
                 # If no expected pattern, just check if we got any output
-                return "Hardware found" if len(output.strip()) > 0 else "Hardware not found"
+                if len(output.strip()) > 0:
+                    return (True, "Hardware found")
+                else:
+                    return (False, "Hardware not found")
 
         elif test_type == "HARDWARE_TEST":
             # Test hardware functionality
@@ -343,23 +376,39 @@ def run_generic_test(tester, test_config):
                         time.sleep(kwargs['sleep'])
                 timeout = kwargs.get('timeout', 10)
                 output = tester.read_until(tester.prompt, timeout)
-                if expected and assert_in(expected, output):
-                    return "Hardware test OK"
-                return failure_msg
+                if expected:
+                    try:
+                        assert_in(expected, output)
+                        return (True, "Hardware test OK")
+                    except AssertionError:
+                        return (False, failure_msg)
+                else:
+                    return (True, "Hardware test completed")
             else:
                 # Single command hardware test
                 tester.send_command(command + "\r\n")
                 timeout = kwargs.get('timeout', 10)
                 output = tester.read_until(tester.prompt, timeout)
-                if expected and assert_in(expected, output):
-                    return "Hardware test OK"
-                return failure_msg
+                if expected:
+                    try:
+                        assert_in(expected, output)
+                        return (True, "Hardware test OK")
+                    except AssertionError:
+                        return (False, failure_msg)
+                else:
+                    return (True, "Hardware test completed")
+
+        elif test_type == "RESET_TARGET":
+            # Reset the target device
+            if reset_bbb():
+                return (True, "Target reset successful")
+            return (False, failure_msg)
 
         else:
-            return f"Unknown test type: {test_type}"
+            return (False, f"Unknown test type: {test_type}")
 
     except Exception as e:
-        return f"Test error: {str(e)}"
+        return (False, f"Test error: {str(e)}")
 
 # Define test suites with generic format
 DEFAULT_TEST_SUITE = [
@@ -412,8 +461,6 @@ IMAGE_11_TEST_SUITE = [
     # ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
-
-
     ["COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
     ["COMMAND_AND_ASSERT", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
     ["COMMAND_AND_ASSERT", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
@@ -424,9 +471,6 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_EXTRACT", "cat /etc/timestamp 2>/dev/null || date -r /etc/issue", None, "Timestamp check failed"],
     ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
     ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
-
-
-    
 ]
 
 class TestSerialHello(unittest.TestCase):
@@ -497,17 +541,12 @@ class TestSerialHello(unittest.TestCase):
                 name = f"{test_type}: {command or 'N/A'}"
 
             print(f"\r\n➡️ Step {i+1}: {name}")
-            try:
-                value = run_generic_test(self.tester, test_config)
-                if isinstance(value, str) and value:
-                    message = value
-                else:
-                    message = "OK"
-                results.append((name, True, message))
+            success, message = run_generic_test(self.tester, test_config)
+            results.append((name, success, message))
+            if success:
                 print(f"✅ PASS: {name} - {message}")
-            except Exception as e:
-                results.append((name, False, str(e)))
-                print(f"❌ FAIL: {name} - {e}")
+            else:
+                print(f"❌ FAIL: {name} - {message}")
                 if test_type not in ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION"]:
                     break  # stop on failure for strict ordering, except for non-blocking tests
 
