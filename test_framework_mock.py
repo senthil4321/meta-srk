@@ -12,6 +12,7 @@ __license__ = "MIT"
 import time
 import queue
 import threading
+import copy
 from test_serial_hello import run_generic_test
 
 class MockRemoteSerialTester:
@@ -32,6 +33,9 @@ class MockRemoteSerialTester:
         self.running = False
         self.mock_responses = {}  # command -> response mapping
         self.buffer_content = ""  # simulated buffer content
+        self.capture_sessions = {}
+        self.active_captures = set()
+        self.capture_lock = threading.Lock()
 
     def connect(self):
         """Mock connection - always succeeds"""
@@ -50,6 +54,7 @@ class MockRemoteSerialTester:
 
         # Simulate command echo (what socat would send back)
         self.output_queue.put(command)
+        self._record_capture(command)
 
         # Simulate response based on command
         response = self._get_mock_response(command.strip())
@@ -57,10 +62,12 @@ class MockRemoteSerialTester:
             # Add some delay to simulate real device
             time.sleep(0.05)
             self.output_queue.put(response)
+            self._record_capture(response)
 
         # Add prompt at the end (this is what the shell sends)
         time.sleep(0.05)
         self.output_queue.put(self.prompt)
+        self._record_capture(self.prompt)
 
     def read_until(self, expected_text, timeout=10):
         """Mock read until expected text"""
@@ -83,6 +90,77 @@ class MockRemoteSerialTester:
     def get_buffer(self):
         """Mock get buffer content"""
         return self.buffer_content
+
+    def start_capture(self, name="default", metadata=None):
+        with self.capture_lock:
+            self.capture_sessions[name] = {
+                "data": "",
+                "chunks": [],
+                "start_time": time.time(),
+                "end_time": None,
+                "metadata": metadata or {}
+            }
+            self.active_captures.add(name)
+        print(f"🎙️ [mock] Started capture '{name}'")
+
+    def stop_capture(self, name=None):
+        with self.capture_lock:
+            targets = [name] if name else list(self.active_captures)
+            for capture_name in targets:
+                session = self.capture_sessions.get(capture_name)
+                if session:
+                    session["end_time"] = time.time()
+                self.active_captures.discard(capture_name)
+        if name:
+            print(f"🛑 [mock] Stopped capture '{name}'")
+        elif name is None and targets:
+            print("🛑 [mock] Stopped all captures")
+
+    def get_capture_data(self, name="default"):
+        with self.capture_lock:
+            session = self.capture_sessions.get(name)
+            if session:
+                return session["data"]
+        return None
+
+    def get_capture_session(self, name="default"):
+        with self.capture_lock:
+            session = self.capture_sessions.get(name)
+            if session:
+                return copy.deepcopy(session)
+        return None
+
+    def get_capture_event_time(self, name, pattern, default=None):
+        session = self.get_capture_session(name)
+        if not session:
+            return None
+        if pattern is None:
+            return session.get("start_time", default)
+        for timestamp, chunk in session.get("chunks", []):
+            if pattern in chunk:
+                return timestamp
+        return default
+
+    def enqueue_output(self, payload):
+        if isinstance(payload, list):
+            for item in payload:
+                self.enqueue_output(item)
+            return
+        self.output_queue.put(payload)
+        self._record_capture(payload)
+
+    def _record_capture(self, data):
+        if not data:
+            return
+        timestamp = time.time()
+        with self.capture_lock:
+            for name in list(self.active_captures):
+                session = self.capture_sessions.get(name)
+                if not session:
+                    continue
+                session["data"] += data
+                session.setdefault("chunks", []).append((timestamp, data))
+                session["end_time"] = timestamp
 
     def _get_mock_response(self, command):
         """Get mock response for a command"""
@@ -152,6 +230,24 @@ def run_mock_tests():
         # Hardware checks
         ["HARDWARE_CHECK", "Check hardware availability", "which bbb-02-rtc", "bbb-02-rtc", "Hardware not found"],
         ["HARDWARE_TEST", "Test hardware functionality", "bbb-02-rtc read", "RTC Time:", "Hardware test failed"],
+
+        # Log capture tests
+        ["LOG_CAPTURE", "Capture mock boot logs", None, "mock login:", "Failed to capture boot logs", {
+            "capture_name": "boot",
+            "timeout": 3,
+            "wait_for_all": True,
+            "preload_output": [
+                "Booting kernel...\n",
+                "Initializing network driver eth0\n",
+                "mock login:\n"
+            ]
+        }],
+        ["CAPTURE_ASSERT", "Verify boot log contains network driver", None, "Initializing network driver", "Network driver not loaded", {"capture_name": "boot"}],
+        ["CAPTURE_CHECK_DURATION", "Boot completes within 30s", None, "mock login:", "Kernel boot exceeded time", {
+            "capture_name": "boot",
+            "max_seconds": 30,
+            "start_pattern": "Booting kernel"
+        }]
     ]
 
     results = []

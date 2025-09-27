@@ -46,6 +46,7 @@ import threading
 import queue
 import warnings
 import subprocess
+import copy
 from test_report import TestReportGenerator
 
 # Suppress deprecation warnings from Paramiko
@@ -92,6 +93,9 @@ class RemoteSerialTester:
         self.output_queue = queue.Queue()
         self.last_command = None
         self.running = False
+        self.capture_sessions = {}
+        self.active_captures = set()
+        self.capture_lock = threading.Lock()
 
     def connect(self):
         """Establish SSH connection and start socat over serial"""
@@ -124,6 +128,7 @@ class RemoteSerialTester:
             if self.channel.recv_ready():
                 data = self.channel.recv(1024).decode("utf-8", errors="ignore")
                 self.output_queue.put(data)
+                self._record_capture(data)
             time.sleep(0.1)
 
     def get_buffer(self):
@@ -136,6 +141,74 @@ class RemoteSerialTester:
             except queue.Empty:
                 break
         return buffer
+
+    def start_capture(self, name="default", metadata=None):
+        """Begin capturing all incoming serial data under a named session."""
+        with self.capture_lock:
+            self.capture_sessions[name] = {
+                "data": "",
+                "chunks": [],
+                "start_time": time.time(),
+                "end_time": None,
+                "metadata": metadata or {}
+            }
+            self.active_captures.add(name)
+        print(f"🎙️ Started capture '{name}'")
+
+    def stop_capture(self, name=None):
+        """Stop capturing data for the specified session (or all active sessions)."""
+        with self.capture_lock:
+            targets = [name] if name else list(self.active_captures)
+            for capture_name in targets:
+                session = self.capture_sessions.get(capture_name)
+                if session:
+                    session["end_time"] = time.time()
+                self.active_captures.discard(capture_name)
+        if name:
+            print(f"🛑 Stopped capture '{name}'")
+        elif targets:
+            print("🛑 Stopped all active captures")
+
+    def get_capture_data(self, name="default"):
+        """Return all captured data for the named session."""
+        with self.capture_lock:
+            session = self.capture_sessions.get(name)
+            if session:
+                return session["data"]
+        return None
+
+    def get_capture_session(self, name="default"):
+        """Return a copy of the capture session details."""
+        with self.capture_lock:
+            session = self.capture_sessions.get(name)
+            if session:
+                return copy.deepcopy(session)
+        return None
+
+    def get_capture_event_time(self, name, pattern, default=None):
+        """Return the timestamp when a pattern first appeared in the capture."""
+        session = self.get_capture_session(name)
+        if not session:
+            return None
+        if pattern is None:
+            return session.get("start_time", default)
+        for timestamp, chunk in session.get("chunks", []):
+            if pattern in chunk:
+                return timestamp
+        return default
+
+    def _record_capture(self, data):
+        if not data:
+            return
+        timestamp = time.time()
+        with self.capture_lock:
+            for name in list(self.active_captures):
+                session = self.capture_sessions.get(name)
+                if not session:
+                    continue
+                session["data"] += data
+                session.setdefault("chunks", []).append((timestamp, data))
+                session["end_time"] = timestamp
 
     def disconnect(self):
         """Close SSH connection"""
@@ -413,6 +486,122 @@ def run_generic_test(tester, test_config):
                         return (False, failure_msg)
                 else:
                     return (True, "Hardware test completed")
+
+        elif test_type == "LOG_CAPTURE":
+            capture_name = kwargs.get("capture_name") or description.replace(" ", "_").lower()
+            end_conditions = []
+            if expected:
+                end_conditions = expected if isinstance(expected, list) else [expected]
+            if "end_condition" in kwargs:
+                cond = kwargs["end_condition"]
+                end_conditions.extend(cond if isinstance(cond, list) else [cond])
+            if "end_conditions" in kwargs:
+                conds = kwargs["end_conditions"]
+                end_conditions.extend(conds if isinstance(conds, list) else [conds])
+            # remove duplicates
+            end_conditions = list(dict.fromkeys(end_conditions))
+
+            timeout = kwargs.get('timeout', 120)
+            wait_for_all = kwargs.get('wait_for_all', True)
+            capture_duration = kwargs.get('capture_duration')
+            reset_before = kwargs.get('reset_before', False)
+            metadata = kwargs.get('metadata')
+
+            tester.start_capture(capture_name, metadata=metadata)
+
+            preload_output = kwargs.get('preload_output')
+            if preload_output and hasattr(tester, "enqueue_output"):
+                for item in preload_output:
+                    tester.enqueue_output(item)
+
+            try:
+                if reset_before:
+                    if not reset_bbb():
+                        tester.stop_capture(capture_name)
+                        return (False, failure_msg)
+
+                if command:
+                    tester.send_command(command + "\r\n")
+
+                if capture_duration is None and not end_conditions:
+                    capture_duration = timeout
+
+                success = False
+                if end_conditions:
+                    start_time = time.time()
+                    while time.time() - start_time < timeout:
+                        captured = tester.get_capture_data(capture_name) or ""
+                        matches = [cond for cond in end_conditions if cond and cond in captured]
+                        if (wait_for_all and len(matches) == len(end_conditions)) or (not wait_for_all and matches):
+                            success = True
+                            break
+                        time.sleep(0.5)
+                else:
+                    time.sleep(capture_duration)
+                    success = True
+
+                tester.stop_capture(capture_name)
+                captured_data = tester.get_capture_data(capture_name) or ""
+
+                if success:
+                    info = f"Captured '{capture_name}' ({len(captured_data)} bytes)"
+                    if end_conditions:
+                        info += " with end condition(s) satisfied"
+                    return (True, info)
+                else:
+                    return (False, failure_msg)
+            except Exception as exc:
+                tester.stop_capture(capture_name)
+                return (False, f"Capture error: {exc}")
+
+        elif test_type == "CAPTURE_ASSERT":
+            capture_name = kwargs.get('capture_name', 'default')
+            capture_data = tester.get_capture_data(capture_name)
+            if capture_data is None:
+                return (False, f"Capture '{capture_name}' not found")
+
+            patterns = expected if expected is not None else kwargs.get('patterns')
+            if patterns is None:
+                return (False, "No patterns provided for capture assertion")
+            if isinstance(patterns, str):
+                patterns = [patterns]
+
+            missing = [pattern for pattern in patterns if pattern not in capture_data]
+            if missing:
+                return (False, f"{failure_msg}: missing {missing}")
+
+            return (True, "Capture assertion passed")
+
+        elif test_type == "CAPTURE_CHECK_DURATION":
+            capture_name = kwargs.get('capture_name', 'default')
+            session = tester.get_capture_session(capture_name)
+            if not session:
+                return (False, f"Capture '{capture_name}' not found")
+
+            start_pattern = kwargs.get('start_pattern')
+            end_pattern = expected or kwargs.get('end_pattern')
+            if not end_pattern:
+                return (False, "No end pattern provided for duration check")
+
+            start_time = tester.get_capture_event_time(capture_name, start_pattern, default=session.get('start_time'))
+            end_time = tester.get_capture_event_time(capture_name, end_pattern)
+
+            if end_time is None or start_time is None:
+                return (False, failure_msg)
+
+            duration = end_time - start_time
+            if duration < 0:
+                return (False, f"{failure_msg}: invalid duration computed")
+
+            max_seconds = kwargs.get('max_seconds')
+            min_seconds = kwargs.get('min_seconds', 0)
+
+            if max_seconds is not None and duration > max_seconds:
+                return (False, f"{failure_msg}: {duration:.2f}s exceeds {max_seconds}s")
+            if duration < min_seconds:
+                return (False, f"{failure_msg}: {duration:.2f}s below {min_seconds}s")
+
+            return (True, f"Duration {duration:.2f}s within limits")
 
         elif test_type == "RESET_TARGET":
             # Reset the target device
