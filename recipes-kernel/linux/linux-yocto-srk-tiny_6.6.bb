@@ -5,6 +5,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://defconfig \
             file://printk_time.cfg \
+            file://disable_scsi_debug.cfg \
            "
 
 KCONFIG_MODE = "alldefconfig"
