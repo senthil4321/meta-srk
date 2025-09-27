@@ -425,6 +425,7 @@ IMAGE_11_TEST_SUITE = [
     ["COMMAND_AND_EXTRACT", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
     ["COMMAND_AND_EXTRACT", "busybox", "BusyBox", "BusyBox version check failed", {"extract_pattern": "BusyBox"}],
 
+
     
 ]
 
