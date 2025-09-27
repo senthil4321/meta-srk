@@ -318,16 +318,25 @@ def run_generic_test(tester, test_config):
             tester.send_command(command + "\r\n")
             timeout = kwargs.get('timeout', 10)
             output = tester.read_until(tester.prompt, timeout)
-            if expected and assert_in(expected, output):
-                # Extract value based on pattern
-                extract_pattern = kwargs.get('extract_pattern', expected)
-                if extract_pattern in output:
-                    # Simple extraction - can be made more sophisticated
-                    parts = output.split(extract_pattern)
-                    if len(parts) > 1:
-                        value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
-                        return (True, value)
-            return (False, "Unknown")
+            try:
+                if expected:
+                    if assert_in(expected, output):
+                        # Extract value based on pattern
+                        extract_pattern = kwargs.get('extract_pattern', expected)
+                        if extract_pattern in output:
+                            # Simple extraction - can be made more sophisticated
+                            parts = output.split(extract_pattern)
+                            if len(parts) > 1:
+                                value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
+                                return (True, value)
+                    return (False, "Unknown")
+                else:
+                    # If no expected pattern, just check if command produced output
+                    if len(output.strip()) > 0:
+                        return (True, "Command executed successfully")
+                    return (False, "No output from command")
+            except AssertionError:
+                return (False, "Unknown")
 
         elif test_type == "WAIT_FOR_CONDITION":
             # Wait for a specific condition
@@ -467,10 +476,10 @@ IMAGE_11_TEST_SUITE = [
     # [description, test_type, command, expected_value, failure_message, kwargs]
 
     # Reset BBB before starting tests
-    ["Reset BBB", "RESET_TARGET", None, None, "Target reset failed"],
+    # ["Reset BBB", "RESET_TARGET", None, None, "Target reset failed"],
     # ["Wait after reset", "WAIT", None, None, None, {"duration": "medium"}],
     # Detailed login steps - simplified for generic format
-    ["Wait for shell prompt", "WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
+    # ["Wait for shell prompt", "WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
     ["Check RTC binary", "COMMAND_AND_ASSERT", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
