@@ -297,11 +297,21 @@ def run_generic_test(tester, test_config):
                 time.sleep(0.5)
             return failure_msg
 
-        elif test_type == "RESET_TARGET":
-            # Reset the target device
-            if reset_bbb():
-                return "Target reset successful"
-            return failure_msg
+        elif test_type == "WAIT":
+            # Wait for a specified duration
+            wait_duration = kwargs.get('duration', 'short')
+            if wait_duration == 'very_short':
+                wait_time = 1
+            elif wait_duration == 'short':
+                wait_time = 5
+            elif wait_duration == 'medium':
+                wait_time = 10
+            else:
+                wait_time = 5  # default to short
+            
+            print(f"⏳ Waiting {wait_duration} ({wait_time}s)...")
+            time.sleep(wait_time)
+            return f"Waited {wait_duration} ({wait_time}s)"
 
         elif test_type == "HARDWARE_CHECK":
             # Check hardware availability
@@ -388,9 +398,8 @@ IMAGE_11_TEST_SUITE = [
 
     # Reset BBB before starting tests
     ["RESET_TARGET", None, None, "Target reset failed"],
-
+    ["WAIT", None, None, None, {"duration": "medium"}],
     # Detailed login steps - simplified for generic format
-    ["SEND_COMMAND", "", None, "Password sent"],
     ["WAIT_FOR_CONDITION", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
@@ -445,7 +454,7 @@ class TestSerialHello(unittest.TestCase):
             steps = DEFAULT_TEST_SUITE
             print("🧪 Running DEFAULT_TEST_SUITE (minimal test set)")
 
-        non_blocking = ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION"]
+        non_blocking = ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION", "WAIT"]
         results = []
 
         for i, test_config in enumerate(steps):
@@ -475,6 +484,9 @@ class TestSerialHello(unittest.TestCase):
                 name = f"Hardware test: {command}"
             elif test_type == "RESET_TARGET":
                 name = "Reset Target Device"
+            elif test_type == "WAIT":
+                duration = test_config[4].get('duration', 'short') if len(test_config) > 4 and test_config[4] else 'short'
+                name = f"Wait {duration}"
             else:
                 name = f"{test_type}: {command or 'N/A'}"
 
@@ -514,6 +526,6 @@ if __name__ == "__main__":
         results = tester.run_all_tests(args.image_type)
         if args.save_report:
             report_generator = TestReportGenerator()
-            report_generator.save_report_to_file(results, args.save_report, ["Check for", "Hardware check", "Wait for"])
+            report_generator.save_report_to_file(results, args.save_report, ["Check for", "Hardware check", "Wait for", "Wait"])
     finally:
         tester.tearDown()
