@@ -197,7 +197,11 @@ bitbake linux-yocto-srk-selinux
 #### Build Tiny Kernel
 
 ```bash
+bitbake linux-yocto-srk-tiny -c clean
 bitbake linux-yocto-srk-tiny
+
+# Then rebuild your image
+bitbake core-image-tiny-initramfs-srk-9-nobusybox
 ```
 
 ### Deploying Kernels
