@@ -222,6 +222,90 @@ class RemoteSerialTester:
 
 import unittest
 
+# Define test suites
+DEFAULT_TEST_SUITE = [
+    # Base system checks
+    ("Check U-Boot logs", lambda t: assert_in("U-Boot", t.get_buffer())),
+    ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
+    ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
+    ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
+
+    # Detailed login steps
+    ("Check if already logged in", lambda t: getattr(t, 'already_logged_in', False)),
+    ("Detect login prompt", lambda t: (not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer(), "Login prompt detected" if not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer() else "No login prompt needed")[1]),
+    ("Send username", lambda t: (t.send_command("srk") if not getattr(t, 'already_logged_in', False) else True, "Username sent" if not getattr(t, 'already_logged_in', False) else "Already logged in")[1]),
+    ("Handle password prompt", lambda t: (t.send_command("") if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else True, "Password handled" if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else "No password needed")[1]),
+    ("Wait for shell prompt", lambda t: (time.sleep(2), "beaglebone-yocto:~$" in t.get_buffer(), "Shell prompt detected" if "beaglebone-yocto:~$" in t.get_buffer() else "Shell prompt not found")[2]),
+    ("Verify login success", lambda t: ("beaglebone-yocto:" in t.get_buffer(), "Login successful" if "beaglebone-yocto:" in t.get_buffer() else "Login failed")[1]),
+
+    # Application tests
+    ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
+    ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
+        "Hello, World! from meta-srk layer and recipes-srk V2!!!",
+        "Hello, World! 20SEP2025 07:28 !!!",
+        "Hello, World! 20SEP2025 23:50 !!!"
+    ]))[2]),
+
+    # System information tests
+    ("Check build version", lambda t: (t.send_command("uname -a"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("Linux", output), (output.split("Linux")[1].split("beaglebone-yocto")[0].strip() if "Linux" in output else "Unknown"))[3]),
+    ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output), (output.split("#")[1].split()[0] if "#" in output else "Unknown"))[3]),
+    ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, (output.strip().split('\n')[-1] if output.strip() else "Unknown"))[3]),
+    ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), (output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown"))[3]),
+    ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), (output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown"))[3]),
+
+    # Init system check (default: expects systemd or init)
+    ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("systemd", output) or assert_in("init", output), ("systemd" if "systemd" in output else "busybox"))[3]),
+
+    # Security tests
+    ("Check encryption support", lambda t: (t.send_command("which cryptsetup"), output1 := t.read_until("beaglebone-yocto:~$", 10), t.send_command("ls /usr/bin/srk-init 2>/dev/null"), output2 := t.read_until("beaglebone-yocto:~$", 10), True, ("Yes" if "cryptsetup" in output1 or "srk-init" in output2 else "No"))[4]),
+]
+
+IMAGE_11_TEST_SUITE = [
+    # Base system checks
+    ("Check U-Boot logs", lambda t: assert_in("U-Boot", t.get_buffer())),
+    ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
+    ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
+    ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
+
+    # Detailed login steps
+    ("Check if already logged in", lambda t: getattr(t, 'already_logged_in', False)),
+    ("Detect login prompt", lambda t: (not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer(), "Login prompt detected" if not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer() else "No login prompt needed")[1]),
+    ("Send username", lambda t: (t.send_command("srk") if not getattr(t, 'already_logged_in', False) else True, "Username sent" if not getattr(t, 'already_logged_in', False) else "Already logged in")[1]),
+    ("Handle password prompt", lambda t: (t.send_command("") if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else True, "Password handled" if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else "No password needed")[1]),
+    ("Wait for shell prompt", lambda t: (time.sleep(2), "beaglebone-yocto:~$" in t.get_buffer(), "Shell prompt detected" if "beaglebone-yocto:~$" in t.get_buffer() else "Shell prompt not found")[2]),
+    ("Verify login success", lambda t: ("beaglebone-yocto:" in t.get_buffer(), "Login successful" if "beaglebone-yocto:" in t.get_buffer() else "Login failed")[1]),
+
+    # Hardware-specific tests (available in image 11)
+    ("Check LED support", lambda t: (t.send_command("ls /sys/class/leds/"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("beaglebone", output), ("LEDs found" if "beaglebone" in output else "No LEDs"))[3]),
+    ("Test LED control", lambda t: (t.send_command("echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), time.sleep(1), t.send_command("cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("1", output), ("LED control OK" if "1" in output else "LED control failed"))[5]),
+    ("Check EEPROM support", lambda t: (t.send_command("ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, ("EEPROM device found" if output.strip() else "No EEPROM device"))[3]),
+    ("Test EEPROM read", lambda t: (t.send_command("hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 10, ("EEPROM readable" if len(output.strip()) > 10 else "EEPROM read failed"))[3]),
+    ("Check RTC binary exists", lambda t: (t.send_command("which bbb-02-rtc"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("bbb-02-rtc", output), ("RTC binary found" if "bbb-02-rtc" in output else "RTC binary missing"))[3]),
+    ("Test RTC read", lambda t: (t.send_command("bbb-02-rtc read"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Time:", output), ("RTC read OK" if "RTC Time:" in output else "RTC read failed"))[3]),
+    ("Test RTC info", lambda t: (t.send_command("bbb-02-rtc info"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Device:", output), ("RTC info OK" if "RTC Device:" in output else "RTC info failed"))[3]),
+
+    # Application tests
+    ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
+    ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
+        "Hello, World! from meta-srk layer and recipes-srk V2!!!",
+        "Hello, World! 20SEP2025 07:28 !!!",
+        "Hello, World! 20SEP2025 23:50 !!!"
+    ]))[2]),
+
+    # System information tests
+    ("Check build version", lambda t: (t.send_command("uname -a"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("Linux", output), (output.split("Linux")[1].split("beaglebone-yocto")[0].strip() if "Linux" in output else "Unknown"))[3]),
+    ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output), (output.split("#")[1].split()[0] if "#" in output else "Unknown"))[3]),
+    ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, (output.strip().split('\n')[-1] if output.strip() else "Unknown"))[3]),
+    ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), (output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown"))[3]),
+    ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), (output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown"))[3]),
+
+    # Init system check (image 11: expects BusyBox init)
+    ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("busybox", output.lower()), "busybox (expected for image 11)")[3]),
+
+    # Security tests
+    ("Check encryption support", lambda t: (t.send_command("which cryptsetup"), output1 := t.read_until("beaglebone-yocto:~$", 10), t.send_command("ls /usr/bin/srk-init 2>/dev/null"), output2 := t.read_until("beaglebone-yocto:~$", 10), True, ("Yes" if "cryptsetup" in output1 or "srk-init" in output2 else "No"))[4]),
+]
+
 class TestSerialHello(unittest.TestCase):
     def setUp(self):
         # Reset BBB before starting tests
@@ -241,74 +325,13 @@ class TestSerialHello(unittest.TestCase):
         self.tester.disconnect()
 
     def run_all_tests(self, image_type=None):
-        # Define test steps based on image type
-        base_steps = [
-            ("Check U-Boot logs", lambda t: assert_in("U-Boot", t.get_buffer())),
-            ("Check kernel logs", lambda t: assert_in("Linux version", t.get_buffer())),
-            ("Check initramfs logs", lambda t: assert_in("initramfs", t.get_buffer())),
-            ("Wait for initial prompt", lambda t: (result := t.wait_for_initial_prompt(), setattr(t, 'already_logged_in', result[1]), result[0] or result[1])[2]),
-        ]
-
-        # Detailed login steps
-        login_steps = [
-            ("Check if already logged in", lambda t: getattr(t, 'already_logged_in', False)),
-            ("Detect login prompt", lambda t: (not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer(), "Login prompt detected" if not getattr(t, 'already_logged_in', False) and "beaglebone-yocto login:" in t.get_buffer() else "No login prompt needed")[1]),
-            ("Send username", lambda t: (t.send_command("srk") if not getattr(t, 'already_logged_in', False) else True, "Username sent" if not getattr(t, 'already_logged_in', False) else "Already logged in")[1]),
-            ("Handle password prompt", lambda t: (t.send_command("") if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else True, "Password handled" if not getattr(t, 'already_logged_in', False) and "Password:" in t.get_buffer() else "No password needed")[1]),
-            ("Wait for shell prompt", lambda t: (time.sleep(2), "beaglebone-yocto:~$" in t.get_buffer(), "Shell prompt detected" if "beaglebone-yocto:~$" in t.get_buffer() else "Shell prompt not found")[2]),
-            ("Verify login success", lambda t: ("beaglebone-yocto:" in t.get_buffer(), "Login successful" if "beaglebone-yocto:" in t.get_buffer() else "Login failed")[1]),
-        ]
-
-        # Hardware-specific tests (available in image 11)
-        hardware_steps = [
-            ("Check LED support", lambda t: (t.send_command("ls /sys/class/leds/"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("beaglebone", output), ("LEDs found" if "beaglebone" in output else "No LEDs"))[3]),
-            ("Test LED control", lambda t: (t.send_command("echo 1 > /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), time.sleep(1), t.send_command("cat /sys/class/leds/beaglebone\\:green\\:usr0/brightness"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("1", output), ("LED control OK" if "1" in output else "LED control failed"))[5]),
-            ("Check EEPROM support", lambda t: (t.send_command("ls /sys/bus/i2c/devices/ | grep -E '0-005[0-9]'"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, ("EEPROM device found" if output.strip() else "No EEPROM device"))[3]),
-            ("Test EEPROM read", lambda t: (t.send_command("hexdump -C /sys/bus/i2c/devices/0-0050/eeprom | head -1"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 10, ("EEPROM readable" if len(output.strip()) > 10 else "EEPROM read failed"))[3]),
-            ("Check RTC binary exists", lambda t: (t.send_command("which bbb-02-rtc"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("bbb-02-rtc", output), ("RTC binary found" if "bbb-02-rtc" in output else "RTC binary missing"))[3]),
-            ("Test RTC read", lambda t: (t.send_command("bbb-02-rtc read"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Time:", output), ("RTC read OK" if "RTC Time:" in output else "RTC read failed"))[3]),
-            ("Test RTC info", lambda t: (t.send_command("bbb-02-rtc info"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("RTC Device:", output), ("RTC info OK" if "RTC Device:" in output else "RTC info failed"))[3]),
-        ]
-
-        # Application and system tests
-        app_steps = [
-            ("Check hello exists", lambda t: (t.send_command("which hello"), assert_in("hello", t.read_until("beaglebone-yocto:~$", 10)))[1]),
-            ("Run and verify hello", lambda t: (t.send_command("hello"), output := t.read_until("beaglebone-yocto:~$", 10), all(assert_in(line, output) for line in [
-                "Hello, World! from meta-srk layer and recipes-srk V2!!!",
-                "Hello, World! 20SEP2025 07:28 !!!",
-                "Hello, World! 20SEP2025 23:50 !!!"
-            ]))[2]),
-        ]
-
-        # System information tests
-        system_steps = [
-            ("Check build version", lambda t: (t.send_command("uname -a"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("Linux", output), (output.split("Linux")[1].split("beaglebone-yocto")[0].strip() if "Linux" in output else "Unknown"))[3]),
-            ("Check build time", lambda t: (t.send_command("uname -v"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("#", output), (output.split("#")[1].split()[0] if "#" in output else "Unknown"))[3]),
-            ("Check system timestamp", lambda t: (t.send_command("cat /etc/timestamp 2>/dev/null || date -r /etc/issue"), output := t.read_until("beaglebone-yocto:~$", 10), len(output.strip()) > 0, (output.strip().split('\n')[-1] if output.strip() else "Unknown"))[3]),
-            ("Check system uptime", lambda t: (t.send_command("uptime"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("up", output), (output.split("up")[1].split(",")[0].strip() if "up" in output else "Unknown"))[3]),
-            ("Check BusyBox version", lambda t: (t.send_command("busybox"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("BusyBox", output), (output.split("BusyBox")[1].split()[0] if "BusyBox" in output else "Unknown"))[3]),
-        ]
-
-        # Init system check - different expectations based on image type
+        # Select test suite based on image type
         if image_type == "11":
-            # Image 11 uses BusyBox init, not systemd
-            init_step = ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("busybox", output.lower()), "busybox (expected for image 11)")[3])
+            steps = IMAGE_11_TEST_SUITE
+            print("🧪 Running IMAGE_11_TEST_SUITE (includes hardware tests)")
         else:
-            # Other images might use systemd or other init systems
-            init_step = ("Check init system type", lambda t: (t.send_command("ps -p 1"), output := t.read_until("beaglebone-yocto:~$", 10), assert_in("systemd", output) or assert_in("init", output), ("systemd" if "systemd" in output else "busybox"))[3])
-
-        # Security tests
-        security_steps = [
-            ("Check encryption support", lambda t: (t.send_command("which cryptsetup"), output1 := t.read_until("beaglebone-yocto:~$", 10), t.send_command("ls /usr/bin/srk-init 2>/dev/null"), output2 := t.read_until("beaglebone-yocto:~$", 10), True, ("Yes" if "cryptsetup" in output1 or "srk-init" in output2 else "No"))[4]),
-        ]
-
-        # Combine all steps based on image type
-        if image_type == "11":
-            # Image 11 (bbb-examples) includes hardware tests
-            steps = base_steps + login_steps + hardware_steps + app_steps + system_steps + [init_step] + security_steps
-        else:
-            # Other images - minimal test set
-            steps = base_steps + login_steps + app_steps + system_steps + [init_step] + security_steps
+            steps = DEFAULT_TEST_SUITE
+            print("🧪 Running DEFAULT_TEST_SUITE (minimal test set)")
 
         non_blocking = ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check if already logged in", "Detect login prompt", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"]
         results = []
