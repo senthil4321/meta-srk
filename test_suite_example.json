@@ -1,0 +1,91 @@
+[
+    [
+        "COMMAND_AND_ASSERT",
+        "Check RTC binary",
+        "which bbb-02-rtc",
+        "bbb-02-rtc",
+        "RTC binary not found"
+    ],
+    [
+        "COMMAND_AND_ASSERT",
+        "Test RTC read",
+        "bbb-02-rtc read",
+        "RTC Time:",
+        "RTC read test failed"
+    ],
+    [
+        "COMMAND_AND_ASSERT",
+        "Test RTC info",
+        "bbb-02-rtc info",
+        "RTC Device:",
+        "RTC info test failed"
+    ],
+    [
+        "COMMAND_AND_EXTRACT",
+        "Check kernel version",
+        "uname -a",
+        "Linux",
+        "Build version check failed",
+        {
+            "extract_pattern": "Linux"
+        }
+    ],
+    [
+        "COMMAND_AND_EXTRACT",
+        "Check build time",
+        "uname -v",
+        "#",
+        "Build time check failed",
+        {
+            "extract_pattern": "#"
+        }
+    ],
+    [
+        "COMMAND_AND_EXTRACT",
+        "Check timestamp",
+        "cat /etc/timestamp 2>/dev/null || date -r /etc/issue",
+        null,
+        "Timestamp check failed"
+    ],
+    [
+        "COMMAND_AND_EXTRACT",
+        "Check uptime",
+        "uptime",
+        "up",
+        "Uptime check failed",
+        {
+            "extract_pattern": "up"
+        }
+    ],
+    [
+        "COMMAND_AND_EXTRACT",
+        "Check BusyBox",
+        "busybox",
+        "BusyBox",
+        "BusyBox version check failed",
+        {
+            "extract_pattern": "BusyBox"
+        }
+    ],
+    [
+        "CAPTURE_LOG",
+        "Capture boot serial logs",
+        null,
+        null,
+        "Error Capturing Log",
+        {
+            "capture_name": "root-shell-boot",
+            "reset_before": true
+        }
+    ],
+    [
+        "CAPTURE_LOG_ASSERT",
+        "Verify root shell boot message",
+        null,
+        "Dropping into root shell...",
+        "Root shell message not found",
+        {
+            "capture_name": "root-shell-boot"
+        }
+    ]
+]

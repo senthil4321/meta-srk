@@ -6,34 +6,14 @@ Tests include hello application, system info, LED control, EEPROM access, and RT
 
 Version: 1.4.0
 Author: SRK Development Team
-Cop        elif test_type == "COMMAND_AND_EXTRACT":
-            # Send command and extract specific information
-            tester.send_command(command + "\r\n")
-            timeout = kwargs.get('timeout', 10)
-            output = tester.read_until(tester.prompt, timeout)
-            try:
-                if expected:
-                    if assert_in(expected, output):
-                        # Extract value based on pattern
-                        extract_pattern = kwargs.get('extract_pattern', expected)
-                        if extract_pattern in output:
-                            # Simple extraction - can be made more sophisticated
-                            parts = output.split(extract_pattern)
-                            if len(parts) > 1:
-                                value = parts[1].split()[0] if len(parts[1].split()) > 0 else "Unknown"
-                                return (True, value)
-                    return (False, "Unknown")
-                else:
-                    # If no expected pattern, just check if command produced output
-                    if len(output.strip()) > 0:
-                        return (True, "Command executed successfully")
-                    return (False, "No output from command")
-            except AssertionError:
-                return (False, "Unknown") SRK. All rights reserved.
+Copyright (c) 2025 SRK. All rights reserved.
 License: MIT
 """
 
 __version__ = "1.8.0"
+__author__ = "SRK Development Team"
+__copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
+__license__ = "MIT"
 __author__ = "SRK Development Team"
 __copyright__ = "Copyright (c) 2025 SRK. All rights reserved."
 __license__ = "MIT"
@@ -47,6 +27,7 @@ import queue
 import warnings
 import subprocess
 import copy
+import json
 from test_report import TestReportGenerator
 
 # Suppress deprecation warnings from Paramiko
@@ -710,14 +691,23 @@ class TestSerialHello(unittest.TestCase):
     def tearDown(self):
         self.tester.disconnect()
 
-    def run_all_tests(self, image_type=None):
-        # Select test suite based on image type
-        if image_type == "11":
+    def run_all_tests(self, image_type=None, test_suite_file=None):
+        # Select test suite based on image type or file
+        if test_suite_file:
+            try:
+                with open(test_suite_file, 'r') as f:
+                    steps = json.load(f)
+                print(f"🧪 Loading test suite from file: {test_suite_file}")
+            except Exception as e:
+                print(f"❌ Error loading test suite from {test_suite_file}: {e}")
+                return []
+        elif image_type == "11":
             steps = IMAGE_11_TEST_SUITE
             print("🧪 Running IMAGE_11_TEST_SUITE (includes hardware tests)")
         else:
             steps = DEFAULT_TEST_SUITE
             print("🧪 Running DEFAULT_TEST_SUITE (minimal test set)")
+
 
         non_blocking = ["ASSERT_IN_BUFFER", "HARDWARE_CHECK", "WAIT_FOR_CONDITION", "WAIT"]
         results = []
@@ -750,15 +740,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SRK Serial Test Script")
     parser.add_argument("--save-report", type=str, help="Save test report to specified file")
     parser.add_argument("--image-type", type=str, help="Image type (e.g., 11 for bbb-examples, affects test selection)")
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument("--test-suite-file", type=str, help="Load test suite from JSON file")
 
     args = parser.parse_args()
 
     tester = TestSerialHello()
+    if not args.test_suite_file and not args.image_type:
+        print("Error: Please specify --test-suite-file or --image-type to select a test suite.")
+        sys.exit(1)
     tester.image_type = args.image_type  # Set image type before setup
     tester.setUp()
     try:
-        results = tester.run_all_tests(args.image_type)
+        results = tester.run_all_tests(args.image_type, args.test_suite_file)
         if args.save_report:
             report_generator = TestReportGenerator()
             report_generator.save_report_to_file(results, args.save_report, ["Check for", "Hardware check", "Wait for", "Wait"])
