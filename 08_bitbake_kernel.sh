@@ -1,14 +1,60 @@
 #!/bin/bash
 
-VERSION="1.0.0"
+VERSION="1.1.0"
+
+# Default values
+USE_TINY=false
+KERNEL_NAME="linux-yocto"
+MACHINE_SUFFIX=""
+BUILD_SUFFIX="-standard-build"
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -tiny)
+            USE_TINY=true
+            KERNEL_NAME="linux-yocto-srk-tiny"
+            MACHINE_SUFFIX="_srk_tiny"
+            BUILD_SUFFIX="-standard-build"
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+# Set up machine suffix and detect kernel version based on kernel type
+if [ "$USE_TINY" = true ]; then
+    MACHINE_SUFFIX="_srk_tiny"
+    KERNEL_BASE_DIR="/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto${MACHINE_SUFFIX}-poky-linux-gnueabi/${KERNEL_NAME}"
+    if [ -d "$KERNEL_BASE_DIR" ] && [ "$(ls -A "$KERNEL_BASE_DIR" 2>/dev/null)" ]; then
+        KERNEL_VERSION=$(ls "$KERNEL_BASE_DIR" | head -1)
+    else
+        KERNEL_VERSION="6.6+git"  # fallback
+    fi
+else
+    MACHINE_SUFFIX=""
+    KERNEL_BASE_DIR="/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto"
+    if [ -d "$KERNEL_BASE_DIR" ] && [ "$(ls -A "$KERNEL_BASE_DIR" 2>/dev/null)" ]; then
+        KERNEL_VERSION=$(ls "$KERNEL_BASE_DIR" | head -1)
+    else
+        KERNEL_VERSION="6.6.21+git"  # fallback
+    fi
+fi
 
 show_menu() {
+    if [ "$USE_TINY" = true ]; then
+        echo "=== TINY KERNEL MODE (-tiny) ==="
+    else
+        echo "=== STANDARD KERNEL MODE ==="
+    fi
     echo "Select an option:"
     echo "0. bitbake virtual/kernel "
-    echo "1. bitbake linux-yocto -c kernel_configme -f"
-    echo "2. bitbake linux-yocto -c menuconfig"
-    echo "3. bitbake linux-yocto -c diffconfig"
-    echo "4. bitbake linux-yocto -c kernel_configcheck -f"
+    echo "1. bitbake $KERNEL_NAME -c kernel_configme -f"
+    echo "2. bitbake $KERNEL_NAME -c menuconfig"
+    echo "3. bitbake $KERNEL_NAME -c diffconfig"
+    echo "4. bitbake $KERNEL_NAME -c kernel_configcheck -f"
     echo "5. Save defconfig"
     echo "6. Print .config file path"
     echo "7. Print defconfig file path meta-srk"
@@ -19,7 +65,7 @@ show_menu() {
     echo "12. Show help"
     echo "13. Exit"
     echo "14. bitbake -c clean virtual/kernel"
-    echo "15. bitbake -c devshell linux-yocto"
+    echo "15. bitbake -c devshell $KERNEL_NAME"
     echo "16. Print version"
 }
 
@@ -29,34 +75,44 @@ execute_option() {
             bitbake virtual/kernel
             ;;
         1)
-            bitbake linux-yocto -c kernel_configme -f
+            bitbake $KERNEL_NAME -c kernel_configme -f
             ;;
         2)
-            bitbake linux-yocto -c menuconfig
+            bitbake $KERNEL_NAME -c menuconfig
             ;;
         3)
-            bitbake linux-yocto -c diffconfig
+            bitbake $KERNEL_NAME -c diffconfig
             ;;
         4)
-            bitbake linux-yocto -c kernel_configcheck -f
+            bitbake $KERNEL_NAME -c kernel_configcheck -f
             ;;
         5)
-            bitbake linux-yocto -c savedefconfig
+            bitbake $KERNEL_NAME -c savedefconfig
             ;;
         6)
-            echo "~/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/linux-beaglebone_yocto-standard-build/.config"
+            echo "~/project/poky/build/tmp/work/beaglebone_yocto${MACHINE_SUFFIX}-poky-linux-gnueabi/${KERNEL_NAME}/${KERNEL_VERSION}/linux-beaglebone_yocto${MACHINE_SUFFIX}-standard-build/.config"
             ;;
         7)
-            echo "/home/srk2cob/project/poky/meta-srk/recipes-kernel/linux/linux-yocto/defconfig"
+            if [ "$USE_TINY" = true ]; then
+                echo "/home/srk2cob/project/poky/meta-srk/recipes-kernel/linux/linux-yocto-srk-tiny/defconfig"
+            else
+                echo "/home/srk2cob/project/poky/meta-srk/recipes-kernel/linux/linux-yocto/defconfig"
+            fi
             ;;
         8)
-            echo "/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/linux-beaglebone_yocto-standard-build/defconfig"
+            echo "/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto${MACHINE_SUFFIX}-poky-linux-gnueabi/${KERNEL_NAME}/${KERNEL_VERSION}/linux-beaglebone_yocto${MACHINE_SUFFIX}-standard-build/defconfig"
             ;;
         9)
-            echo "/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/fragment.cfg"
+            echo "/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto${MACHINE_SUFFIX}-poky-linux-gnueabi/${KERNEL_NAME}/${KERNEL_VERSION}/fragment.cfg"
             ;;
         10)
-            cat "/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto-poky-linux-gnueabi/linux-yocto/6.6.21+git/fragment.cfg"
+            FRAGMENT_FILE="/home/srk2cob/project/poky/build/tmp/work/beaglebone_yocto${MACHINE_SUFFIX}-poky-linux-gnueabi/${KERNEL_NAME}/${KERNEL_VERSION}/fragment.cfg"
+            if [ -f "$FRAGMENT_FILE" ]; then
+                cat "$FRAGMENT_FILE"
+            else
+                echo "Fragment file does not exist: $FRAGMENT_FILE"
+                echo "Run menuconfig (option 2) and diffconfig (option 3) first to create the fragment.cfg file."
+            fi
             ;;
         11)
             echo "Run 2. menuconfig.  3. diffconfig and view the fragment.cfg file using 10. Print fragment.cfg file contents"
@@ -72,7 +128,7 @@ execute_option() {
             bitbake -c clean virtual/kernel
             ;;
         15)
-            bitbake -c devshell linux-yocto
+            bitbake -c devshell $KERNEL_NAME
             ;;
         16)
             echo "Version: $VERSION"
@@ -84,7 +140,12 @@ execute_option() {
 }
 
 show_help() {
-    echo "Help:"
+    echo "Usage: $0 [-tiny] [option]"
+    echo ""
+    echo "Options:"
+    echo "  -tiny    Use tiny kernel (linux-yocto-srk-tiny) instead of standard kernel"
+    echo ""
+    echo "Menu Options:"
     echo "0. Build kernel: Builds the kernel using bitbake."
     echo "1. kernel_configme: Configures the kernel."
     echo "2. menuconfig: Opens the kernel menu configuration."
@@ -100,14 +161,25 @@ show_help() {
     echo "12. Show help: Displays this help message."
     echo "13. Exit: Exits the script."
     echo "14. Clean kernel: Cleans the kernel build using bitbake."
-    echo "15. Open devshell: Opens the development shell for linux-yocto."
+    echo "15. Open devshell: Opens the development shell for the current kernel."
     echo "16. Print version: Prints the version of the script."
+    echo ""
+    if [ "$USE_TINY" = true ]; then
+        echo "Current mode: TINY KERNEL (linux-yocto-srk-tiny)"
+    else
+        echo "Current mode: STANDARD KERNEL (linux-yocto)"
+    fi
 }
 
-if [ -z "$1" ]; then
+if [ $# -eq 0 ] || ([ $# -eq 1 ] && [ "$1" = "-tiny" ]); then
     show_menu
     read -p "Enter your choice: " choice
     execute_option $choice
 else
-    execute_option $1
+    # Remove the -tiny parameter if it was used, and execute the remaining argument
+    if [ "$1" = "-tiny" ]; then
+        execute_option $2
+    else
+        execute_option $1
+    fi
 fi
