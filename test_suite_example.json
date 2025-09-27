@@ -80,7 +80,7 @@
     ],
     [
         "CAPTURE_LOG_ASSERT",
-        "Verify root shell boot message",
+        "Verify boot message",
         null,
         "Dropping into root shell...",
         "Root shell message not found",
