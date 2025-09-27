@@ -139,6 +139,16 @@ CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE=0
 - Minimal kernel footprint
 - BeagleBone Black support
 
+#### Boot Time Optimizations
+
+To achieve faster boot times, the following optimizations have been implemented:
+
+- **HDMI Disable in Device Tree**: The HDMI DTS include (`am335x-boneblack-hdmi.dtsi`) is commented out in the main BeagleBone Black DTS to prevent HDMI hardware initialization.
+- **Audio Disable in Device Tree**: The sound node in the HDMI DTS include is commented out to avoid audio subsystem setup.
+- **Audio Disable in Kernel Config**: Kernel configuration fragments disable sound support (`CONFIG_SOUND=n`, `CONFIG_SND=n`) to remove audio drivers from the build.
+
+These changes reduce boot time by skipping unnecessary peripheral initialization while maintaining core functionality for the no-busybox initramfs environment.
+
 #### Tiny Kernel Runtime Configuration
 
 **Avoid Delay Calibration at Boot:**
