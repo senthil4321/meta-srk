@@ -56,12 +56,14 @@ def reset_bbb():
         return False
 
 class RemoteSerialTester:
-    def __init__(self, host, user, port='/dev/ttyUSB0', baudrate=115200, timeout=5):
+    def __init__(self, host, user, port='/dev/ttyUSB0', baudrate=115200, timeout=5, prompt='beaglebone-yocto:~$'):
         self.host = host
         self.user = user
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
+        self.prompt = prompt  # Shell prompt to expect
+        self.login_prompt = "beaglebone-yocto login:"
         self.client = None
         self.channel = None
         self.output_queue = queue.Queue()
@@ -158,12 +160,12 @@ class RemoteSerialTester:
                 print(f"Received: {data.strip()}")
                 last_data_time = time.time()
 
-                if not login_found and "beaglebone-yocto login:" in combined_buffer:
+                if not login_found and self.login_prompt in combined_buffer:
                     login_found = True
                     print("✓ Login prompt detected")
                     break
 
-                if not already_logged_in and "beaglebone-yocto:~$" in combined_buffer:
+                if not already_logged_in and self.prompt in combined_buffer:
                     already_logged_in = True
                     print("✓ Already logged in, shell prompt detected")
                     break
@@ -205,7 +207,7 @@ class RemoteSerialTester:
                     if self.channel:
                         self.channel.send("\n")
                     password_sent = True
-                if "beaglebone-yocto:~$" in buffer:
+                if self.prompt in buffer:
                     print("✓ Shell prompt detected")
                     break
             except queue.Empty:
@@ -214,7 +216,7 @@ class RemoteSerialTester:
             print("ERROR: Timeout waiting for shell prompt")
             return False
 
-        if "beaglebone-yocto:" not in buffer:
+        if self.prompt not in buffer:
             print("ERROR: Shell prompt not found")
             return False
 
@@ -233,6 +235,12 @@ def run_generic_test(tester, test_config):
     failure_msg = test_config[3] if len(test_config) > 3 else "Test failed"
     kwargs = test_config[4] if len(test_config) > 4 else {}
 
+    # Replace {PROMPT} placeholder with actual prompt
+    if expected and isinstance(expected, str):
+        expected = expected.replace("{PROMPT}", tester.prompt)
+    if isinstance(expected, list):
+        expected = [e.replace("{PROMPT}", tester.prompt) if isinstance(e, str) else e for e in expected]
+
     try:
         if test_type == "ASSERT_IN_BUFFER":
             # Check if expected string exists in current buffer
@@ -248,7 +256,7 @@ def run_generic_test(tester, test_config):
             # Send command and check for expected string in response
             tester.send_command(command)
             timeout = kwargs.get('timeout', 10)
-            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            output = tester.read_until(tester.prompt, timeout)
             if assert_in(expected, output):
                 return "OK"
             return failure_msg
@@ -257,7 +265,7 @@ def run_generic_test(tester, test_config):
             # Send command and verify multiple expected strings
             tester.send_command(command)
             timeout = kwargs.get('timeout', 10)
-            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            output = tester.read_until(tester.prompt, timeout)
             expected_lines = expected if isinstance(expected, list) else [expected]
             if all(assert_in(line, output) for line in expected_lines):
                 return "OK"
@@ -267,7 +275,7 @@ def run_generic_test(tester, test_config):
             # Send command and extract specific information
             tester.send_command(command)
             timeout = kwargs.get('timeout', 10)
-            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            output = tester.read_until(tester.prompt, timeout)
             if expected and assert_in(expected, output):
                 # Extract value based on pattern
                 extract_pattern = kwargs.get('extract_pattern', expected)
@@ -301,7 +309,7 @@ def run_generic_test(tester, test_config):
             # Check hardware availability
             tester.send_command(command)
             timeout = kwargs.get('timeout', 10)
-            output = tester.read_until("beaglebone-yocto:~$", timeout)
+            output = tester.read_until(tester.prompt, timeout)
             if expected:
                 return "Hardware found" if expected in output else "Hardware not found"
             else:
@@ -317,7 +325,7 @@ def run_generic_test(tester, test_config):
                     if 'sleep' in kwargs:
                         time.sleep(kwargs['sleep'])
                 timeout = kwargs.get('timeout', 10)
-                output = tester.read_until("beaglebone-yocto:~$", timeout)
+                output = tester.read_until(tester.prompt, timeout)
                 if expected and assert_in(expected, output):
                     return "Hardware test OK"
                 return failure_msg
@@ -325,7 +333,7 @@ def run_generic_test(tester, test_config):
                 # Single command hardware test
                 tester.send_command(command)
                 timeout = kwargs.get('timeout', 10)
-                output = tester.read_until("beaglebone-yocto:~$", timeout)
+                output = tester.read_until(tester.prompt, timeout)
                 if expected and assert_in(expected, output):
                     return "Hardware test OK"
                 return failure_msg
@@ -344,12 +352,12 @@ DEFAULT_TEST_SUITE = [
     ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
     ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
     ["ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto:~$", "No login or shell prompt found", {"timeout": 90}],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
 
     # Detailed login steps - simplified for generic format
     ["SEND_COMMAND", "srk", None, "Username sent"],
     ["SEND_COMMAND", "", None, "Password sent"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto:~$", "Shell prompt not found", {"timeout": 30}],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
     ["ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
 
     # Application tests
@@ -381,12 +389,12 @@ IMAGE_11_TEST_SUITE = [
     ["ASSERT_IN_BUFFER", None, "U-Boot", "U-Boot not found in logs"],
     ["ASSERT_IN_BUFFER", None, "Linux version", "Kernel logs not found"],
     ["ASSERT_IN_BUFFER", None, "initramfs", "Initramfs logs not found"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto:~$", "No login or shell prompt found", {"timeout": 90}],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto login:|beaglebone-yocto{PROMPT}", "No login or shell prompt found", {"timeout": 90}],
 
     # Detailed login steps - simplified for generic format
     ["SEND_COMMAND", "srk", None, "Username sent"],
     ["SEND_COMMAND", "", None, "Password sent"],
-    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto:~$", "Shell prompt not found", {"timeout": 30}],
+    ["WAIT_FOR_CONDITION", None, "beaglebone-yocto{PROMPT}", "Shell prompt not found", {"timeout": 30}],
     ["ASSERT_IN_BUFFER", None, "beaglebone-yocto:", "Login verification failed"],
 
     # Hardware-specific tests
@@ -421,17 +429,25 @@ IMAGE_11_TEST_SUITE = [
 ]
 
 class TestSerialHello(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.image_type = None
+
     def setUp(self):
         # Reset BBB before starting tests
         if not reset_bbb():
             self.fail("BBB reset failed, cannot proceed with tests")
+
+        # Determine prompt based on image type (passed via command line)
+        prompt = "beaglebone-yocto:#" if self.image_type == "11" else "beaglebone-yocto:~$"
 
         self.tester = RemoteSerialTester(
             host='192.168.1.100',
             user='pi',
             port='/dev/ttyUSB0',
             baudrate=115200,
-            timeout=5
+            timeout=5,
+            prompt=prompt
         )
         self.assertTrue(self.tester.connect(), "Failed to establish SSH connection")
 
@@ -508,11 +524,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     tester = TestSerialHello()
+    tester.image_type = args.image_type  # Set image type before setup
     tester.setUp()
     try:
         results = tester.run_all_tests(args.image_type)
         if args.save_report:
             report_generator = TestReportGenerator()
-            report_generator.save_report_to_file(results, args.save_report, ["Check U-Boot logs", "Check kernel logs", "Check initramfs logs", "Check LED support", "Test LED control", "Check EEPROM support", "Test EEPROM read", "Check RTC binary exists", "Test RTC read", "Test RTC info"])
+            report_generator.save_report_to_file(results, args.save_report, ["Check for", "Hardware check", "Wait for"])
     finally:
         tester.tearDown()
