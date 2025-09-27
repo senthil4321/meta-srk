@@ -439,7 +439,7 @@ class TestSerialHello(unittest.TestCase):
             self.fail("BBB reset failed, cannot proceed with tests")
 
         # Determine prompt based on image type (passed via command line)
-        prompt = "beaglebone-yocto:#" if self.image_type == "11" else "beaglebone-yocto:~$"
+        prompt = "#" if self.image_type == "11" else "beaglebone-yocto:~$"
 
         self.tester = RemoteSerialTester(
             host='192.168.1.100',
