@@ -139,6 +139,19 @@ CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE=0
 - Minimal kernel footprint
 - BeagleBone Black support
 
+#### Tiny Kernel Runtime Configuration
+
+**Avoid Delay Calibration at Boot:**
+To prevent the kernel from performing delay loop calibration at boot time (which can take several seconds), configure the loops per jiffy (lpj) value in U-Boot:
+
+```bash
+# Set the pre-calculated lpj value
+setenv bootargs "${bootargs} lpj=4980736"
+saveenv
+```
+
+This bypasses the calibration process and uses the pre-calculated value for better boot performance.
+
 ## Build Information
 
 ### Current Build Status
