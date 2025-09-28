@@ -89,7 +89,7 @@ IMAGE_11_TEST_SUITE_TINY = [
     ["CAPTURE_LOG", "Capture boot serial logs", None, None, "Error Capturing Log", {
         "capture_name": "root-shell-boot",
         "reset_before": True,
-        "timeout": 10,
+        "timeout": 5,
         "end_conditions": ["Hello World"]
     }],
     ["CAPTURE_LOG_ASSERT", "Verify boot message", None, "Hello World", "Message not found", {"capture_name": "root-shell-boot"}],
