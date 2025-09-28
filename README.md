@@ -2,7 +2,7 @@
 
 meta-srk
 
-## bitbake tutorial
+## Bitbake Tutorial
 
 ```bash
 bitbake-layers create-layer ../meta-srk
@@ -12,48 +12,34 @@ bitbake-layers show-layers
 
 ## Important Variables
 
-```ba### Kernel Modules```
-```
+### Kernel Modules
 
-T```
-
-TODO
-
-```bash
-### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
-```
-
-To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
-# LINUX_VERSION_EXTENSION += "-srk-trial20"bash
-### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
-```
-
-To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
-# LINUX_VERSION_EXTENSION += "-srk-trial20"``bash
-### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
 ```bash
 sunrpc - Used by NFS
 xfrm - used by IPSec
 ```
 
-TODO
+### TODO
 
 ```bash
 ### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`
 ```
 
-To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
+To overwrite kernel version update the Yocto variable in custom `kernel recipe` or `local.conf`
+
+```bash
 # LINUX_VERSION_EXTENSION += "-srk-trial20"
+```
+
 IMAGE_INSTALL
 IMAGE_FSTYPES
 IMAGE_FEATURES
-```
 
-### Package Group Recipe
+## Package Group Recipe
 
 A package group recipe bundles multiple packages together and then instead of having to explicitly specify each package in the IMAGE_INSTALL variable you can simply specify the package group name.
 
-* https://lists.yoctoproject.org/g/yocto/message/20345
+* [https://lists.yoctoproject.org/g/yocto/message/20345](https://lists.yoctoproject.org/g/yocto/message/20345)
 
 ```bash
 # How to list all package groups?
@@ -63,7 +49,7 @@ ls meta*/recipes-kernel/*
 ```
 
 ```bash
-bitbake -c copy_rootfs_to_nfs rootfs-nfs-copy 
+bitbake -c copy_rootfs_to_nfs rootfs-nfs-copy
 ```
 
 ```bash
@@ -91,7 +77,7 @@ echo '$1$V9izHbFg$z8ZfBeREgRqdOP3AuHGn51' | sed 's/\$/\\$/g'
 echo \$1\$V9izHbFg\$z8ZfBeREgRqdOP3AuHGn51 | sed 's/\\//g'
 ```
 
-## Mount sqashfs and switch root
+## Mount Squashfs and Switch Root
 
 ```bash
 zcat /proc/config.gz |grep "=y"|grep "CONFIG_SQUASHFS"
@@ -123,7 +109,6 @@ setenv bootargs 'console=ttyS0,115200n8 root=/dev/ram0'
 saveenv
 boo
 mount -t nfs 192.168.1.100:/srv/nfs /mnt/
-
 ```
 
 ## Workflow
@@ -131,7 +116,7 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 1. Run bitbake `bitbake core-image-tiny-initramfs-srk-2` to compile initRamFS Image
 2. Run bitbake `bitbake core-image-minimal-srk` to compile Kernel with initRamFS included
 3. Copy `zImage` using script `04_copy_zImage.sh`
-4. Deply squashfs based ROOTS to `nfs`
+4. Deploy squashfs based ROOTS to `nfs`
 
 ### Workflow - initramfs
 
@@ -143,7 +128,6 @@ mount -t nfs 192.168.1.100:/srv/nfs /mnt/
 6. Run `03_copy_initramfs.sh 3`
 7. Run `05_copy_squashfs.sh -i -k` -> note order is important, as command 6 deletes entire nfs in the server.
 8. Copy `zImage` using script `04_copy_zImage.sh`
-`
 
 ## Initramfs Image Recipes
 
@@ -215,7 +199,7 @@ Change the library to `musl`
 
 Log : meta-srk/backup/01_busybox_init_srk-3/
 
-Result : Faulure
+Result : Failure
 
 ```bash
 # 2. Remove Kernel and U-Boot from Image
@@ -226,24 +210,24 @@ VIRTUAL-RUNTIME_init_manager = "busybox"
 
 PREFERRED_PROVIDER_virtual/libc = "musl"
 PREFERRED_PROVIDER_virtual/libiconv = "glibc"
-
 ```
 
-### Kernel Modules
+### Kernel Modules for Trial 3.3
 
 ```bash
 sunrpc - Used by NFS
 xfrm - used by IPSec
 ```
-### TODO 
-~### add `LINUX_VERSION_EXTENSION += "-srk-trial20"`~
-To overwrite kernel version update the Yocot variable in custom `kernel recipe` or `local.conf`
+
+### TODO for Trial 3.3
+
+To overwrite kernel version update the Yocto variable in custom `kernel recipe` or `local.conf`
 
 ```text
 # LINUX_VERSION_EXTENSION += "-srk-trial20"
 ```
 
-### workflow rootfs encrypted build
+### Workflow rootfs encrypted build
 
 ```bash
 bitbake core-image-minimal-srk
@@ -258,31 +242,35 @@ bitbake core-image-minimal-srk
 A Python-based test automation script for SRK target devices that connects via SSH and performs serial communication testing.
 
 ### Version
+
 1.6.0
 
 ### Features
 
-- **Remote Serial Testing**: Connects to target device via SSH and socat for reliable serial communication
-- **Automated Test Suite**: Runs comprehensive tests including login, command execution, and output verification
-- **Colored Report Generation**: Generates formatted test reports with color-coded status indicators
-- **Detailed Output**: Shows actual system information (versions, timestamps, uptime) in test results
-- **Modular Design**: Separated report generation into a reusable module
-- **Command-line Interface**: Supports saving reports to files and version display
-- **Initramfs Analysis**: Separated checks for init system type and encryption support
+* **Remote Serial Testing**: Connects to target device via SSH and socat for reliable serial communication
+* **Automated Test Suite**: Runs comprehensive tests including login, command execution, and output verification
+* **Colored Report Generation**: Generates formatted test reports with color-coded status indicators
+* **Detailed Output**: Shows actual system information (versions, timestamps, uptime) in test results
+* **Modular Design**: Separated report generation into a reusable module
+* **Command-line Interface**: Supports saving reports to files and version display
+* **Initramfs Analysis**: Separated checks for init system type and encryption support
 
 ### Usage
 
 #### Basic Usage
+
 ```bash
 python3 test_serial_hello.py
 ```
 
 #### Save Report to File
+
 ```bash
 python3 test_serial_hello.py --save-report test_results.txt
 ```
 
 #### Show Version
+
 ```bash
 python3 test_serial_hello.py --version
 ```
@@ -291,9 +279,9 @@ python3 test_serial_hello.py --version
 
 ### Yocto Best Practices
 
-- Flexibility: Images can override distro defaults when needed
-- Layered Configuration: Distro → Image → Machine → Local overrides
-- Common Pattern: Many Yocto projects do this (e.g., initramfs with busybox, rootfs with systemd)
+* Flexibility: Images can override distro defaults when needed
+* Layered Configuration: Distro → Image → Machine → Local overrides
+* Common Pattern: Many Yocto projects do this (e.g., initramfs with busybox, rootfs with systemd)
 
 ### Test Steps
 
@@ -318,24 +306,25 @@ The script performs the following test steps:
 
 The test script now includes comprehensive build time checking with **detailed output**:
 
-- **Kernel Build Time**: Shows when the Linux kernel was compiled (e.g., "Tue Mar 19 16:42:51 UTC 2024")
-- **System Timestamp**: Displays the build timestamp from system files
-- **System Uptime**: Indicates how long the system has been running (e.g., "2 days, 3:45")
-- **Build Version**: Shows complete system version information
-- **BusyBox Version**: Displays the exact BusyBox version installed
+* **Kernel Build Time**: Shows when the Linux kernel was compiled (e.g., "Tue Mar 19 16:42:51 UTC 2024")
+* **System Timestamp**: Displays the build timestamp from system files
+* **System Uptime**: Indicates how long the system has been running (e.g., "2 days, 3:45")
+* **Build Version**: Shows complete system version information
+* **BusyBox Version**: Displays the exact BusyBox version installed
 
 This information is crucial for:
-- Verifying the freshness of the build
-- Troubleshooting timing-related issues
-- Confirming the system is running the expected version
-- Performance analysis and optimization
+
+* Verifying the freshness of the build
+* Troubleshooting timing-related issues
+* Confirming the system is running the expected version
+* Performance analysis and optimization
 
 ### Requirements
 
-- Python 3.8+
-- paramiko
-- SSH access to target device
-- socat installed on target device
+* Python 3.8+
+* paramiko
+* SSH access to target device
+* socat installed on target device
 
 ### Copyright
 
