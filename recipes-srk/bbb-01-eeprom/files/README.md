@@ -49,7 +49,7 @@ bbb-01-eeprom
 
 ## Example Output
 
-```
+```text
 BBB EEPROM Reader
 =================
 
