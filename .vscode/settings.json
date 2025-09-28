@@ -1,9 +1,15 @@
 {
     // Show all files in Explorer
     "files.exclude": {
-        "**/.git": false,
-        "**/build": false,
-        "**/tmp": false
+        "**/.git": true,
+        "**/__pycache__": true,
+        "**/.gitignore": true,
+        "**/.pydevproject": true,
+        "**/COPYING.MIT": true,
+        "**/keyfile": true,
+        "**/encrypted.img": true,
+        "**/.project": true
+        
     },
     "explorer.excludeGitIgnore": false,
 
