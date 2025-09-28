@@ -1,17 +1,38 @@
 {
-    "python.autoComplete.extraPaths": [
-        "${workspaceFolder}/sources/poky/bitbake/lib",
-        "${workspaceFolder}\\sources\\poky\\meta\\lib",
-        "/lib",
-        "../meta/lib"
-    ],
-    "python.analysis.extraPaths": [
-        "${workspaceFolder}/sources/poky/bitbake/lib",
-        "${workspaceFolder}\\sources\\poky\\meta\\lib"
-    ],
+    // Show all files in Explorer
+    "files.exclude": {
+        "**/.git": false,
+        "**/build": false,
+        "**/tmp": false
+    },
+    "explorer.excludeGitIgnore": false,
+
+    // BitBake file associations
     "files.associations": {
+        "*.bb": "bitbake",
         "*.conf": "bitbake",
         "*.inc": "bitbake"
     },
-    "bitbake.sdkImage": "core-image-minimal"
+
+    // Python paths for Yocto scripts
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/sources/poky/bitbake/lib",
+        "${workspaceFolder}/sources/poky/meta/lib",
+        "/lib",
+        "../meta/lib",
+        "${workspaceFolder}/bitbake/lib",
+        "${workspaceFolder}/meta/lib",
+        "${workspaceFolder}/../bitbake/lib",
+        "meta/lib"
+    ],
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/sources/poky/bitbake/lib",
+        "${workspaceFolder}/sources/poky/meta/lib"
+    ],
+    "bitbake.pathToBitbakeFolder": "${workspaceFolder}/../bitbake",
+    "bitbake.pathToEnvScript": "${workspaceFolder}/../oe-init-build-env",
+    "bitbake.buildConfigurations": [
+
+    ],
+    "bitbake.pathToBuildFolder": "${workspaceFolder}/../build"
 }
