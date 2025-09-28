@@ -4,7 +4,7 @@
 # Uses SSH alias 'p' configured in ~/.ssh/config for pi@srk.local
 # Uses SSH key-based authentication (no password required)
 # Supports both standard and tiny kernel configurations
-
+# KAN-17 Fix am335x-yocto-srk-tiny.dtb copy
 VERSION="1.0.0"
 
 print_help() {
@@ -68,8 +68,7 @@ done
 
 # Set configuration based on -tiny flag
 if [ "$USE_TINY" = true ]; then
-    # INPUT_FILES=("am335x-yocto-srk-tiny.dtb") TODO Fix
-    INPUT_FILES=("am335x-boneblack.dtb")
+    INPUT_FILES=("am335x-yocto-srk-tiny.dtb") # TODO [KAN-17] Fix
     SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto-srk-tiny/"
     MACHINE_SUFFIX="-srk-tiny"
     DTB_NAME="am335x-yocto-srk-tiny.dtb"
