@@ -5,6 +5,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://defconfig \
             file://printk_time.cfg \
+            file://am335x-yocto-srk-tiny.dts;subdir=git/arch/arm/boot/dts/ti/omap \    
            "
 KCONFIG_MODE = "alldefconfig"
 

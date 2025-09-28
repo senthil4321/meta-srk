@@ -1,0 +1,67 @@
+<svg width="980" height="420" viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Material colors -->
+    <style>
+      .txt { font-family: Inter, Roboto, Arial, sans-serif; fill: #FFFFFF; font-size: 13px; }
+      .cap { font-family: Inter, Roboto, Arial, sans-serif; fill: #212121; font-size: 13px; }
+      .small { font-size: 12px; }
+      .box { rx: 10; ry: 10; }
+      .blue { fill: #2196F3; }     /* Blue 500 */
+      .green { fill: #4CAF50; }    /* Green 500 */
+      .amber { fill: #FFC107; }    /* Amber 500 */
+      .purple { fill: #673AB7; }   /* Deep Purple 500 */
+      .grey { fill: #757575; }     /* Grey 600 */
+      .white { fill: #FFFFFF; }
+      .line { stroke: #607D8B; stroke-width: 2; } /* Blue Grey 500 */
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#607D8B"/>
+    </marker>
+  </defs>
+
+  <!-- 1. Source DTS in layer -->
+  <rect class="box blue" x="30" y="40" width="260" height="90"/>
+  <text class="txt" x="50" y="70">Layer file</text>
+  <text class="txt small" x="50" y="90">meta-srk/recipes-kernel/linux/</text>
+  <text class="txt small" x="50" y="108">linux-yocto-srk-tiny/am335x-yocto-srk-tiny.dts</text>
+
+  <!-- 2. SRC_URI directive -->
+  <rect class="box grey" x="320" y="40" width="320" height="90"/>
+  <text class="txt" x="340" y="70">Recipe SRC_URI</text>
+  <text class="txt small" x="340" y="90">file://am335x-yocto-srk-tiny.dts;</text>
+  <text class="txt small" x="340" y="108">subdir=git/arch/arm/boot/dts/ti/omap</text>
+
+  <!-- 3. Kernel source destination -->
+  <rect class="box green" x="670" y="40" width="280" height="90"/>
+  <text class="txt" x="690" y="70">Staged into kernel source</text>
+  <text class="txt small" x="690" y="90">${S}/git/arch/arm/boot/dts/ti/omap/</text>
+  <text class="txt small" x="690" y="108">am335x-yocto-srk-tiny.dts</text>
+
+  <!-- 4. Machine config -->
+  <rect class="box purple" x="30" y="180" width="420" height="90"/>
+  <text class="txt" x="50" y="210">Machine config</text>
+  <text class="txt small" x="50" y="230">DTB_FILES += "am335x-yocto-srk-tiny.dtb"</text>
+  <text class="txt small" x="50" y="248">KERNEL_DEVICETREE = "ti/omap/${DTB_FILES}"</text>
+
+  <!-- 5. Build/Deploy -->
+  <rect class="box amber" x="480" y="180" width="470" height="90"/>
+  <text class="cap" x="500" y="210">Kernel build & deploy</text>
+  <text class="cap small" x="500" y="230">dtc compiles: am335x-yocto-srk-tiny.dts → am335x-yocto-srk-tiny.dtb</text>
+  <text class="cap small" x="500" y="248">installed to deploy/images/... and included in IMAGE_BOOT_FILES</text>
+
+  <!-- Arrows -->
+  <line class="line" x1="290" y1="85" x2="320" y2="85" marker-end="url(#arrow)"/>
+  <line class="line" x1="640" y1="85" x2="670" y2="85" marker-end="url(#arrow)"/>
+  <line class="line" x1="450" y1="225" x2="480" y2="225" marker-end="url(#arrow)"/>
+  <!-- Cross-links -->
+  <line class="line" x1="780" y1="130" x2="780" y2="180" marker-end="url(#arrow)"/>
+  <line class="line" x1="160" y1="130" x2="160" y2="180" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <rect class="box white" x="30" y="300" width="920" height="90" stroke="#E0E0E0" fill="#FAFAFA"/>
+  <text class="cap small" x="50" y="325">Legend</text>
+  <circle cx="80" cy="350" r="8" fill="#2196F3"/><text class="cap small" x="100" y="354">Layer source file (DTS)</text>
+  <circle cx="300" cy="350" r="8" fill="#757575"/><text class="cap small" x="320" y="354">Recipe SRC_URI mapping with subdir</text>
+  <circle cx="560" cy="350" r="8" fill="#4CAF50"/><text class="cap small" x="580" y="354">File staged into kernel tree</text>
+  <circle cx="770" cy="350" r="8" fill="#FFC107"/><text class="cap small" x="790" y="354">Built & deployed DTB</text>
+</svg>
