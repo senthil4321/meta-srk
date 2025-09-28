@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Kernel Configuration Iteration Script
-# Adds options from alldefconfig to defconfig 10 at a time until test passes
+# Removes options from alldefconfig to defconfig 10 at a time until test passes
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 META_SRK_DIR="$SCRIPT_DIR"
@@ -17,6 +17,10 @@ echo "Defconfig File: $DEFCONFIG_FILE"
 
 # Function to generate alldefconfig
 generate_alldefconfig() {
+    echo "Configuring kernel..."
+    cd "$BUILD_DIR"
+    bitbake linux-yocto-srk-tiny -c configure
+
     echo "Generating alldefconfig..."
     cd "$KERNEL_BUILD_DIR"
     make alldefconfig
@@ -44,37 +48,28 @@ extract_missing_options() {
     cat /tmp/missing_options
 }
 
-# Function to add options to defconfig
-add_options_to_defconfig() {
+# Function to remove options from defconfig
+remove_options_from_defconfig() {
     local defconfig="$1"
     local options_file="$2"
     local count="$3"
 
-    echo "Adding $count options to defconfig..."
+    echo "Removing $count options from defconfig..."
 
     # Take first N options
-    head -n "$count" "$options_file" > /tmp/options_to_add
+    head -n "$count" "$options_file" > /tmp/options_to_remove
 
     # Backup original defconfig
     cp "$defconfig" "${defconfig}.backup"
 
-    # Add options to defconfig (before the disabled sections)
-    awk '
-    BEGIN { added = 0 }
-    /^# --- Disable/ && added == 0 {
-        # Read options to add
-        while ((getline line < "/tmp/options_to_add") > 0) {
-            print line
-        }
-        added = 1
-    }
-    { print }
-    ' "$defconfig" > "${defconfig}.new"
+    # Remove options by setting to =n
+    while IFS= read -r option; do
+        option_name=$(echo "$option" | cut -d'=' -f1)
+        sed -i "s/^$option_name=y/$option_name=n/" "$defconfig"
+    done < /tmp/options_to_remove
 
-    mv "${defconfig}.new" "$defconfig"
-
-    echo "Added options:"
-    cat /tmp/options_to_add
+    echo "Removed options:"
+    cat /tmp/options_to_remove
 }
 
 # Function to create trial directory and save configs
@@ -136,19 +131,28 @@ test_kernel() {
 
 # Main iteration loop
 main() {
+    # Source Yocto environment
+    source "$META_SRK_DIR/../poky/oe-init-build-env" "$BUILD_DIR"
+
     # Generate alldefconfig if not exists
     if [ ! -f "$KERNEL_BUILD_DIR/alldefconfig.full" ]; then
         generate_alldefconfig
     fi
 
-    # Extract missing options
-    extract_missing_options "$KERNEL_BUILD_DIR/alldefconfig.full" "$DEFCONFIG_FILE"
+    # Backup original defconfig
+    cp "$DEFCONFIG_FILE" "$DEFCONFIG_FILE.original"
+
+    # Start with alldefconfig
+    cp "$KERNEL_BUILD_DIR/alldefconfig.full" "$DEFCONFIG_FILE"
+
+    # Extract missing options (options to remove)
+    extract_missing_options "$KERNEL_BUILD_DIR/alldefconfig.full" "$DEFCONFIG_FILE.original"
 
     local total_options=$(wc -l < /tmp/missing_options)
-    echo "Total missing options: $total_options"
+    echo "Total options to remove: $total_options"
 
     if [ "$total_options" -eq 0 ]; then
-        echo "No missing options found. All options already present."
+        echo "No options to remove. Config is already minimal."
         exit 0
     fi
 
@@ -168,10 +172,10 @@ main() {
             options_to_add="$remaining_options"
         fi
 
-        echo "Adding $options_to_add options in trial $trial_num"
+        echo "Removing $options_to_add options in trial $trial_num"
 
-        # Add options to defconfig
-        add_options_to_defconfig "$DEFCONFIG_FILE" "/tmp/missing_options" "$options_to_add"
+        # Remove options from defconfig
+        remove_options_from_defconfig "$DEFCONFIG_FILE" "/tmp/missing_options" "$options_to_add"
 
         # Remove the added options from the missing list
         tail -n +$((options_to_add + 1)) /tmp/missing_options > /tmp/missing_options.tmp

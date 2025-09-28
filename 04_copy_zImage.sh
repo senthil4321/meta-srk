@@ -68,7 +68,8 @@ done
 
 # Set configuration based on -tiny flag
 if [ "$USE_TINY" = true ]; then
-    INPUT_FILES=("am335x-yocto-srk-tiny.dtb")
+    # INPUT_FILES=("am335x-yocto-srk-tiny.dtb") TODO Fix
+    INPUT_FILES=("am335x-boneblack.dtb")
     SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto-srk-tiny/"
     MACHINE_SUFFIX="-srk-tiny"
     DTB_NAME="am335x-yocto-srk-tiny.dtb"
