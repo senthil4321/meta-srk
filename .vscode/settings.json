@@ -34,5 +34,7 @@
     "bitbake.buildConfigurations": [
 
     ],
-    "bitbake.pathToBuildFolder": "${workspaceFolder}/../build"
+    "bitbake.pathToBuildFolder": "${workspaceFolder}/../build",
+    "git.inputValidation": true,
+    "git.inputValidationSubjectLength": 50
 }
