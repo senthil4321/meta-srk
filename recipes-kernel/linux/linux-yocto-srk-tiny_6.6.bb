@@ -9,6 +9,16 @@ SRC_URI += "file://defconfig \
             file://disable-rng.cfg \
             file://ultra-minimal.cfg \
             file://disable-ti-sysc.cfg \
+            file://optimization_02_sound_multimedia.cfg \
+            file://optimization_01_filesystem_optimization.cfg \
+            file://optimization_03_wireless_bluetooth.cfg \
+            file://optimization_04_graphics_display.cfg \
+            file://optimization_05_crypto_security.cfg \
+            file://optimization_06_kernel_debugging.cfg \
+            file://optimization_07_power_management.cfg \
+            file://optimization_08_profiling_tracing.cfg \
+            file://optimization_09_memory_features.cfg \
+            file://optimization_10_final_cleanup.cfg \
             file://am335x-yocto-srk-tiny.dts;subdir=git/arch/arm/boot/dts/ti/omap"
 
 # Force disable multiple configs after all fragments are processed
