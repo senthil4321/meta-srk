@@ -127,7 +127,7 @@ recipes-kernel/linux/linux-yocto-srk-tiny/
 python3 ./03_scripts/01_optimization/03_complete_optimization.py --single-iteration 1
 
 # Monitor boot performance
-python3 ./03_scripts/01_optimization/01_boot_performance_monitor.py
+python3 ./03_scripts/01_optimization/01_reset_bbb_and_log_monitor.py
 ```
 
 ### Method 2: Continue from Interruption
@@ -141,7 +141,7 @@ python3 ./03_scripts/01_optimization/04_continue_optimization.py
 
 ```bash
 # Quick boot test without full automation
-./03_scripts/01_optimization/02_quick_boot_monitor.sh
+./03_scripts/01_optimization/02_quick_reset_bbb_and_log_monitor.sh
 ```
 
 ## 🔍 TROUBLESHOOTING

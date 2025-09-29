@@ -7,8 +7,8 @@ This directory contains the complete automation framework for systematic Linux k
 ```
 03_scripts/
 ├── optimization/           # Main optimization scripts
-│   ├── 14_boot_performance_monitor.py     # Advanced Python boot monitoring
-│   ├── 15_quick_boot_monitor.sh          # Fast shell-based monitoring
+│   ├── 14_reset_bbb_and_log_monitor.py     # Advanced Python boot monitoring
+│   ├── 15_quick_reset_bbb_and_log_monitor.sh          # Fast shell-based monitoring
 │   ├── 16_complete_optimization.py       # Full 10-iteration automation
 │   ├── 17_continue_optimization.py       # Streamlined completion system
 │   ├── 18_final_analysis.py             # Basic reporting
@@ -59,10 +59,10 @@ python3 20_final_complete_analysis.py
 ### Advanced Boot Monitoring
 ```bash
 # Comprehensive boot performance analysis
-python3 14_boot_performance_monitor.py
+python3 14_reset_bbb_and_log_monitor.py
 
 # Quick boot monitoring for testing
-./15_quick_boot_monitor.sh
+./15_quick_reset_bbb_and_log_monitor.sh
 ```
 
 ### Continuing Interrupted Optimization

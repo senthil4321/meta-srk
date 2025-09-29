@@ -9,8 +9,8 @@ This organized archive contains the complete kernel optimization system that suc
 ```
 03_scripts/
 ├── optimization/                    # 🔧 Automation Scripts
-│   ├── 14_boot_performance_monitor.py   # Advanced Python boot monitoring with KPI extraction
-│   ├── 15_quick_boot_monitor.sh         # Fast shell-based boot monitoring
+│   ├── 14_reset_bbb_and_log_monitor.py   # Advanced Python boot monitoring with KPI extraction
+│   ├── 15_quick_reset_bbb_and_log_monitor.sh         # Fast shell-based boot monitoring
 │   ├── 16_complete_optimization.py      # Complete 10-iteration automation system
 │   ├── 17_continue_optimization.py      # Streamlined continuation from iteration 3+
 │   ├── 18_final_analysis.py            # Basic analysis and reporting

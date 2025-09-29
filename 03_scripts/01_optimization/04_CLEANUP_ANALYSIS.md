@@ -5,6 +5,7 @@
 ### ✅ **CORE SCRIPTS - KEEP THESE**
 
 #### Main Automation Scripts
+
 - **`16_complete_optimization.py`** - Primary automation script (18.8KB)
   - **Purpose:** Complete 10-iteration automation
   - **Status:** ESSENTIAL - Main production script
@@ -21,17 +22,19 @@
   - **Usage:** Generate final performance analysis
 
 #### Boot Monitoring Scripts
-- **`14_boot_performance_monitor.py`** - Advanced boot monitor (12.8KB)
+
+- **`01_reset_bbb_and_log_monitor.py`** - Advanced boot monitor (12.8KB)
   - **Purpose:** Real-time boot monitoring with KPI extraction
   - **Status:** ESSENTIAL - Core monitoring functionality
   - **Usage:** Detailed boot analysis and timing
 
-- **`15_quick_boot_monitor.sh`** - Quick monitor (1.7KB)
+- **`02_quick_reset_bbb_and_log_monitor.sh`** - Quick monitor (1.7KB)
   - **Purpose:** Simple shell-based boot testing
   - **Status:** USEFUL - Quick validation tool
   - **Usage:** Fast boot verification
 
 #### User Interface Scripts
+
 - **`run_optimization.sh`** - Main execution script (3.8KB)
   - **Purpose:** User-friendly entry point
   - **Status:** ESSENTIAL - Primary user interface
@@ -42,6 +45,7 @@
 ### ⚠️ **REDUNDANT SCRIPTS - RECOMMEND REMOVAL**
 
 #### Duplicate/Alternative Implementations
+
 - **`16_iterative_kernel_optimizer.py`** - Alternative optimizer (19.6KB)
   - **Problem:** Functionally identical to `16_complete_optimization.py`
   - **Recommendation:** **DELETE** - Superseded by `16_complete_optimization.py`
@@ -53,6 +57,7 @@
   - **Reason:** Manual iteration is cumbersome vs automated approach
 
 #### Obsolete Monitoring Scripts
+
 - **`17_monitor_optimization.sh`** - Progress monitor (1.6KB)
   - **Problem:** Designed for old script names and structure
   - **Recommendation:** **DELETE** - Built-in progress reporting exists
@@ -64,6 +69,7 @@
   - **Reason:** Modern scripts have integrated monitoring
 
 #### Obsolete Analysis Scripts
+
 - **`18_final_analysis.py`** - Basic analysis (7.4KB)
   - **Problem:** Limited functionality vs comprehensive version
   - **Recommendation:** **DELETE** - Superseded by `20_final_complete_analysis.py`
@@ -75,6 +81,7 @@
   - **Reason:** Final analysis script is more comprehensive
 
 #### Utility Scripts
+
 - **`verify_organization.sh`** - Organization check (2.9KB)
   - **Problem:** One-time use script for setup verification
   - **Recommendation:** **MOVE TO ARCHIVE** - Not needed for production
@@ -85,6 +92,7 @@
 ## 🎯 **RECOMMENDED CLEANUP ACTIONS**
 
 ### 1. **DELETE These Scripts** (Save ~55KB, reduce confusion)
+
 ```bash
 rm 16_iterative_kernel_optimizer.py      # Duplicate of main optimizer
 rm 17_monitor_optimization.sh            # Obsolete monitoring
@@ -95,12 +103,14 @@ rm monitor_progress.sh                   # Built-in monitoring exists
 ```
 
 ### 2. **Archive These Scripts** (Development/diagnostic use)
+
 ```bash
 mkdir -p archive/
 mv verify_organization.sh archive/       # Keep for future verification
 ```
 
 ### 3. **Clean Documentation**
+
 ```bash
 rm REPRODUCTION_GUIDE_OLD.md             # Remove old version
 ```
@@ -111,11 +121,11 @@ rm REPRODUCTION_GUIDE_OLD.md             # Remove old version
 
 After cleanup, the optimization directory will contain:
 
-```
+```text
 03_scripts/01_optimization/
 ├── 01_logs/                           # All logs and reports
-├── 14_boot_performance_monitor.py     # Advanced boot monitoring
-├── 15_quick_boot_monitor.sh           # Quick boot testing  
+├── 01_reset_bbb_and_log_monitor.py   # Advanced boot monitoring
+├── 02_quick_reset_bbb_and_log_monitor.sh # Quick boot testing  
 ├── 16_complete_optimization.py        # Main automation (ENTRY POINT)
 ├── 17_continue_optimization.py        # Recovery/continuation
 ├── 20_final_complete_analysis.py      # Final reporting
@@ -142,11 +152,13 @@ After cleanup, the optimization directory will contain:
 ## 🔧 **EXECUTION FLOW AFTER CLEANUP**
 
 ### Primary Usage (95% of cases)
+
 ```bash
 ./run_optimization.sh    # Does everything automatically
 ```
 
-### Advanced Usage (5% of cases) 
+### Advanced Usage (5% of cases)
+
 ```bash
 # Manual control
 python3 16_complete_optimization.py
@@ -158,7 +170,7 @@ python3 17_continue_optimization.py
 python3 20_final_complete_analysis.py
 
 # Quick boot test only
-./15_quick_boot_monitor.sh
+./02_quick_reset_bbb_and_log_monitor.sh
 ```
 
 ---

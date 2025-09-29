@@ -284,7 +284,7 @@ class KernelOptimizer:
         
         try:
             # Run the Python boot monitor
-            cmd = ["python3", "14_boot_performance_monitor.py"]
+            cmd = ["python3", "01_reset_bbb_and_log_monitor.py"]
             
             with open(log_file, 'w') as f:
                 result = subprocess.run(
