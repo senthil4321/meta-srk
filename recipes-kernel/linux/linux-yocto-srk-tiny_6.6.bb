@@ -8,6 +8,7 @@ SRC_URI += "file://defconfig \
             file://minimal-config.cfg \
             file://disable-rng.cfg \
             file://ultra-minimal.cfg \
+            file://disable-ti-sysc.cfg \
             file://am335x-yocto-srk-tiny.dts;subdir=git/arch/arm/boot/dts/ti/omap"
 
 # Force disable multiple configs after all fragments are processed
@@ -33,6 +34,11 @@ do_kernel_configme:append() {
     sed -i '/CONFIG_INPUT/d' ${B}/.config
     sed -i '/CONFIG_VT/d' ${B}/.config
     sed -i '/CONFIG_USB_SUPPORT/d' ${B}/.config
+    sed -i '/CONFIG_USB_DWC3_OMAP/d' ${B}/.config
+    sed -i '/CONFIG_USB_MUSB_OMAP2PLUS/d' ${B}/.config
+    sed -i '/CONFIG_OMAP_USB2/d' ${B}/.config
+    sed -i '/CONFIG_OMAP_USB3/d' ${B}/.config
+    sed -i '/CONFIG_OMAP_CONTROL_PHY/d' ${B}/.config
     
     # Force disable configurations
     echo "# CONFIG_SCSI_DEBUG is not set" >> ${B}/.config
@@ -57,6 +63,11 @@ do_kernel_configme:append() {
     echo "# CONFIG_INPUT is not set" >> ${B}/.config
     echo "# CONFIG_VT is not set" >> ${B}/.config
     echo "# CONFIG_USB_SUPPORT is not set" >> ${B}/.config
+    echo "# CONFIG_USB_DWC3_OMAP is not set" >> ${B}/.config
+    echo "# CONFIG_USB_MUSB_OMAP2PLUS is not set" >> ${B}/.config
+    echo "# CONFIG_OMAP_USB2 is not set" >> ${B}/.config
+    echo "# CONFIG_OMAP_USB3 is not set" >> ${B}/.config
+    echo "# CONFIG_OMAP_CONTROL_PHY is not set" >> ${B}/.config
     echo "CONFIG_INIT_STACK_NONE=y" >> ${B}/.config
     
     # Force enable serial console
