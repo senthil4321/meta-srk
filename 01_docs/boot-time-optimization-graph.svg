@@ -1,0 +1,133 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <style>
+    .title { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 24px; font-weight: bold; fill: #1f2937; }
+    .subtitle { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; fill: #6b7280; }
+    .axis-label { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; fill: #374151; }
+    .bar-label { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 12px; fill: #111827; }
+    .improvement-text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 11px; fill: #dc2626; font-weight: bold; }
+    .grid-line { stroke: #e5e7eb; stroke-width: 1; }
+    .original-bar { fill: #ef4444; stroke: #dc2626; stroke-width: 1; }
+    .minimal-bar { fill: #f59e0b; stroke: #d97706; stroke-width: 1; }
+    .optimized-bar { fill: #10b981; stroke: #059669; stroke-width: 1; }
+    .ultra-bar { fill: #3b82f6; stroke: #2563eb; stroke-width: 1; }
+  </style>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f9fafb"/>
+  
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" class="title">BeagleBone Black Kernel Boot Time Optimization</text>
+  <text x="400" y="55" text-anchor="middle" class="subtitle">Progressive Optimization Results (Estimated Times)</text>
+  
+  <!-- Chart Area -->
+  <rect x="80" y="80" width="640" height="400" fill="white" stroke="#d1d5db" stroke-width="2"/>
+  
+  <!-- Grid Lines (Time markers) -->
+  <!-- 0ms -->
+  <line x1="80" y1="80" x2="80" y2="480" class="grid-line"/>
+  <text x="75" y="485" text-anchor="end" class="axis-label">0ms</text>
+  
+  <!-- 500ms -->
+  <line x1="240" y1="80" x2="240" y2="480" class="grid-line"/>
+  <text x="235" y="485" text-anchor="end" class="axis-label">500ms</text>
+  
+  <!-- 1000ms -->
+  <line x1="400" y1="80" x2="400" y2="480" class="grid-line"/>
+  <text x="395" y="485" text-anchor="end" class="axis-label">1000ms</text>
+  
+  <!-- 1500ms -->
+  <line x1="560" y1="80" x2="560" y2="480" class="grid-line"/>
+  <text x="555" y="485" text-anchor="end" class="axis-label">1500ms</text>
+  
+  <!-- 2000ms -->
+  <line x1="720" y1="80" x2="720" y2="480" class="grid-line"/>
+  <text x="715" y="485" text-anchor="end" class="axis-label">2000ms</text>
+  
+  <!-- Y-axis -->
+  <line x1="80" y1="80" x2="80" y2="480" stroke="#6b7280" stroke-width="2"/>
+  <text x="75" y="75" text-anchor="end" class="axis-label">Time (ms)</text>
+  
+  <!-- X-axis -->
+  <line x1="80" y1="480" x2="720" y2="480" stroke="#6b7280" stroke-width="2"/>
+  <text x="400" y="510" text-anchor="middle" class="axis-label">Optimization Phases</text>
+  
+  <!-- Bars -->
+  <!-- Original Kernel: 2000ms -->
+  <rect x="90" y="100" width="630" height="35" class="original-bar"/>
+  <text x="95" y="120" class="bar-label">Original Kernel</text>
+  <text x="715" y="120" text-anchor="end" class="bar-label">2000ms</text>
+  
+  <!-- Network Disabled: 1900ms -->
+  <rect x="90" y="145" width="598.5" height="35" class="minimal-bar"/>
+  <text x="95" y="165" class="bar-label">Network Disabled</text>
+  <text x="683" y="165" text-anchor="end" class="bar-label">1900ms</text>
+  <text x="695" y="165" class="improvement-text">-100ms</text>
+  
+  <!-- SCSI Disabled: 1850ms -->
+  <rect x="90" y="190" width="582.75" height="35" class="minimal-bar"/>
+  <text x="95" y="210" class="bar-label">SCSI Disabled</text>
+  <text x="667" y="210" text-anchor="end" class="bar-label">1850ms</text>
+  <text x="679" y="210" class="improvement-text">-50ms</text>
+  
+  <!-- Hardware RNG Disabled: 1830ms -->
+  <rect x="90" y="235" width="576.45" height="35" class="minimal-bar"/>
+  <text x="95" y="255" class="bar-label">Hardware RNG Disabled</text>
+  <text x="661" y="255" text-anchor="end" class="bar-label">1830ms</text>
+  <text x="673" y="255" class="improvement-text">-20ms</text>
+  
+  <!-- USB Disabled: 1630ms -->
+  <rect x="90" y="280" width="513.45" height="35" class="optimized-bar"/>
+  <text x="95" y="300" class="bar-label">USB Disabled</text>
+  <text x="598" y="300" text-anchor="end" class="bar-label">1630ms</text>
+  <text x="610" y="300" class="improvement-text">-200ms</text>
+  
+  <!-- Input Disabled: 1580ms -->
+  <rect x="90" y="325" width="497.7" height="35" class="optimized-bar"/>
+  <text x="95" y="345" class="bar-label">Input Disabled</text>
+  <text x="582" y="345" text-anchor="end" class="bar-label">1580ms</text>
+  <text x="594" y="345" class="improvement-text">-50ms</text>
+  
+  <!-- Modules Disabled: 1550ms -->
+  <rect x="90" y="370" width="488.25" height="35" class="optimized-bar"/>
+  <text x="95" y="390" class="bar-label">Modules Disabled</text>
+  <text x="573" y="390" text-anchor="end" class="bar-label">1550ms</text>
+  <text x="585" y="390" class="improvement-text">-30ms</text>
+  
+  <!-- Virtual Terminal Disabled: 1530ms -->
+  <rect x="90" y="415" width="481.95" height="35" class="optimized-bar"/>
+  <text x="95" y="435" class="bar-label">Virtual Terminal Disabled</text>
+  <text x="566" y="435" text-anchor="end" class="bar-label">1530ms</text>
+  <text x="578" y="435" class="improvement-text">-20ms</text>
+  
+  <!-- Ultra-Minimal: 1430ms -->
+  <rect x="90" y="460" width="450.45" height="15" class="ultra-bar"/>
+  <text x="95" y="470" class="bar-label" style="font-weight: bold;">Ultra-Minimal Kernel</text>
+  <text x="535" y="470" text-anchor="end" class="bar-label" style="font-weight: bold;">1430ms</text>
+  <text x="547" y="470" class="improvement-text">-100ms</text>
+  
+  <!-- Summary Box -->
+  <rect x="525" y="520" width="190" height="70" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" rx="5"/>
+  <text x="620" y="540" text-anchor="middle" class="subtitle" style="font-weight: bold;">Total Improvement</text>
+  <text x="620" y="560" text-anchor="middle" class="title" style="fill: #3b82f6;">570ms faster</text>
+  <text x="620" y="580" text-anchor="middle" class="bar-label" style="fill: #1f2937;">28.5% reduction</text>
+  
+  <!-- Legend -->
+  <rect x="90" y="520" width="400" height="70" fill="#f3f4f6" stroke="#9ca3af" stroke-width="1" rx="3"/>
+  <text x="95" y="535" class="bar-label" style="font-weight: bold;">Optimization Categories:</text>
+  
+  <rect x="100" y="545" width="15" height="10" class="original-bar"/>
+  <text x="120" y="553" class="bar-label">Original</text>
+  
+  <rect x="180" y="545" width="15" height="10" class="minimal-bar"/>
+  <text x="200" y="553" class="bar-label">Basic Minimal</text>
+  
+  <rect x="290" y="545" width="15" height="10" class="optimized-bar"/>
+  <text x="310" y="553" class="bar-label">Hardware Optimized</text>
+  
+  <rect x="420" y="545" width="15" height="10" class="ultra-bar"/>
+  <text x="440" y="553" class="bar-label">Ultra-Minimal</text>
+  
+  <!-- Key Improvements -->
+  <text x="95" y="570" class="bar-label">Key: USB removal (-200ms), Network stack (-100ms), Combined optimizations (-270ms)</text>
+  
+</svg>
