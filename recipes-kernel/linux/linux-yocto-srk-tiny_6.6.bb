@@ -7,6 +7,7 @@ SRC_URI += "file://defconfig \
             file://disable-scsi-debug.cfg \
             file://minimal-config.cfg \
             file://disable-rng.cfg \
+            file://ultra-minimal.cfg \
             file://am335x-yocto-srk-tiny.dts;subdir=git/arch/arm/boot/dts/ti/omap"
 
 # Force disable multiple configs after all fragments are processed
@@ -26,6 +27,12 @@ do_kernel_configme:append() {
     sed -i '/CONFIG_BLK_DEV_BSG/d' ${B}/.config
     sed -i '/CONFIG_HW_RANDOM/d' ${B}/.config
     sed -i '/CONFIG_HW_RANDOM_OMAP/d' ${B}/.config
+    sed -i '/CONFIG_MODULES/d' ${B}/.config
+    sed -i '/CONFIG_DEBUG_KERNEL/d' ${B}/.config
+    sed -i '/CONFIG_PM/d' ${B}/.config
+    sed -i '/CONFIG_INPUT/d' ${B}/.config
+    sed -i '/CONFIG_VT/d' ${B}/.config
+    sed -i '/CONFIG_USB_SUPPORT/d' ${B}/.config
     
     # Force disable configurations
     echo "# CONFIG_SCSI_DEBUG is not set" >> ${B}/.config
@@ -42,6 +49,15 @@ do_kernel_configme:append() {
     echo "# CONFIG_BLK_DEV_BSG is not set" >> ${B}/.config
     echo "# CONFIG_HW_RANDOM is not set" >> ${B}/.config
     echo "# CONFIG_HW_RANDOM_OMAP is not set" >> ${B}/.config
+    
+    # Ultra-minimal optimizations for fastest boot (KEEP PRINTK for boot messages)
+    echo "# CONFIG_MODULES is not set" >> ${B}/.config
+    echo "# CONFIG_DEBUG_KERNEL is not set" >> ${B}/.config
+    echo "# CONFIG_PM is not set" >> ${B}/.config
+    echo "# CONFIG_INPUT is not set" >> ${B}/.config
+    echo "# CONFIG_VT is not set" >> ${B}/.config
+    echo "# CONFIG_USB_SUPPORT is not set" >> ${B}/.config
+    echo "CONFIG_INIT_STACK_NONE=y" >> ${B}/.config
     
     # Force enable serial console
     echo "CONFIG_SERIAL_8250=y" >> ${B}/.config
