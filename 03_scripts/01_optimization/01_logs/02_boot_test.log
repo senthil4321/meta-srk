@@ -1,0 +1,122 @@
+[21:46:27.493] 🔧 BeagleBone Black Boot Performance Monitor
+[21:46:27.493] ==================================================
+[21:46:27.494] 🔍 Starting serial console monitoring...
+[21:46:28.496] 🔄 Performing hardware reset...
+[21:46:28.598] Hello World 1970-01-01 00:00:17
+[21:46:29.605] Hello World 1970-01-01 00:00:18
+[21:46:30.611] Hello World 1970-01-01 00:00:19
+[21:46:32.391] ✅ Reset command sent successfully
+[21:46:32.398] 
+[21:46:32.398] U-Boot SPL 2024.04 (Dec 26 2024 - 22:10:53 +0100)
+[21:46:32.399] Trying to boot from MMC1
+[21:46:33.117] 
+[21:46:33.117] 
+[21:46:33.117] U-Boot 2024.04 (Dec 26 2024 - 22:10:53 +0100)
+[21:46:33.117] 
+[21:46:33.117] CPU  : AM335X-GP rev 2.1
+[21:46:33.117] Model: TI AM335x BeagleBone Black
+[21:46:33.117] DRAM:  512 MiB
+[21:46:33.209] Core:  160 devices, 18 uclasses, devicetree: separate
+[21:46:33.209] WDT:   Started wdt@44e35000 with servicing every 1000ms (60s timeout)
+[21:46:33.608] NAND:  0 MiB
+[21:46:33.608] MMC:   OMAP SD/MMC: 0, OMAP SD/MMC: 1
+[21:46:33.705] Loading Environment from FAT... OK
+[21:46:33.768] Net:   eth2: ethernet@4a100000using musb-hdrc, OUT ep1out IN ep1in STATUS ep2in
+[21:46:33.768] MAC de:ad:be:ef:00:01
+[21:46:33.768] HOST MAC de:ad:be:ef:00:00
+[21:46:33.769] RNDIS ready
+[21:46:33.769] , eth3: usb_ether
+[21:46:35.791] Hit any key to stop autoboot:  2  1  0
+[21:46:35.791] link up on port 0, speed 100, full duplex
+[21:46:35.791] Using ethernet@4a100000 device
+[21:46:35.791] TFTP from server 192.168.1.100; our IP address is 192.168.1.200
+[21:46:35.791] Filename 'zImage'.
+[21:46:35.791] Load address: 0x81000000
+[21:46:36.703] Loading: *##################################################  2 MiB
+[21:46:36.717] 2.2 MiB/s
+[21:46:36.717] done
+[21:46:36.717] Bytes transferred = 2101120 (200f80 hex)
+[21:46:36.945] link up on port 0, speed 100, full duplex
+[21:46:36.945] Using ethernet@4a100000 device
+[21:46:36.945] TFTP from server 192.168.1.100; our IP address is 192.168.1.200
+[21:46:36.945] Filename 'am335x-boneblack.dtb'.
+[21:46:36.945] Load address: 0x84000000
+[21:46:36.989] Loading: *##################################################  66.8 KiB
+[21:46:36.989] 1.7 MiB/s
+[21:46:36.989] done
+[21:46:36.989] Bytes transferred = 68432 (10b50 hex)
+[21:46:37.213] Kernel image @ 0x81000000 [ 0x000000 - 0x200f80 ]
+[21:46:37.213] ## Flattened Device Tree blob at 84000000
+[21:46:37.213] Booting using the fdt blob at 0x84000000
+[21:46:37.213] Working FDT set to 84000000
+[21:46:37.213] Loading Device Tree to 8ffec000, end 8ffffb4f ... OK
+[21:46:37.213] Working FDT set to 8ffec000
+[21:46:37.213] 
+[21:46:37.213] Starting kernel ...
+[21:46:37.213] 
+[21:46:37.770] [    0.000000] Booting Linux on physical CPU 0x0
+[21:46:37.771] [    0.000000] Linux version 6.6.75-yocto-standard (oe-user@oe-host) (arm-poky-linux-gnueabi-gcc (GCC) 14.2.0, GNU ld (GNU Binutils) 2.43.1.20241111) #1 Mon Feb  3 12:52:24 UTC 2025
+[21:46:37.771] [    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c5387d
+[21:46:37.771] [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[21:46:37.771] [    0.000000] OF: fdt: Machine model: TI AM335x BeagleBone Black
+[21:46:37.812] [    0.000000] Memory policy: Data cache writeback
+[21:46:37.813] [    0.000000] Zone ranges:
+[21:46:37.813] [    0.000000]   Normal   [mem 0x0000000080000000-0x000000009fefffff]
+[21:46:37.813] [    0.000000]   HighMem  empty
+[21:46:37.813] [    0.000000] Movable zone start for each node
+[21:46:37.813] [    0.000000] Early memory node ranges
+[21:46:37.813] [    0.000000]   node   0: [mem 0x0000000080000000-0x000000009fefffff]
+[21:46:37.813] [    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000009fefffff]
+[21:46:37.813] [    0.000000] CPU: All CPU(s) started in SVC mode.
+[21:46:37.813] [    0.000000] AM335X ES2.1 (sgx neon)
+[21:46:37.856] [    0.000000] Kernel command line: console=ttyS0,115200n8 root=/dev/nfs ip=192.168.1.200 nfsroot=192.168.1.100:/srv/nfs,nfsvers=3,tcp rw lpj=4980736
+[21:46:37.856] [    0.000000] Unknown kernel command line parameters "ip=192.168.1.200 nfsroot=192.168.1.100:/srv/nfs,nfsvers=3,tcp", will be passed to user space.
+[21:46:37.856] [    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[21:46:37.856] [    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+[21:46:37.899] [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 129794
+[21:46:37.899] [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[21:46:37.899] [    0.000000] Memory: 511632K/523264K available (3072K kernel code, 465K rwdata, 260K rodata, 2048K init, 217K bss, 11632K reserved, 0K cma-reserved, 0K highmem)
+[21:46:37.899] [    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[21:46:37.899] [    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[21:46:37.942] [    0.000000] IRQ: Found an INTC at 0x(ptrval) (revision 5.0) with 128 interrupts
+[21:46:37.942] [    0.000000] TI gptimer clocksource: always-on /ocp/interconnect@44c00000/segment@200000/target-module@31000
+[21:46:37.942] [    0.000003] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 89478484971ns
+[21:46:37.942] [    0.000024] clocksource: dmtimer: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 79635851949 ns
+[21:46:37.942] [    0.000329] TI gptimer clockevent: 24000000 Hz at /ocp/interconnect@48000000/segment@0/target-module@40000
+[21:46:37.987] [    0.001135] Calibrating delay loop (skipped) preset value.. 996.14 BogoMIPS (lpj=4980736)
+[21:46:37.987] [    0.001157] CPU: Testing write buffer coherency: ok
+[21:46:37.987] [    0.001220] CPU0: Spectre v2: using BPIALL workaround
+[21:46:37.987] [    0.001228] pid_max: default: 4096 minimum: 301
+[21:46:37.987] [    0.001321] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[21:46:37.987] [    0.001335] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[21:46:37.987] [    0.002532] Setting up static identity map for 0x80100000 - 0x80100060
+[21:46:37.987] [    0.003103] devtmpfs: initialized
+[21:46:38.030] [    0.012777] VFP support v0.3: implementor 41 architecture 3 part 30 variant c rev 3
+[21:46:38.030] [    0.012942] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[21:46:38.030] [    0.012967] futex hash table entries: 16 (order: -5, 192 bytes, linear)
+[21:46:38.030] [    0.013040] pinctrl core: initialized pinctrl subsystem
+[21:46:38.030] [    0.013735] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[21:46:38.030] [    0.026924] clocksource: Switched to clocksource dmtimer
+[21:46:38.074] [    0.035435] workingset: timestamp_bits=30 max_order=17 bucket_order=0
+[21:46:38.075] [    0.035733] io scheduler mq-deadline registered
+[21:46:38.075] [    0.035747] io scheduler kyber registered
+[21:46:38.075] [    0.082461] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[21:46:38.075] [    0.084190] omap_voltage_late_init: Voltage driver support not added
+[21:46:38.075] [    0.096647] printk: console [ttyS0] disabled
+[21:46:38.075] [    0.097100] 44e09000.serial: ttyS0 at MMIO 0x44e09000 (irq = 18, base_baud = 3000000) is a 8250
+[21:46:38.075] [    0.097172] printk: console [ttyS0] enabled
+[21:46:38.113] [    0.445524] /ocp/interconnect@44c00000/segment@200000/target-module@10000/scm@0/pinmux@800: Fixed dependency cycle(s) with /ocp/interconnect@44c00000/segment@200000/target-module@10000/scm@0/pinmux@800/clkout2-pins
+[21:46:38.114] [    0.466168] ti-sysc: probe of 44e31000.target-module failed with error -16
+[21:46:38.145] [    0.494802] ti-sysc: probe of 48040000.target-module failed with error -16
+[21:46:38.199] [    0.531948] l3-aon-clkctrl:0000:0: failed to disable
+[21:46:38.199] [    0.538564] clk: Disabling unused clocks
+[21:46:38.199] [    0.545782] Freeing unused kernel image (initmem) memory: 2048K
+[21:46:38.199] [    0.551964] Run /init as init process
+[21:46:38.199] Hello World 1970-01-01 00:00:00
+[21:46:38.199] ✅ Application started - monitoring complete!
+[21:46:38.199] 
+============================================================
+[21:46:38.199] 📊 BOOT PERFORMANCE KPI ANALYSIS
+[21:46:38.199] ============================================================
+[21:46:38.199] ❌ No boot start time detected
+[21:46:38.200] 📄 Boot log saved to: boot_analysis_20250929_214638.txt

@@ -1,0 +1,158 @@
+RHello World 1970-01-01 00:08:42
+Hello World 1970-01-01 00:08:43
+
+U-Boot SPL 2024.04 (Dec 26 2024 - 22:10:53 +0100)
+Trying to boot from MMC1
+
+
+U-Boot 2024.04 (Dec 26 2024 - 22:10:53 +0100)
+
+CPU  : AM335X-GP rev 2.1
+Model: TI AM335x BeagleBone Black
+DRAM:  512 MiB
+Core:  160 devices, 18 uclasses, devicetree: separate
+WDT:   Started wdt@44e35000 with servicing every 1000ms (60s timeout)
+NAND:  0 MiB
+MMC:   OMAP SD/MMC: 0, OMAP SD/MMC: 1
+Loading Environment from FAT... OK
+Net:   eth2: ethernet@4a100000using musb-hdrc, OUT ep1out IN ep1in STATUS ep2in
+MAC de:ad:be:ef:00:01
+HOST MAC de:ad:be:ef:00:00
+RNDIS ready
+, eth3: usb_ether
+Hit any key to stop autoboot:  2  1  0 
+link up on port 0, speed 100, full duplex
+Using ethernet@4a100000 device
+TFTP from server 192.168.1.100; our IP address is 192.168.1.200
+Filename 'zImage'.
+Load address: 0x81000000
+Loading: *##################################################  2 MiB
+	 2.2 MiB/s
+done
+Bytes transferred = 2101120 (200f80 hex)
+link up on port 0, speed 100, full duplex
+Using ethernet@4a100000 device
+TFTP from server 192.168.1.100; our IP address is 192.168.1.200
+Filename 'am335x-boneblack.dtb'.
+Load address: 0x84000000
+Loading: *##################################################  66.8 KiB
+	 1.7 MiB/s
+done
+Bytes transferred = 68432 (10b50 hex)
+Kernel image @ 0x81000000 [ 0x000000 - 0x200f80 ]
+## Flattened Device Tree blob at 84000000
+   Booting using the fdt blob at 0x84000000
+Working FDT set to 84000000
+   Loading Device Tree to 8ffec000, end 8ffffb4f ... OK
+Working FDT set to 8ffec000
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 6.6.75-yocto-standard (oe-user@oe-host) (arm-poky-linux-gnueabi-gcc (GCC) 14.2.0, GNU ld (GNU Binutils) 2.43.1.20241111) #1 Mon Feb  3 12:52:24 UTC 2025
+[    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7), cr=10c5387d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] OF: fdt: Machine model: TI AM335x BeagleBone Black
+[    0.000000] Memory policy: Data cache writeback
+[    0.000000] Zone ranges:
+[    0.000000]   Normal   [mem 0x0000000080000000-0x000000009fefffff]
+[    0.000000]   HighMem  empty
+[    0.000000] Movable zone start for each node
+[    0.000000] Early memory node ranges
+[    0.000000]   node   0: [mem 0x0000000080000000-0x000000009fefffff]
+[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x000000009fefffff]
+[    0.000000] CPU: All CPU(s) started in SVC mode.
+[    0.000000] AM335X ES2.1 (sgx neon)
+[    0.000000] Kernel command line: console=ttyS0,115200n8 root=/dev/nfs ip=192.168.1.200 nfsroot=192.168.1.100:/srv/nfs,nfsvers=3,tcp rw lpj=4980736
+[    0.000000] Unknown kernel command line parameters "ip=192.168.1.200 nfsroot=192.168.1.100:/srv/nfs,nfsvers=3,tcp", will be passed to user space.
+[    0.000000] Dentry cache hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 5, 131072 bytes, linear)
+[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 129794
+[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
+[    0.000000] Memory: 511632K/523264K available (3072K kernel code, 465K rwdata, 260K rodata, 2048K init, 217K bss, 11632K reserved, 0K cma-reserved, 0K highmem)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+[    0.000000] NR_IRQS: 16, nr_irqs: 16, preallocated irqs: 16
+[    0.000000] IRQ: Found an INTC at 0x(ptrval) (revision 5.0) with 128 interrupts
+[    0.000000] TI gptimer clocksource: always-on /ocp/interconnect@44c00000/segment@200000/target-module@31000
+[    0.000002] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every 89478484971ns
+[    0.000025] clocksource: dmtimer: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 79635851949 ns
+[    0.000335] TI gptimer clockevent: 24000000 Hz at /ocp/interconnect@48000000/segment@0/target-module@40000
+[    0.001143] Calibrating delay loop (skipped) preset value.. 996.14 BogoMIPS (lpj=4980736)
+[    0.001167] CPU: Testing write buffer coherency: ok
+[    0.001228] CPU0: Spectre v2: using BPIALL workaround
+[    0.001236] pid_max: default: 4096 minimum: 301
+[    0.001328] Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.001342] Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+[    0.002541] Setting up static identity map for 0x80100000 - 0x80100060
+[    0.003114] devtmpfs: initialized
+[    0.012823] VFP support v0.3: implementor 41 architecture 3 part 30 variant c rev 3
+[    0.012989] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.013014] futex hash table entries: 16 (order: -5, 192 bytes, linear)
+[    0.013088] pinctrl core: initialized pinctrl subsystem
+[    0.013792] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.026995] clocksource: Switched to clocksource dmtimer
+[    0.035499] workingset: timestamp_bits=30 max_order=17 bucket_order=0
+[    0.035797] io scheduler mq-deadline registered
+[    0.035809] io scheduler kyber registered
+[    0.082515] Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+[    0.084232] omap_voltage_late_init: Voltage driver support not added
+[    0.096808] printk: console [ttyS0] disabled
+[    0.097258] 44e09000.serial: ttyS0 at MMIO 0x44e09000 (irq = 18, base_baud = 3000000) is a 8250
+[    0.097327] printk: console [ttyS0] enabled
+[    0.445692] /ocp/interconnect@44c00000/segment@200000/target-module@10000/scm@0/pinmux@800: Fixed dependency cycle(s) with /ocp/interconnect@44c00000/segment@200000/target-module@10000/scm@0/pinmux@800/clkout2-pins
+[    0.466328] ti-sysc: probe of 44e31000.target-module failed with error -16
+[    0.494814] ti-sysc: probe of 48040000.target-module failed with error -16
+[    0.531983] l3-aon-clkctrl:0000:0: failed to disable
+[    0.538594] clk: Disabling unused clocks
+[    0.545794] Freeing unused kernel image (initmem) memory: 2048K
+[    0.551975] Run /init as init process
+Hello World 1970-01-01 00:00:00
+Hello World 1970-01-01 00:00:01
+Hello World 1970-01-01 00:00:02
+Hello World 1970-01-01 00:00:03
+Hello World 1970-01-01 00:00:04
+Hello World 1970-01-01 00:00:05
+Hello World 1970-01-01 00:00:06
+Hello World 1970-01-01 00:00:07
+Hello World 1970-01-01 00:00:08
+Hello World 1970-01-01 00:00:09
+Hello World 1970-01-01 00:00:10
+Hello World 1970-01-01 00:00:11
+Hello World 1970-01-01 00:00:12
+Hello World 1970-01-01 00:00:13
+Hello World 1970-01-01 00:00:14
+Hello World 1970-01-01 00:00:15
+Hello World 1970-01-01 00:00:16
+Hello World 1970-01-01 00:00:17
+Hello World 1970-01-01 00:00:18
+Hello World 1970-01-01 00:00:19
+Hello World 1970-01-01 00:00:20
+Hello World 1970-01-01 00:00:21
+Hello World 1970-01-01 00:00:22
+Hello World 1970-01-01 00:00:23
+Hello World 1970-01-01 00:00:24
+Hello World 1970-01-01 00:00:25
+Hello World 1970-01-01 00:00:26
+Hello World 1970-01-01 00:00:27
+Hello World 1970-01-01 00:00:28
+Hello World 1970-01-01 00:00:29
+Hello World 1970-01-01 00:00:30
+Hello World 1970-01-01 00:00:31
+Hello World 1970-01-01 00:00:32
+Hello World 1970-01-01 00:00:33
+Hello World 1970-01-01 00:00:34
+Hello World 1970-01-01 00:00:35
+Hello World 1970-01-01 00:00:36
+Hello World 1970-01-01 00:00:37
+Hello World 1970-01-01 00:00:38
+Hello World 1970-01-01 00:00:39
+Hello World 1970-01-01 00:00:40
+Hello World 1970-01-01 00:00:41
+Hello World 1970-01-01 00:00:42
+Hello World 1970-01-01 00:00:43
+Hello World 1970-01-01 00:00:44
+Hello World 1970-01-01 00:00:45
+Hello World 1970-01-01 00:00:47
+Hello World 1970-01-01 00:00:48
+Hello World 1970-01-01 00:00:49
+Hello World 1970-01-01 00:00:50
