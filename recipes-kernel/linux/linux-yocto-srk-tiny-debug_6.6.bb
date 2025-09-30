@@ -111,10 +111,10 @@ KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto-srk-tiny"
 
-# Use same initramfs for consistency
-INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox"
+# Use debug initramfs for debugging
+INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox-debug"
 INITRAMFS_IMAGE_BUNDLE = "1"
-INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-${MACHINE}.rootfs"
+INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-debug-${MACHINE}.rootfs"
 
 INSANE_SKIP:kernel-dev = "buildpaths"
 
@@ -125,4 +125,4 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 #How to build: change local.conf to use this kernel:
 # PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-tiny-debug"
 # bitbake linux-yocto-srk-tiny-debug
-# bitbake core-image-tiny-initramfs-srk-9-nobusybox
+# bitbake core-image-tiny-initramfs-srk-9-nobusybox-debug
