@@ -71,6 +71,14 @@ do_kernel_configme:append() {
     sed -i '/CONFIG_CRAMFS/d' ${B}/.config
     sed -i '/CONFIG_MINIX/d' ${B}/.config
     sed -i '/CONFIG_ROMFS/d' ${B}/.config
+    sed -i '/CONFIG_FAT_FS/d' ${B}/.config
+    sed -i '/CONFIG_VFAT_FS/d' ${B}/.config
+    sed -i '/CONFIG_MSDOS_FS/d' ${B}/.config
+    sed -i '/CONFIG_CONFIGFS_FS/d' ${B}/.config
+    sed -i '/CONFIG_NLS/d' ${B}/.config
+    sed -i '/CONFIG_DEVPTS_FS/d' ${B}/.config
+    sed -i '/CONFIG_EXPORTFS/d' ${B}/.config
+    sed -i '/CONFIG_RAMFS/d' ${B}/.config
     sed -i '/CONFIG_CRYPTO/d' ${B}/.config
     sed -i '/CONFIG_ZSTD/d' ${B}/.config
     sed -i '/CONFIG_XZ/d' ${B}/.config
@@ -124,6 +132,14 @@ do_kernel_configme:append() {
     echo "# CONFIG_CRAMFS is not set" >> ${B}/.config
     echo "# CONFIG_MINIX is not set" >> ${B}/.config
     echo "# CONFIG_ROMFS is not set" >> ${B}/.config
+    echo "# CONFIG_FAT_FS is not set" >> ${B}/.config
+    echo "# CONFIG_VFAT_FS is not set" >> ${B}/.config
+    echo "# CONFIG_MSDOS_FS is not set" >> ${B}/.config
+    echo "# CONFIG_CONFIGFS_FS is not set" >> ${B}/.config
+    echo "# CONFIG_NLS is not set" >> ${B}/.config
+    echo "# CONFIG_DEVPTS_FS is not set" >> ${B}/.config
+    echo "# CONFIG_EXPORTFS is not set" >> ${B}/.config
+    echo "# CONFIG_RAMFS is not set" >> ${B}/.config
     echo "# CONFIG_CRYPTO is not set" >> ${B}/.config
     echo "# CONFIG_ZSTD is not set" >> ${B}/.config
     echo "# CONFIG_XZ is not set" >> ${B}/.config
@@ -144,9 +160,9 @@ KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto-srk-tiny"
 
-INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox"
-INITRAMFS_IMAGE_BUNDLE = "1"
-INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-${MACHINE}.rootfs"
+#INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox"
+#INITRAMFS_IMAGE_BUNDLE = "1"
+#INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-${MACHINE}.rootfs"
 
 INSANE_SKIP:kernel-dev = "buildpaths"
 KERNEL_IMAGETYPE ?= "zImage"
