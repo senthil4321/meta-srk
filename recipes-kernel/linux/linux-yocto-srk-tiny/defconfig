@@ -836,7 +836,7 @@ CONFIG_BLK_DEV=y
 #
 # SCSI device support
 #
-CONFIG_SCSI_MOD=y
+# CONFIG_SCSI_MOD is not set
 # CONFIG_RAID_ATTRS is not set
 CONFIG_SCSI_COMMON=y
 CONFIG_SCSI=y
