@@ -1,0 +1,1 @@
+1. Before running bitbake comman run 'cd ~/project/poky/ && source oe-init-build-env'

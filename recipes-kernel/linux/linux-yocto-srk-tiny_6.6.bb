@@ -3,6 +3,13 @@ require recipes-kernel/linux/linux-yocto_6.6.bb
 DESCRIPTION = "Custom Linux kernel based on linux-yocto from srk"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# Add build timestamp to kernel version
+def get_build_timestamp(d):
+    import time
+    return time.strftime("%d%b%Y-%H:%M:%S", time.gmtime())
+
+KERNEL_LOCALVERSION = "-srk-tiny-${@get_build_timestamp(d)}"
+
 # Exclude SCSI features for truly minimal kernel
 KERNEL_FEATURES:remove = "features/scsi/scsi.scc features/scsi/scsi-debug.scc"
 
@@ -187,9 +194,9 @@ KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto-srk-tiny"
 
-#INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox"
-#INITRAMFS_IMAGE_BUNDLE = "1"
-#INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-${MACHINE}.rootfs"
+INITRAMFS_IMAGE = "core-image-tiny-initramfs-srk-9-nobusybox"
+INITRAMFS_IMAGE_BUNDLE = "1"
+INITRAMFS_IMAGE_NAME = "core-image-tiny-initramfs-srk-9-nobusybox-${MACHINE}.rootfs"
 
 INSANE_SKIP:kernel-dev = "buildpaths"
 KERNEL_IMAGETYPE ?= "zImage"
