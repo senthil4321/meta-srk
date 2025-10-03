@@ -6,9 +6,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 # Add build timestamp to kernel version
 def get_build_timestamp(d):
     import time
-    return time.strftime("%d%b%Y-%H:%M:%S", time.gmtime())
+    return time.strftime("%d%b%y-%H%M%S", time.gmtime())
 
-KERNEL_LOCALVERSION = "-srk-tiny-${@get_build_timestamp(d)}"
+KERNEL_LOCALVERSION = "-yocto-standard-srk-1-${@get_build_timestamp(d)}"
 
 # Exclude SCSI features for truly minimal kernel
 KERNEL_FEATURES:remove = "features/scsi/scsi.scc features/scsi/scsi-debug.scc"
