@@ -22,6 +22,7 @@ SRC_URI += "file://defconfig \
             file://optimization_08_profiling_tracing.cfg \
             file://optimization_09_memory_features.cfg \
             file://optimization_10_final_cleanup.cfg \
+            file://optimization_11_driver_optimization.cfg \
             file://am335x-yocto-srk-tiny.dts;subdir=git/arch/arm/boot/dts/ti/omap"
 
 # Force disable multiple configs after all fragments are processed
@@ -65,6 +66,19 @@ do_kernel_configme:append() {
     sed -i '/CONFIG_DRM/d' ${B}/.config
     sed -i '/CONFIG_FB/d' ${B}/.config
     sed -i '/CONFIG_BACKLIGHT/d' ${B}/.config
+    sed -i '/CONFIG_I2C/d' ${B}/.config
+    sed -i '/CONFIG_REGULATOR/d' ${B}/.config
+    sed -i '/CONFIG_MFD/d' ${B}/.config
+    sed -i '/CONFIG_PCI/d' ${B}/.config
+    sed -i '/CONFIG_PM_GENERIC_DOMAINS/d' ${B}/.config
+    sed -i '/CONFIG_MEMORY/d' ${B}/.config
+    sed -i '/CONFIG_CHAR/d' ${B}/.config
+    sed -i '/CONFIG_PINCTRL/d' ${B}/.config
+    sed -i '/CONFIG_RESET/d' ${B}/.config
+    sed -i '/CONFIG_IRQCHIP/d' ${B}/.config
+    sed -i '/CONFIG_RTC_CLASS/d' ${B}/.config
+    sed -i '/CONFIG_BUS/d' ${B}/.config
+    sed -i '/CONFIG_CLOCKSOURCE/d' ${B}/.config
     sed -i '/CONFIG_JFFS2/d' ${B}/.config
     sed -i '/CONFIG_UBIFS/d' ${B}/.config
     sed -i '/CONFIG_SQUASHFS/d' ${B}/.config
@@ -126,6 +140,19 @@ do_kernel_configme:append() {
     echo "# CONFIG_DRM is not set" >> ${B}/.config
     echo "# CONFIG_FB is not set" >> ${B}/.config
     echo "# CONFIG_BACKLIGHT is not set" >> ${B}/.config
+    echo "# CONFIG_I2C is not set" >> ${B}/.config
+    echo "# CONFIG_REGULATOR is not set" >> ${B}/.config
+    echo "# CONFIG_MFD_SYSCON is not set" >> ${B}/.config
+    echo "# CONFIG_PCI is not set" >> ${B}/.config
+    echo "# CONFIG_PM_GENERIC_DOMAINS is not set" >> ${B}/.config
+    echo "# CONFIG_MEMORY is not set" >> ${B}/.config
+    echo "# CONFIG_CHAR is not set" >> ${B}/.config
+    echo "# CONFIG_PINCTRL is not set" >> ${B}/.config
+    echo "# CONFIG_RESET is not set" >> ${B}/.config
+    echo "# CONFIG_IRQCHIP is not set" >> ${B}/.config
+    echo "# CONFIG_RTC_CLASS is not set" >> ${B}/.config
+    echo "# CONFIG_BUS is not set" >> ${B}/.config
+    echo "# CONFIG_CLOCKSOURCE is not set" >> ${B}/.config
     echo "# CONFIG_JFFS2 is not set" >> ${B}/.config
     echo "# CONFIG_UBIFS is not set" >> ${B}/.config
     echo "# CONFIG_SQUASHFS is not set" >> ${B}/.config
