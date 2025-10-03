@@ -1,5 +1,5 @@
-SUMMARY = "srk-9-nobusybox: Minimal static helloloop only (no BusyBox)"
-DESCRIPTION = "Trial 14: Removes BusyBox entirely; provides a static /init replacement (helloloop) printing Hello World + date every second."
+SUMMARY = "srk-9-nobusybox: Minimal static LED blinker (no BusyBox)"
+DESCRIPTION = "Trial 14: Removes BusyBox entirely; provides a static /init replacement (srk-led-blink) that blinks BBB LEDs."
 LICENSE = "MIT"
 
 IMAGE_FSTYPES = "cpio.gz cpio.xz cpio.lz4"
@@ -7,7 +7,7 @@ IMAGE_FSTYPES = "cpio.gz cpio.xz cpio.lz4"
 inherit core-image
 
 # Do not pull in busybox
-IMAGE_INSTALL = "helloloop"
+IMAGE_INSTALL = "srk-led-blink"
 IMAGE_FEATURES = ""
 SPDX_CREATE = "0"
 
@@ -24,11 +24,11 @@ python install_minimal_init () {
     bb.warn("Running install_minimal_init")
     import os
     rootfs = d.getVar('IMAGE_ROOTFS')
-    target_rel = 'sbin/helloloop'
-    helloloop_path = os.path.join(rootfs, target_rel)
-    if not os.path.exists(helloloop_path):
-        bb.error("helloloop binary not found at %s" % helloloop_path)
-    # Copy helloloop to /init
+    target_rel = 'usr/bin/srk-led-blink'
+    blink_path = os.path.join(rootfs, target_rel)
+    if not os.path.exists(blink_path):
+        bb.error("srk-led-blink binary not found at %s" % blink_path)
+    # Copy srk-led-blink to /init
     init_path = os.path.join(rootfs, 'init')
     if os.path.islink(init_path) or os.path.exists(init_path):
         try:
@@ -36,9 +36,9 @@ python install_minimal_init () {
         except OSError as e:
             bb.warn("Failed removing existing /init: %s" % e)
     import shutil
-    shutil.copy2(helloloop_path, init_path)
+    shutil.copy2(blink_path, init_path)
     os.chmod(init_path, 0o755)
-    bb.warn("Copied helloloop to /init")
+    bb.warn("Copied srk-led-blink to /init")
     # Provide /sbin/init symlink too (kernel fallback search path)
     sbin_init = os.path.join(rootfs, 'sbin', 'init')
     if os.path.islink(sbin_init) or os.path.exists(sbin_init):
@@ -46,7 +46,7 @@ python install_minimal_init () {
             os.remove(sbin_init)
         except OSError as e:
             bb.warn("Failed removing existing /sbin/init: %s" % e)
-    os.symlink('helloloop', sbin_init)  # relative inside /sbin
+    os.symlink('../usr/bin/srk-led-blink', sbin_init)  # relative
     bb.warn("Created /sbin/init symlink")
 }
 
