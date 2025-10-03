@@ -1,3 +1,8 @@
 */*.pyc
 */*.img
 
+# Boot log files
+boot_analysis_*.txt
+quick_boot_*.log
+*.log
+

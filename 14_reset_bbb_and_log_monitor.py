@@ -227,7 +227,12 @@ class BBBBootMonitor:
     def save_boot_log(self):
         """Save boot log to file"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"boot_analysis_{timestamp}.txt"
+        
+        # Use local temp directory in project folder for easy access
+        temp_dir = os.path.join(os.path.dirname(__file__), "temp", "bbb_boot_logs")
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        filename = os.path.join(temp_dir, f"boot_analysis_{timestamp}.txt")
         
         try:
             with open(filename, 'w') as f:

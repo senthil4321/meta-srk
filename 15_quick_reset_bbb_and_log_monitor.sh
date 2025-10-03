@@ -4,7 +4,13 @@ Quick Boot Monitor Script - Simple version for immediate use
 """
 
 TIMEOUT=30
-LOG_FILE="quick_boot_$(date +%Y%m%d_%H%M%S).log"
+
+# Use local temp directory in project folder for easy access
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMP_DIR="$SCRIPT_DIR/temp/bbb_boot_logs"
+mkdir -p "$TEMP_DIR"
+
+LOG_FILE="$TEMP_DIR/quick_boot_$(date +%Y%m%d_%H%M%S).log"
 
 echo "🔧 Quick BeagleBone Black Boot Monitor"
 echo "===================================="
