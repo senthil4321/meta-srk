@@ -16,6 +16,8 @@ KERNEL_LOCALVERSION = "-srk-tiny-${@get_build_timestamp(d)}"
 
 # Exclude SCSI features for truly minimal kernel
 KERNEL_FEATURES:remove = "features/scsi/scsi.scc features/scsi/scsi-debug.scc"
+#file://disable-printk.cfg 
+#file://disable-serial-tty.cfg 
 
 SRC_URI += "file://defconfig \
             file://disable-scsi-debug.cfg \
