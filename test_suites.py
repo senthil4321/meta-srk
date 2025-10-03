@@ -57,9 +57,9 @@ IMAGE_11_TEST_SUITE = [
     # ["WAIT_FOR_CONDITION", "Wait for shell prompt", None, "{PROMPT}", "Shell prompt not found", {"timeout": 30}],
 
     # Hardware-specific tests
-    ["COMMAND_AND_ASSERT", "Check RTC binary", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
-    ["COMMAND_AND_ASSERT", "Test RTC read", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
-    ["COMMAND_AND_ASSERT", "Test RTC info", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
+    ["COMMAND_AND_ASSERT", "Check RTC binary", "which bbb-03-rtc", "bbb-03-rtc", "RTC binary not found"],
+    ["COMMAND_AND_ASSERT", "Test RTC read", "bbb-03-rtc read", "RTC Time:", "RTC read test failed"],
+    ["COMMAND_AND_ASSERT", "Test RTC info", "bbb-03-rtc info", "RTC Device:", "RTC info test failed"],
 
     # System information tests
     ["COMMAND_AND_EXTRACT", "Check kernel version", "uname -a", "Linux", "Build version check failed", {"extract_pattern": "Linux"}],

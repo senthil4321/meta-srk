@@ -4,7 +4,7 @@ This recipe provides a Real Time Clock (RTC) read/write utility for the BeagleBo
 
 ## What it does
 
-The `bbb-02-rtc` program provides comprehensive RTC functionality:
+The `bbb-03-rtc` program provides comprehensive RTC functionality:
 
 - **Read RTC time**: Display current RTC time
 - **Write RTC time**: Set RTC to a specific time
@@ -14,12 +14,12 @@ The `bbb-02-rtc` program provides comprehensive RTC functionality:
 
 ## Building the Recipe
 
-The recipe is named `bbb-02-rtc.bb` and follows the BBB example naming convention.
+The recipe is named `bbb-03-rtc.bb` and follows the BBB example naming convention.
 
 To build just this recipe:
 
 ```bash
-bitbake bbb-02-rtc
+bitbake bbb-03-rtc
 ```
 
 ## Including in the Image
@@ -32,36 +32,36 @@ bitbake core-image-tiny-initramfs-srk-11-bbb-examples
 
 ## Usage
 
-After booting the image, the program will be installed at `/usr/bin/bbb-02-rtc`.
+After booting the image, the program will be installed at `/usr/bin/bbb-03-rtc`.
 
 ### Read RTC Time
 
 ```bash
-bbb-02-rtc read
+bbb-03-rtc read
 ```
 
 ### Write RTC Time
 
 ```bash
-bbb-02-rtc write "2025-09-27 15:30:00"
+bbb-03-rtc write "2025-09-27 15:30:00"
 ```
 
 ### Set System Time from RTC
 
 ```bash
-bbb-02-rtc set-system
+bbb-03-rtc set-system
 ```
 
 ### Set RTC Time from System
 
 ```bash
-bbb-02-rtc set-rtc
+bbb-03-rtc set-rtc
 ```
 
 ### Show RTC Information
 
 ```bash
-bbb-02-rtc info
+bbb-03-rtc info
 ```
 
 ## Hardware Requirements
@@ -78,8 +78,8 @@ bbb-02-rtc info
 
 ## Files
 
-- `bbb-02-rtc.bb` - The recipe file
-- `files/bbb-02-rtc.c` - Main C program
+- `bbb-03-rtc.bb` - The recipe file
+- `files/bbb-03-rtc.c` - Main C program
 - `files/Makefile` - Build configuration
 
 ## Troubleshooting

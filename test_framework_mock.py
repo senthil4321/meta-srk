@@ -174,9 +174,9 @@ class MockRemoteSerialTester:
             "busybox": "BusyBox v1.36.1 (2025-09-23 12:34:56 UTC) multi-call binary.",
             "ps -p 1": "systemd",
             "which cryptsetup": "/usr/sbin/cryptsetup",
-            "which bbb-02-rtc": "/usr/bin/bbb-02-rtc",
-            "bbb-02-rtc read": "RTC Time: 2025-09-27 12:34:56",
-            "bbb-02-rtc info": "RTC Device: /dev/rtc0",
+            "which bbb-03-rtc": "/usr/bin/bbb-03-rtc",
+            "bbb-03-rtc read": "RTC Time: 2025-09-27 12:34:56",
+            "bbb-03-rtc info": "RTC Device: /dev/rtc0",
         }
         return responses.get(command, f"Mock response for: {command}")
 
@@ -219,17 +219,17 @@ def run_mock_tests():
         ["COMMAND_AND_ASSERT", "Check encryption support", "which cryptsetup", "cryptsetup", "Encryption check failed"],
 
         # Hardware tests
-        ["COMMAND_AND_ASSERT", "Check RTC binary", "which bbb-02-rtc", "bbb-02-rtc", "RTC binary not found"],
-        ["COMMAND_AND_ASSERT", "Test RTC read", "bbb-02-rtc read", "RTC Time:", "RTC read test failed"],
-        ["COMMAND_AND_ASSERT", "Test RTC info", "bbb-02-rtc info", "RTC Device:", "RTC info test failed"],
+        ["COMMAND_AND_ASSERT", "Check RTC binary", "which bbb-03-rtc", "bbb-03-rtc", "RTC binary not found"],
+        ["COMMAND_AND_ASSERT", "Test RTC read", "bbb-03-rtc read", "RTC Time:", "RTC read test failed"],
+        ["COMMAND_AND_ASSERT", "Test RTC info", "bbb-03-rtc info", "RTC Device:", "RTC info test failed"],
 
         # Wait tests
         ["WAIT", "Wait short duration", None, None, None, {"duration": "short"}],
         ["WAIT", "Wait medium duration", None, None, None, {"duration": "medium"}],
 
         # Hardware checks
-        ["HARDWARE_CHECK", "Check hardware availability", "which bbb-02-rtc", "bbb-02-rtc", "Hardware not found"],
-        ["HARDWARE_TEST", "Test hardware functionality", "bbb-02-rtc read", "RTC Time:", "Hardware test failed"],
+        ["HARDWARE_CHECK", "Check hardware availability", "which bbb-03-rtc", "bbb-03-rtc", "Hardware not found"],
+        ["HARDWARE_TEST", "Test hardware functionality", "bbb-03-rtc read", "RTC Time:", "Hardware test failed"],
 
         # Log capture tests
         ["CAPTURE_LOG", "Capture mock boot logs", None, "mock login:", "Failed to capture boot logs", {

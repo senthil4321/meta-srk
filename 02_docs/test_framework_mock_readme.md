@@ -48,7 +48,7 @@ The framework includes realistic mock responses for common commands:
 
 - System info: `uname -a`, `uptime`, `busybox`
 - Applications: `which hello`, `hello`
-- Hardware: `which bbb-02-rtc`, `bbb-02-rtc read/info`
+- Hardware: `which bbb-03-rtc`, `bbb-03-rtc read/info`
 - Security: `which cryptsetup`
 
 ## Use Cases

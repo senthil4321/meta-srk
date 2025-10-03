@@ -5,7 +5,7 @@ LICENSE = "MIT"
 inherit core-image
 
 # Include BusyBox, EEPROM reader app, and LED blink app
-IMAGE_INSTALL = "busybox bbb-01-eeprom bbb-02-led-blink bbb-02-rtc"
+IMAGE_INSTALL = "busybox bbb-01-eeprom bbb-02-led-blink bbb-03-rtc"
 
 # Minimal system packages
 IMAGE_INSTALL += "base-files base-passwd"
