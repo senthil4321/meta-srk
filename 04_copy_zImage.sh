@@ -5,7 +5,7 @@
 # Uses SSH key-based authentication (no password required)
 # Supports both standard and tiny kernel configurations
 # KAN-17 Fix am335x-yocto-srk-tiny.dtb copy
-VERSION="1.1.0"
+VERSION="1.2.0"
 
 print_help() {
     cat <<EOF
@@ -25,12 +25,26 @@ Examples:
     $0 -i -tiny              # Tiny kernel with initramfs
     $0 -i -tiny -v           # Tiny kernel with initramfs and verbose output
 
+Features:
+    - Automatic IP detection with fallback (192.168.1.100 → 192.168.0.152)
+    - Visual progress bars for large files (>100KB)
+    - Transfer speed monitoring
+    - File size reporting in human-readable format
+    - Overall deployment statistics
+    - Direct rsync to TFTP directory (optimized for speed)
+
+Network Configuration:
+    - Primary (Ethernet): pi@192.168.1.100
+    - Fallback (WiFi): pi@192.168.0.152
+    - Automatic connectivity testing and fallback
+    - SSH key-based authentication required
+
 Notes:
-    - Uses SSH alias 'p' configured in ~/.ssh/config
-    - SSH key-based authentication is used (no password required)
+    - Tests connectivity to primary IP first, falls back to WiFi if needed
     - By default, uses regular zImage if available, otherwise initramfs version
     - Default: standard beaglebone-yocto machine with am335x-boneblack.dtb
     - With -tiny: beaglebone-yocto-srk-tiny machine with am335x-yocto-srk-tiny.dtb
+    - Progress bars automatically shown for files larger than 100KB
 
 Version: $VERSION
 EOF
@@ -39,8 +53,66 @@ EOF
 # Define the input filenames and destination
 USERNAME="pi"
 HOSTNAME="srk.local"
-SERVER_NAME="$USERNAME@$HOSTNAME"
+
+# Define primary and fallback IP addresses
+PRIMARY_IP="192.168.1.100"
+FALLBACK_IP="192.168.0.152"
+SELECTED_IP=""
+SERVER_NAME=""
+DESTINATION=""
+
+# Function to test server connectivity
+test_server_connection() {
+    local ip="$1"
+    local test_server="$USERNAME@$ip"
+    
+    # Test SSH connectivity with a quick command
+    if ssh -o ConnectTimeout=3 -o BatchMode=yes "$test_server" "echo 'Connection test'" >/dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Determine which server IP to use
+if [ "$VERBOSE" = "-v" ]; then
+    echo "🔍 Detecting server connectivity..."
+fi
+
+if test_server_connection "$PRIMARY_IP"; then
+    SELECTED_IP="$PRIMARY_IP"
+    if [ "$VERBOSE" = "-v" ]; then
+        echo "✅ Using primary server: $USERNAME@$PRIMARY_IP (Ethernet)"
+    else
+        echo "0. Using primary server: $USERNAME@$PRIMARY_IP (Ethernet)"
+    fi
+elif test_server_connection "$FALLBACK_IP"; then
+    SELECTED_IP="$FALLBACK_IP"
+    if [ "$VERBOSE" = "-v" ]; then
+        echo "✅ Using fallback server: $USERNAME@$FALLBACK_IP (WiFi)"
+    else
+        echo "0. Using fallback server: $USERNAME@$FALLBACK_IP (WiFi)"
+    fi
+else
+    echo "❌ Error: Cannot connect to server on either IP address"
+    echo "   Primary (Ethernet): $PRIMARY_IP"
+    echo "   Fallback (WiFi): $FALLBACK_IP"
+    echo ""
+    echo "Please check:"
+    echo "   • Network connectivity"
+    echo "   • SSH key authentication"
+    echo "   • Server availability"
+    exit 1
+fi
+
+# Set server name and destination based on selected IP
+SERVER_NAME="$USERNAME@$SELECTED_IP"
 DESTINATION="$SERVER_NAME:/tmp/"
+
+if [ "$VERBOSE" = "-v" ]; then
+    echo "🌐 Connected to: $SERVER_NAME"
+    echo ""
+fi
 
 # Initialize variables
 USE_INITRAMFS=false
@@ -130,15 +202,31 @@ for INPUT_FILENAME in "${INPUT_FILES[@]}"; do
     fi
     
     # Use rsync with sudo to copy directly to TFTP directory
-    rsync -aL $VERBOSE --rsync-path="sudo rsync" $SOURCE_FILE $SERVER_NAME:/srv/tftp/$TARGET_NAME
+    rsync -aL $VERBOSE  --progress  --rsync-path="sudo rsync" $SOURCE_FILE $SERVER_NAME:/srv/tftp/$TARGET_NAME
     if [ $? -eq 0 ]; then
-        echo "2. $INPUT_FILENAME copied successfully to /srv/tftp/ as $TARGET_NAME"
+        echo "2. ✅ $INPUT_FILENAME copied successfully to /srv/tftp/ as $TARGET_NAME"
     else
-        echo "2. Failed to copy $INPUT_FILENAME to /srv/tftp/"
+        echo "2. ❌ Failed to copy $INPUT_FILENAME to /srv/tftp/"
         exit 1
     fi
+        echo ""
 done
 
 END_TIME=$(date +%s)
 TIME_TAKEN=$(($END_TIME - $START_TIME))
 echo "Time taken to copy all files: $TIME_TAKEN seconds"
+if [ "$VERBOSE" = "-v" ]; then
+    echo ""
+    echo "🎉 ==============================================="
+    echo "📋 Deployment Summary:"
+    echo "   📁 Files transferred: ${#INPUT_FILES[@]}"
+    echo "   ⏱️  Time taken: ${TIME_TAKEN}s"
+    echo "   🌐 Server used: $SERVER_NAME"
+    if [ "$SELECTED_IP" = "$PRIMARY_IP" ]; then
+        echo "   🔗 Connection: Ethernet (Primary)"
+    else
+        echo "   🔗 Connection: WiFi (Fallback)"
+    fi
+    echo "   🎯 Target: /srv/tftp/"
+    echo "==============================================="
+fi
