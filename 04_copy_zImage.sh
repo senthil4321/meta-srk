@@ -5,7 +5,7 @@
 # Uses SSH key-based authentication (no password required)
 # Supports both standard and tiny kernel configurations
 # KAN-17 Fix am335x-yocto-srk-tiny.dtb copy
-VERSION="1.0.0"
+VERSION="1.1.0"
 
 print_help() {
     cat <<EOF
@@ -109,39 +109,36 @@ fi
 
 INPUT_FILES=("$ZIMAGE_FILE" "${INPUT_FILES[@]}")
 
-# Copy the files using rsync
+# Copy all files directly to TFTP directory using rsync with sudo
+echo "Copying files directly to TFTP directory..."
+START_TIME=$(date +%s)
 for INPUT_FILENAME in "${INPUT_FILES[@]}"; do
     SOURCE_FILE="$SOURCE_DIR$INPUT_FILENAME"
-    echo "1. Copying $INPUT_FILENAME to $DESTINATION"
-    START_TIME=$(date +%s)
-    rsync -aLv --progress $SOURCE_FILE $DESTINATION
-    # Check if the copy was successful
-    if [ $? -eq 0 ];  then
-        echo "2. $INPUT_FILENAME copied successfully to $DESTINATION"
-        # Move the file to the TFTP folder with appropriate naming
-        if [ "$INPUT_FILENAME" = "$ZIMAGE_FILE" ]; then
-            ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/$ZIMAGE_TARGET"
-            TARGET_NAME="$ZIMAGE_TARGET"
-        else
-            # For tiny DTB, rename to standard name as workaround
-            if [ "$USE_TINY" = true ] && [ "$INPUT_FILENAME" = "am335x-yocto-srk-tiny.dtb" ]; then
-                ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/am335x-boneblack.dtb"
-                TARGET_NAME="am335x-boneblack.dtb"
-                echo "4. Renamed $INPUT_FILENAME to am335x-boneblack.dtb as workaround"
-            else
-                ssh $VERBOSE $SERVER_NAME "sudo mv /tmp/$INPUT_FILENAME /srv/tftp/"
-                TARGET_NAME="$INPUT_FILENAME"
-            fi
-        fi
-        if [ $? -eq 0 ]; then
-            echo "3. $INPUT_FILENAME moved successfully to /srv/tftp/ as $TARGET_NAME"
-        else
-            echo "3. Failed to move $INPUT_FILENAME to /srv/tftp/"
-        fi
+    echo "1. Copying $INPUT_FILENAME to TFTP directory"
+    
+    # Determine target name
+    if [ "$INPUT_FILENAME" = "$ZIMAGE_FILE" ]; then
+        TARGET_NAME="$ZIMAGE_TARGET"
     else
-        echo "2. Failed to copy $INPUT_FILENAME to $DESTINATION"
+        # For tiny DTB, rename to standard name as workaround
+        if [ "$USE_TINY" = true ] && [ "$INPUT_FILENAME" = "am335x-yocto-srk-tiny.dtb" ]; then
+            TARGET_NAME="am335x-boneblack.dtb"
+            echo "4. Will rename $INPUT_FILENAME to am335x-boneblack.dtb as workaround"
+        else
+            TARGET_NAME="$INPUT_FILENAME"
+        fi
     fi
-    END_TIME=$(date +%s)
-    TIME_TAKEN=$(($END_TIME - $START_TIME))
-    echo "Time taken to copy $INPUT_FILENAME: $TIME_TAKEN seconds"
+    
+    # Use rsync with sudo to copy directly to TFTP directory
+    rsync -aL $VERBOSE --rsync-path="sudo rsync" $SOURCE_FILE $SERVER_NAME:/srv/tftp/$TARGET_NAME
+    if [ $? -eq 0 ]; then
+        echo "2. $INPUT_FILENAME copied successfully to /srv/tftp/ as $TARGET_NAME"
+    else
+        echo "2. Failed to copy $INPUT_FILENAME to /srv/tftp/"
+        exit 1
+    fi
 done
+
+END_TIME=$(date +%s)
+TIME_TAKEN=$(($END_TIME - $START_TIME))
+echo "Time taken to copy all files: $TIME_TAKEN seconds"
