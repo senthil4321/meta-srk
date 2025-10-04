@@ -2,8 +2,7 @@
 # Optimized for rapid development cycles with NFS root filesystem
 
 DISK2="/media/srk2cob/disk2/"
-
-MACHINE = "beaglebone-yocto-srk-tiny"
+MACHINE = "beaglebone-yocto"
 DL_DIR ?= "${DISK2}/downloads"
 SSTATE_DIR ?= "${DISK2}/sstate-cache"
 DISTRO ?= "poky"
@@ -55,3 +54,4 @@ IMAGE_FSTYPES = "tar.bz2 ext4"
 
 # Enable package management for development
 EXTRA_IMAGE_FEATURES:append = " package-management"
+PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-bbb"
