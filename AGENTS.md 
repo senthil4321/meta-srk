@@ -1,1 +1,10 @@
-1. Before running bitbake comman run 'cd ~/project/poky/ && source oe-init-build-env'
+# Agent configurtion for the project
+
+## yocto
+- Before running bitbake comman run 'cd ~/project/poky/ && source oe-init-build-env'
+
+## md file
+- Fix lint errors after generation
+
+## git
+- dont commit the file
