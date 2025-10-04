@@ -4,28 +4,23 @@ This directory contains template configurations for reproducible Yocto builds wi
 
 ## 🚀 Quick Start
 
-### Using Templates
+### Direct TEMPLATECONF (Recommended)
 
 ```bash
-# From meta-srk directory
-./template-config.sh list        # Show available templates
-./template-config.sh nfs-dev     # Apply NFS development template
-./template-config.sh production  # Apply production template
-./template-config.sh current     # Show current template
-```
+# From poky directory
+cd /home/srk2cob/project/poky
 
-### Building with Templates
-
-```bash
-# 1. Apply desired template
-./template-config.sh nfs-dev
-
-# 2. Enter build environment
-cd build
-source ../oe-init-build-env
-
-# 3. Build your image
+# NFS Development build
+TEMPLATECONF=meta-srk/conf/templates/nfs-dev source oe-init-build-env build-nfs-dev
 bitbake core-image-tiny-initramfs-srk-11-bbb-nfs
+
+# Production build  
+TEMPLATECONF=meta-srk/conf/templates/production source oe-init-build-env build-production
+bitbake core-image-tiny-initramfs-srk-3
+
+# Default build
+TEMPLATECONF=meta-srk/conf/templates/default source oe-init-build-env build-default
+bitbake core-image-tiny-initramfs-srk-3
 ```
 
 ## 📋 Available Templates
@@ -67,37 +62,42 @@ templates/[template-name]/
 └── conf-summary.txt       # Template identifier
 ```
 
-## 🔄 How It Works
+## � Benefits
 
-1. **Template Storage**: Templates are stored in `meta-srk/conf/templates/`
-2. **Automatic Backup**: Current configuration is backed up before switching
-3. **Copy Operation**: Template files are copied to `build/conf/`
-4. **Tracking**: Current template is tracked in `conf-summary.txt`
+- **Standard Yocto**: Uses official TEMPLATECONF mechanism
+- **Reproducible Builds**: Consistent configuration across different environments  
+- **No Manual Editing**: No need to modify `local.conf` manually
+- **Fresh Environments**: Each build gets clean configuration
+- **Parallel Builds**: Multiple build directories with different configs
+- **Version Control**: Templates can be versioned in git
+- **Team Collaboration**: Shared configurations across team members
 
-## 📁 Directory Structure
+## 🛠️ Advanced Usage
 
-```
-meta-srk/
-├── .templateconf                    # Points to default template
-├── template-config.sh               # Template management script
-├── conf/templates/
-│   ├── default/                     # Standard configuration
-│   │   ├── local.conf.sample
-│   │   ├── bblayers.conf.sample
-│   │   └── conf-summary.txt
-│   ├── nfs-dev/                     # NFS development
-│   │   ├── local.conf.sample
-│   │   ├── bblayers.conf.sample
-│   │   └── conf-summary.txt
-│   └── production/                  # Production configuration
-│       ├── local.conf.sample
-│       ├── bblayers.conf.sample
-│       └── conf-summary.txt
-└── backup/                          # Automatic configuration backups
-    └── conf_YYYYMMDD_HHMMSS/        # Timestamped backups
+### Custom Build Directory Names
+```bash
+TEMPLATECONF=meta-srk/conf/templates/nfs-dev source oe-init-build-env my-custom-build
 ```
 
-## 🛠️ Creating Custom Templates
+### Environment Variable Override
+```bash
+MACHINE=beaglebone-yocto TEMPLATECONF=meta-srk/conf/templates/nfs-dev source oe-init-build-env build-dev
+```
+
+### Multiple Parallel Builds
+```bash
+# Create separate environments for different purposes
+TEMPLATECONF=meta-srk/conf/templates/nfs-dev source oe-init-build-env build-dev
+TEMPLATECONF=meta-srk/conf/templates/production source oe-init-build-env build-prod
+# Now you have two independent build environments!
+```
+
+### One-liner Build Commands
+```bash
+TEMPLATECONF=meta-srk/conf/templates/nfs-dev source oe-init-build-env build-nfs && bitbake core-image-tiny-initramfs-srk-11-bbb-nfs
+```
+
+## 🔧 Creating Custom Templates
 
 1. **Create Template Directory**:
    ```bash
@@ -109,7 +109,7 @@ meta-srk/
    # Copy from existing template
    cp meta-srk/conf/templates/default/* meta-srk/conf/templates/my-template/
    
-   # Edit configurations
+   # Edit configurations  
    nano meta-srk/conf/templates/my-template/local.conf.sample
    ```
 
@@ -120,70 +120,5 @@ meta-srk/
 
 4. **Use Your Template**:
    ```bash
-   ./template-config.sh my-template
+   TEMPLATECONF=meta-srk/conf/templates/my-template source oe-init-build-env build-custom
    ```
-
-## 💡 Benefits
-
-- **Reproducible Builds**: Consistent configuration across different environments
-- **No Manual Editing**: No need to modify `local.conf` manually
-- **Quick Switching**: Easy switching between development and production configs
-- **Automatic Backups**: Current configuration is always backed up
-- **Version Control**: Templates can be versioned in git
-- **Team Collaboration**: Shared configurations across team members
-
-## 🔧 Advanced Usage
-
-### Environment Variables
-You can override template settings using environment variables:
-
-```bash
-# Override machine type
-MACHINE=beaglebone-yocto ./template-config.sh nfs-dev
-
-# Override download directory
-DL_DIR=/path/to/downloads ./template-config.sh production
-```
-
-### Integration with CI/CD
-Templates make CI/CD integration easier:
-
-```bash
-#!/bin/bash
-# CI build script
-cd meta-srk
-./template-config.sh production
-cd build
-source ../oe-init-build-env
-bitbake core-image-tiny-initramfs-srk-production
-```
-
-### Template Validation
-The script validates templates before applying:
-- Checks for required files
-- Validates template directory structure
-- Shows warnings for incomplete templates
-
-## 📚 Migration from Manual Configuration
-
-If you have existing `local.conf` customizations:
-
-1. **Backup Current Config**:
-   ```bash
-   cp build/conf/local.conf meta-srk/backup/my-custom-local.conf
-   ```
-
-2. **Create Custom Template**:
-   ```bash
-   mkdir -p meta-srk/conf/templates/my-config
-   cp build/conf/local.conf meta-srk/conf/templates/my-config/local.conf.sample
-   cp build/conf/bblayers.conf meta-srk/conf/templates/my-config/bblayers.conf.sample
-   echo "my-config" > meta-srk/conf/templates/my-config/conf-summary.txt
-   ```
-
-3. **Test Template**:
-   ```bash
-   ./template-config.sh my-config
-   ```
-
-This system eliminates the need to manually edit `local.conf` and provides a clean, reproducible way to manage different build configurations!
