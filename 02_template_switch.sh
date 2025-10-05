@@ -156,7 +156,8 @@ show_next_steps() {
     echo -e "${BLUE}🎯 Next Steps:${NC}"
     case "$template" in
         "nfs-dev"|"dev")
-            echo "  bitbake core-image-tiny-initramfs-srk-11-bbb-nfs"
+            echo "  bitbake core-image-tiny-initramfs-srk-11-bbb-examples"
+            echo "  bitbake linux-yocto-srk-bbb"
             echo "  ../meta-srk/05_deploy_nfs_rootfs.sh"
             ;;
         "production"|"prod")
@@ -168,7 +169,8 @@ show_next_steps() {
             echo "  ../meta-srk/04_copy_zImage.sh"
             ;;
         "conf-srk-tiny"|"tiny")
-            echo "  bitbake core-image-tiny-initramfs-srk-3"
+            echo "  bitbake core-image-tiny-initramfs-srk-9-nobusybox"
+            echo "  bitbake linux-yocto-srk-tiny #builds kernel with embedded initramfs"
             echo "  ../meta-srk/04_copy_zImage.sh -i -tiny"
             ;;
     esac
