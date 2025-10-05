@@ -4,8 +4,8 @@
 set -e
 
 # Script directory and poky root
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-POKY_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SCRIPT_DIR="$(cd "$HOME/project/poky/meta-srk/" && pwd)"
+POKY_ROOT="$(cd "$HOME/project/poky/" && pwd)"
 BUILD_DIR="$POKY_ROOT/build"
 
 # Color codes for output
@@ -106,7 +106,7 @@ apply_template() {
         [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     }
     cat ~/project/poky/build/conf/local.conf | head -n 2
-
+    cd "$SCRIPT_DIR"
     echo -e "${GREEN}✅ Template applied successfully!${NC}"
     echo -e "${BLUE}Bitbake location: $(which bitbake)${NC}"
 }
