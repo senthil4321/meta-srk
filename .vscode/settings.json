@@ -20,10 +20,11 @@
         "*.bbclass": "bitbake.class",
         "*.inc": "bitbake",
         "*.conf": "bitbake",
-        "*.conf.sample": "bitbake.conf",
-        "*.conf.samples": "bitbake.conf",
+        "*local.conf.sample": "bitbake",
         "local.conf.sample": "bitbake.conf",
-        "bblayers.conf.sample": "bitbake.conf"
+        "bblayers.conf.sample": "bitbake.conf",
+        "*.conf.sample": "bitbake.conf",
+        "*.conf.samples": "bitbake.conf"
     },
 
     // Python paths for Yocto scripts

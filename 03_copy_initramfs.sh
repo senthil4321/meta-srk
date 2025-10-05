@@ -13,91 +13,197 @@ print_help() {
 Usage: $0 <version> [options]
 
 <version> can be one of:
+    1              -> core-image-tiny-initramfs-srk-1
     2              -> core-image-tiny-initramfs-srk-2
     3              -> core-image-tiny-initramfs-srk-3
+    4              -> core-image-tiny-initramfs-srk-4-nocrypt
+    5              -> core-image-tiny-initramfs-srk-5
+    6              -> core-image-tiny-initramfs-srk-6
+    7              -> core-image-tiny-initramfs-srk-7-sizeopt
+    8              -> core-image-tiny-initramfs-srk-8-nonet
     9              -> core-image-tiny-initramfs-srk-9-nobusybox (BusyBox removed)
     10             -> core-image-tiny-initramfs-srk-10-selinux (SELinux enabled)
-    <number>       -> core-image-tiny-initramfs-srk-<number> (generic format)
-    <number>-<suffix> -> core-image-tiny-initramfs-srk-<number>-<suffix> (with suffix)
+    11             -> core-image-tiny-initramfs-srk-11-bbb-examples (BBB hardware examples)
+    <number>-<suffix> -> core-image-tiny-initramfs-srk-<number>-<suffix> (custom format)
 
 Options:
+    -m <machine>   Machine target (default: beaglebone-yocto)
+                   Valid options: beaglebone-yocto, beaglebone-yocto-srk, beaglebone-yocto-srk-tiny
+                   Short aliases: -srk (for beaglebone-yocto-srk), -tiny (for beaglebone-yocto-srk-tiny)
     -V             Show version and exit
     -h             This help
 
 Examples:
-    $0 2
-    $0 3
-    $0 9
-    $0 10
-    $0 11
-    $0 11-bbb-examples
+    ./03_copy_initramfs.sh 2                                    # Uses default machine: beaglebone-yocto
+    ./03_copy_initramfs.sh 3 -m -srk                          # Uses beaglebone-yocto-srk machine
+    ./03_copy_initramfs.sh 9 -m -tiny                         # Uses tiny machine variant
+    ./03_copy_initramfs.sh 10
+    ./03_copy_initramfs.sh 11
+    ./03_copy_initramfs.sh 11 -m beaglebone-yocto-srk-tiny
 
 Notes:
     - Uses SSH alias 'p' configured in ~/.ssh/config
     - SSH key-based authentication is used (no password required)
+    - Supports multiple machine targets: beaglebone-yocto (default), beaglebone-yocto-srk, beaglebone-yocto-srk-tiny
+    - Short aliases: -srk, -tiny for common machine variants
+    - Images are deployed to /srv/nfs/ on remote target
 
 Version: $VERSION
 EOF
 }
 
-# Parse command line arguments
-while getopts "Vh" opt; do
-    case $opt in
-        V)
-            echo "$(basename "$0") version $VERSION"
-            exit 0
+# Default machine target
+MACHINE_TARGET="beaglebone-yocto"
+
+# Parse command line arguments manually to handle flexible argument order
+VERSION_ARG=""
+SHOW_VERSION=false
+SHOW_HELP=false
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -V)
+            SHOW_VERSION=true
+            shift
             ;;
-        h)
-            print_help
-            exit 0
+        -h)
+            SHOW_HELP=true
+            shift
             ;;
-        *)
-            echo "Invalid option: -$OPTARG" >&2
+        -m)
+            if [ -z "$2" ]; then
+                echo "Option -m requires an argument" >&2
+                exit 1
+            fi
+            case "$2" in
+                beaglebone-yocto-srk|beaglebone-yocto|beaglebone-yocto-srk-tiny)
+                    MACHINE_TARGET="$2"
+                    ;;
+                -srk)
+                    MACHINE_TARGET="beaglebone-yocto-srk"
+                    ;;
+                -tiny)
+                    MACHINE_TARGET="beaglebone-yocto-srk-tiny"
+                    ;;
+                *)
+                    echo "Invalid machine '$2'. Valid options: beaglebone-yocto, beaglebone-yocto-srk, beaglebone-yocto-srk-tiny, -srk, -tiny" >&2
+                    exit 1
+                    ;;
+            esac
+            shift 2
+            ;;
+        -*)
+            echo "Invalid option: $1" >&2
             print_help
             exit 1
+            ;;
+        *)
+            if [ -z "$VERSION_ARG" ]; then
+                VERSION_ARG="$1"
+            else
+                echo "Multiple version arguments provided: '$VERSION_ARG' and '$1'" >&2
+                exit 1
+            fi
+            shift
             ;;
     esac
 done
 
-# Shift parsed options
-shift $((OPTIND-1))
+# Handle help and version requests
+if [ "$SHOW_VERSION" = true ]; then
+    echo "$(basename "$0") version $VERSION"
+    exit 0
+fi
+
+if [ "$SHOW_HELP" = true ]; then
+    print_help
+    exit 0
+fi
 
 # Check if the version argument is provided
-if [ -z "$1" ]; then
+if [ -z "$VERSION_ARG" ]; then
     echo "Missing version argument. See --help (-h) for options."
     exit 1
 fi
 
-# Define the input filename based on the version argument
-INITRAMFS_VERSION="$1"
-case "$INITRAMFS_VERSION" in
-    2|3)
-        IMAGE_BASE="core-image-tiny-initramfs-srk-${INITRAMFS_VERSION}"
-        ;;
-    9)
-        # New no-busybox minimal image
-        IMAGE_BASE="core-image-tiny-initramfs-srk-9-nobusybox"
-        ;;
-    10)
-        # SELinux-enabled image
-        IMAGE_BASE="core-image-tiny-initramfs-srk-10-selinux"
-        ;;
-    [0-9]*)
-        # Generic case: number followed by optional hyphenated suffix
-        # Examples: "11" -> "core-image-tiny-initramfs-srk-11"
-        #          "11-bbb-examples" -> "core-image-tiny-initramfs-srk-11-bbb-examples"
-        IMAGE_BASE="core-image-tiny-initramfs-srk-${INITRAMFS_VERSION}"
-        ;;
-    *)
-        echo "Invalid version '$INITRAMFS_VERSION'. Supported: 2, 3, 9, 10, or generic format like '11' or '11-bbb-examples'" >&2
-        exit 1
-        ;;
-esac
+# Define the input filename based on the version argument with specific mappings
+INITRAMFS_VERSION="$VERSION_ARG"
 
-INPUT_FILENAME="${IMAGE_BASE}-beaglebone-yocto.rootfs.cpio.gz"
+# Function to map version numbers to specific image recipes
+map_version_to_image() {
+    local version="$1"
+    case "$version" in
+        1)
+            echo "core-image-tiny-initramfs-srk-1"
+            ;;
+        2)
+            echo "core-image-tiny-initramfs-srk-2"
+            ;;
+        3)
+            echo "core-image-tiny-initramfs-srk-3"
+            ;;
+        4)
+            echo "core-image-tiny-initramfs-srk-4-nocrypt"
+            ;;
+        5)
+            echo "core-image-tiny-initramfs-srk-5"
+            ;;
+        6)
+            echo "core-image-tiny-initramfs-srk-6"
+            ;;
+        7)
+            echo "core-image-tiny-initramfs-srk-7-sizeopt"
+            ;;
+        8)
+            echo "core-image-tiny-initramfs-srk-8-nonet"
+            ;;
+        9)
+            echo "core-image-tiny-initramfs-srk-9-nobusybox"
+            ;;
+        10)
+            echo "core-image-tiny-initramfs-srk-10-selinux"
+            ;;
+        11)
+            echo "core-image-tiny-initramfs-srk-11-bbb-examples"
+            ;;
+        [0-9]*-*)
+            # Handle hyphenated versions like "11-bbb-examples"
+            echo "core-image-tiny-initramfs-srk-${version}"
+            ;;
+        [0-9]*)
+            # Generic numeric versions not specifically mapped
+            echo "core-image-tiny-initramfs-srk-${version}"
+            ;;
+        *)
+            echo ""  # Invalid version
+            ;;
+    esac
+}
+
+IMAGE_BASE=$(map_version_to_image "$INITRAMFS_VERSION")
+
+if [ -z "$IMAGE_BASE" ]; then
+    echo "Invalid version '$INITRAMFS_VERSION'." >&2
+    echo "Supported versions:" >&2
+    echo "  1  -> core-image-tiny-initramfs-srk-1" >&2
+    echo "  2  -> core-image-tiny-initramfs-srk-2" >&2
+    echo "  3  -> core-image-tiny-initramfs-srk-3" >&2
+    echo "  4  -> core-image-tiny-initramfs-srk-4-nocrypt" >&2
+    echo "  5  -> core-image-tiny-initramfs-srk-5" >&2
+    echo "  6  -> core-image-tiny-initramfs-srk-6" >&2
+    echo "  7  -> core-image-tiny-initramfs-srk-7-sizeopt" >&2
+    echo "  8  -> core-image-tiny-initramfs-srk-8-nonet" >&2
+    echo "  9  -> core-image-tiny-initramfs-srk-9-nobusybox" >&2
+    echo "  10 -> core-image-tiny-initramfs-srk-10-selinux" >&2
+    echo "  11 -> core-image-tiny-initramfs-srk-11-bbb-examples" >&2
+    echo "  Or use hyphenated format like '11-custom' for core-image-tiny-initramfs-srk-11-custom" >&2
+    exit 1
+fi
+
+INPUT_FILENAME="${IMAGE_BASE}-${MACHINE_TARGET}.rootfs.cpio.gz"
 
 # Define the source file and destination
-SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
+SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/${MACHINE_TARGET}/"
 SOURCE_FILE="${SOURCE_DIR}${INPUT_FILENAME}"
 
 # Check if the expected file exists, if not try to find a matching file with suffix
@@ -108,7 +214,7 @@ if [ ! -f "$SOURCE_FILE" ]; then
     BASE_PATTERN=$(echo "$IMAGE_BASE" | sed 's/core-image-tiny-initramfs-srk-//')
     
     # Look for files matching the pattern with suffix
-    CANDIDATE_FILES=$(find "$SOURCE_DIR" -name "core-image-tiny-initramfs-srk-${BASE_PATTERN}*-beaglebone-yocto.rootfs.cpio.gz" -type l 2>/dev/null)
+    CANDIDATE_FILES=$(find "$SOURCE_DIR" -name "core-image-tiny-initramfs-srk-${BASE_PATTERN}*-${MACHINE_TARGET}.rootfs.cpio.gz" -type l 2>/dev/null)
     
     if [ -n "$CANDIDATE_FILES" ]; then
         # Use the first candidate file found
@@ -117,7 +223,10 @@ if [ ! -f "$SOURCE_FILE" ]; then
         SOURCE_FILE="$ACTUAL_FILE"
         echo "Found matching file: $INPUT_FILENAME"
     else
-        echo "Error: No matching initramfs file found for pattern: core-image-tiny-initramfs-srk-${BASE_PATTERN}*-beaglebone-yocto.rootfs.cpio.gz" >&2
+        echo "Error: No matching initramfs file found for pattern: core-image-tiny-initramfs-srk-${BASE_PATTERN}*-${MACHINE_TARGET}.rootfs.cpio.gz" >&2
+        echo "Source directory: $SOURCE_DIR" >&2
+        echo "Available files:" >&2
+        ls -la "$SOURCE_DIR"core-image-tiny-initramfs-srk-${BASE_PATTERN}* 2>/dev/null || echo "No files found with pattern core-image-tiny-initramfs-srk-${BASE_PATTERN}*" >&2
         exit 1
     fi
 fi
@@ -125,7 +234,7 @@ fi
 DESTINATION="p:/tmp/"
 
 # Copy the file using scp
-echo "1. Copying $INPUT_FILENAME to $DESTINATION"
+echo "1. Copying $INPUT_FILENAME to $DESTINATION (Machine: $MACHINE_TARGET)"
 scp $SOURCE_FILE $DESTINATION
 
 # Check if the copy was successful
