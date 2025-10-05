@@ -15,6 +15,7 @@ Copy zImage and device tree files to the target device for TFTP boot.
 
 Options:
     -i             Use initramfs-embedded zImage
+    -srk           Use SRK kernel configuration (beaglebone-yocto-srk)
     -tiny          Use tiny kernel configuration (beaglebone-yocto-srk-tiny)
     -v             Verbose output
     -V             Show version and exit
@@ -22,8 +23,9 @@ Options:
 
 Examples:
     $0 -i                    # Standard kernel with initramfs
+    $0 -i -srk               # SRK kernel with initramfs
     $0 -i -tiny              # Tiny kernel with initramfs
-    $0 -i -tiny -v           # Tiny kernel with initramfs and verbose output
+    $0 -i -srk -v            # SRK kernel with initramfs and verbose output
 
 Features:
     - Automatic IP detection with fallback (192.168.1.100 → 192.168.0.152)
@@ -43,6 +45,7 @@ Notes:
     - Tests connectivity to primary IP first, falls back to WiFi if needed
     - By default, uses regular zImage if available, otherwise initramfs version
     - Default: standard beaglebone-yocto machine with am335x-boneblack.dtb
+    - With -srk: beaglebone-yocto-srk machine with am335x-boneblack.dtb
     - With -tiny: beaglebone-yocto-srk-tiny machine with am335x-yocto-srk-tiny.dtb
     - Progress bars automatically shown for files larger than 100KB
 
@@ -116,6 +119,7 @@ fi
 
 # Initialize variables
 USE_INITRAMFS=false
+USE_SRK=false
 USE_TINY=false
 VERBOSE=""
 
@@ -123,6 +127,7 @@ VERBOSE=""
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -i) USE_INITRAMFS=true ;;
+        -srk) USE_SRK=true ;;
         -tiny) USE_TINY=true ;;
         -v) VERBOSE="-v" ;;
         -V)
@@ -138,13 +143,19 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# Set configuration based on -tiny flag
+# Set configuration based on flags
 if [ "$USE_TINY" = true ]; then
     INPUT_FILES=("am335x-yocto-srk-tiny.dtb") # TODO [KAN-17] Fix
     SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto-srk-tiny/"
     MACHINE_SUFFIX="-srk-tiny"
     DTB_NAME="am335x-yocto-srk-tiny.dtb"
     echo "Using tiny kernel configuration (beaglebone-yocto-srk-tiny)"
+elif [ "$USE_SRK" = true ]; then
+    INPUT_FILES=("am335x-boneblack.dtb")
+    SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto-srk/"
+    MACHINE_SUFFIX="-srk"
+    DTB_NAME="am335x-boneblack.dtb"
+    echo "Using SRK kernel configuration (beaglebone-yocto-srk)"
 else
     INPUT_FILES=("am335x-boneblack.dtb")
     SOURCE_DIR="/home/srk2cob/project/poky/build/tmp/deploy/images/beaglebone-yocto/"
