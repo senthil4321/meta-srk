@@ -106,7 +106,6 @@ apply_template() {
         [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     }
     cat ~/project/poky/build/conf/local.conf | head -n 2
-    cd "$SCRIPT_DIR"
     echo -e "${GREEN}✅ Template applied successfully!${NC}"
     echo -e "${BLUE}Bitbake location: $(which bitbake)${NC}"
 }
