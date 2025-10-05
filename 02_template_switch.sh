@@ -158,11 +158,11 @@ show_next_steps() {
         "nfs-dev"|"dev")
             echo "  bitbake core-image-tiny-initramfs-srk-11-bbb-examples"
             echo "  bitbake linux-yocto-srk-bbb"
-            echo "  ../meta-srk/05_deploy_nfs_rootfs.sh"
+            echo "  05_deploy_nfs_rootfs.sh"
             ;;
         "production"|"prod")
             echo "  bitbake core-image-tiny-initramfs-srk-3"
-            echo "  ../meta-srk/04_copy_zImage.sh -i -tiny"
+            echo "  04_copy_zImage.sh -i -tiny"
             ;;
         "default")
             echo "  bitbake core-image-tiny-initramfs-srk-3"
@@ -171,7 +171,7 @@ show_next_steps() {
         "conf-srk-tiny"|"tiny")
             echo "  bitbake core-image-tiny-initramfs-srk-9-nobusybox"
             echo "  bitbake linux-yocto-srk-tiny #builds kernel with embedded initramfs"
-            echo "  ../meta-srk/04_copy_zImage.sh -i -tiny"
+            echo "  04_copy_zImage.sh -i -tiny"
             ;;
     esac
 }
