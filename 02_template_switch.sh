@@ -20,26 +20,33 @@ declare -A TEMPLATES=(
     ["default"]="meta-srk/conf/templates/default"
     ["nfs-dev"]="meta-srk/conf/templates/nfs-dev"
     ["production"]="meta-srk/conf/templates/production"
+    ["conf-srk-tiny"]="meta-srk/conf/templates/conf-srk-tiny"
     ["dev"]="meta-srk/conf/templates/nfs-dev"  # Alias
     ["prod"]="meta-srk/conf/templates/production"  # Alias
+    ["tiny"]="meta-srk/conf/templates/conf-srk-tiny"  # Alias
 )
 
 # Function to show usage
 show_usage() {
     echo -e "${BLUE}Template Switch Script${NC}"
-    echo "Usage: $0 <template>"
+    echo "Usage: source $0 <template>  (or . $0 <template>)"
     echo ""
     echo "Available templates:"
-    echo "  default     - Standard BeagleBone Black configuration"
-    echo "  nfs-dev     - NFS development with debugging tools"
-    echo "  dev         - Alias for nfs-dev"
-    echo "  production  - Minimal, secure production build"
-    echo "  prod        - Alias for production"
+    echo "  default        - Standard BeagleBone Black configuration"
+    echo "  nfs-dev        - NFS development with debugging tools"
+    echo "  dev            - Alias for nfs-dev"
+    echo "  production     - Minimal, secure production build"
+    echo "  prod           - Alias for production"
+    echo "  conf-srk-tiny  - Tiny initramfs configuration"
+    echo "  tiny           - Alias for conf-srk-tiny"
     echo ""
     echo "Examples:"
-    echo "  $0 dev          # Switch to NFS development template"
-    echo "  $0 production   # Switch to production template"
-    echo "  $0 default      # Switch to default template"
+    echo "  source $0 dev            # Switch to NFS development template"
+    echo "  source $0 production     # Switch to production template"
+    echo "  source $0 conf-srk-tiny  # Switch to tiny initramfs template"
+    echo "  source $0 tiny           # Switch to tiny initramfs template"
+    echo ""
+    echo "Note: This script must be sourced to set up the build environment in your shell."
 }
 
 # Function to backup existing config
@@ -90,17 +97,18 @@ apply_template() {
     
     # Source the build environment (this will create new conf files from templates)
     cd ~/project/poky/
-    source oe-init-build-env build > /dev/null 2>&1 || {
+    source oe-init-build-env build || {
         echo -e "${RED}❌ Failed to initialize build environment${NC}"
-        exit 1
+        [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     }
     cd ~/project/poky/meta-srk || {
         echo -e "${RED}❌ Failed to change directory to meta-srk${NC}"
-        exit 1
+        [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     }
     cat ~/project/poky/build/conf/local.conf | head -n 2
 
     echo -e "${GREEN}✅ Template applied successfully!${NC}"
+    echo -e "${BLUE}Bitbake location: $(which bitbake)${NC}"
 }
 
 # Function to show template info
@@ -131,6 +139,13 @@ show_template_info() {
             echo "  • Balanced feature set"
             echo "  • Good starting point"
             ;;
+        "conf-srk-tiny"|"tiny")
+            echo -e "${GREEN}🔸 Tiny Initramfs Template${NC}"
+            echo "  • Minimal initramfs configuration"
+            echo "  • Optimized for small footprint"
+            echo "  • Fast boot times"
+            echo "  • Suitable for embedded systems"
+            ;;
     esac
 }
 
@@ -152,6 +167,10 @@ show_next_steps() {
             echo "  bitbake core-image-tiny-initramfs-srk-3"
             echo "  ../meta-srk/04_copy_zImage.sh"
             ;;
+        "conf-srk-tiny"|"tiny")
+            echo "  bitbake core-image-tiny-initramfs-srk-3"
+            echo "  ../meta-srk/04_copy_zImage.sh -i -tiny"
+            ;;
     esac
 }
 
@@ -160,7 +179,7 @@ main() {
     # Check if template argument provided
     if [ $# -eq 0 ]; then
         show_usage
-        exit 1
+        [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     fi
     
     local template="$1"
@@ -168,7 +187,7 @@ main() {
     # Show help
     if [ "$template" = "help" ] || [ "$template" = "-h" ] || [ "$template" = "--help" ]; then
         show_usage
-        exit 0
+        [ "$0" = "$BASH_SOURCE" ] && exit 0 || return 0
     fi
     
     # Validate template exists
@@ -176,7 +195,7 @@ main() {
         echo -e "${RED}❌ Error: Template '$template' not found${NC}"
         echo ""
         show_usage
-        exit 1
+        [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     fi
     
     local template_path="${TEMPLATES[$template]}"
@@ -184,7 +203,7 @@ main() {
     # Verify template directory exists
     if [ ! -d "$POKY_ROOT/$template_path" ]; then
         echo -e "${RED}❌ Error: Template directory not found: $POKY_ROOT/$template_path${NC}"
-        exit 1
+        [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     fi
     
     echo -e "${BLUE}🔄 Template Switch Script${NC}"
