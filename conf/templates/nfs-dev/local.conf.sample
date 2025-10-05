@@ -1,11 +1,11 @@
 # vfs-dev V1.0
-# Optimized for rapid development cycles with NFS root filesystem
+# Used for BBB Devlopment Debug
 
 DISK2="/media/srk2cob/disk2/"
-MACHINE = "beaglebone-yocto"
+MACHINE = "beaglebone-yocto-srk"
 DL_DIR ?= "${DISK2}/downloads"
 SSTATE_DIR ?= "${DISK2}/sstate-cache"
-DISTRO ?= "poky"
+DISTRO ?= "srk-distro"
 
 EXTRA_IMAGE_FEATURES ?= "debug-tweaks ssh-server-dropbear"
 
@@ -14,9 +14,7 @@ PATCHRESOLVE = "noop"
 # Disable SPDX creation for faster builds
 SPDX_CREATE = "0"
 
-#
 # Disk Space Monitoring during the build
-#
 BB_DISKMON_DIRS ??= "\
     STOPTASKS,${TMPDIR},1G,100K \
     STOPTASKS,${DL_DIR},1G,100K \
@@ -32,12 +30,6 @@ CONF_VERSION = "2"
 # NFS Development optimizations
 EXTRA_IMAGEDEPENDS:remove = " virtual/bootloader virtual/kernel qemu-native qemu-helper-native"
 DISTRO_FEATURES:remove = "package-management"
-
-# Enable debugging tools for development
-IMAGE_INSTALL:append = " gdb gdbserver strace ltrace tcpdump i2c-tools devmem2"
-
-# Kernel configuration for NFS development
-PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-tiny"
 PREFERRED_PROVIDER_virtual/bootloader = ""
 
 # Disable graphics features to reduce build time
@@ -49,9 +41,10 @@ EXTRA_IMAGEDEPENDS:remove = "qemu-native qemu-helper-native"
 # Remove buildhistory to reduce metadata
 INHERIT:remove = "buildhistory"
 
-# NFS-specific image formats
-IMAGE_FSTYPES = "tar.bz2 ext4"
+#IMAGE_FSTYPES = "tar.bz2 ext4"
 
-# Enable package management for development
-EXTRA_IMAGE_FEATURES:append = " package-management"
+# Enable debugging tools for development
+IMAGE_INSTALL:append = " gdb gdbserver strace ltrace tcpdump i2c-tools devmem2"
+
+# Kernel configuration for NFS development
 PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-bbb"

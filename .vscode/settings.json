@@ -16,8 +16,14 @@
     // BitBake file associations
     "files.associations": {
         "*.bb": "bitbake",
+        "*.bbappend": "bitbake.recipe",
+        "*.bbclass": "bitbake.class",
+        "*.inc": "bitbake",
         "*.conf": "bitbake",
-        "*.inc": "bitbake"
+        "*.conf.sample": "bitbake.conf",
+        "*.conf.samples": "bitbake.conf",
+        "local.conf.sample": "bitbake.conf",
+        "bblayers.conf.sample": "bitbake.conf"
     },
 
     // Python paths for Yocto scripts
