@@ -10,8 +10,8 @@ IMAGE_INSTALL = "busybox bbb-01-eeprom bbb-02-led-blink bbb-03-rtc"
 # Minimal system packages
 IMAGE_INSTALL += "base-files base-passwd"
 
-# Networking & i2c tools (optional)
-IMAGE_INSTALL += "netbase i2c-tools"
+# Networking tools only (i2c-tools removed due to perl dependency)
+IMAGE_INSTALL += "netbase"
 
 # No extra features
 IMAGE_FEATURES = ""
@@ -84,6 +84,10 @@ echo "Dropping into root shell..."
 exec /bin/sh </dev/ttyS0 >/dev/ttyS0 2>&1
 """
 
+    # Remove any existing init (might be a symlink from busybox)
+    if os.path.exists(sbin_init) or os.path.islink(sbin_init):
+        os.remove(sbin_init)
+    
     with open(sbin_init, 'w') as f:
         f.write(init_script)
     os.chmod(sbin_init, 0o755)
