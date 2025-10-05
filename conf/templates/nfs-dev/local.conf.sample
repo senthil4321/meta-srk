@@ -1,8 +1,8 @@
-# vfs-dev V1.0
+# nfs-dev V2.0
 # Used for BBB Devlopment Debug
 
 DISK2="/media/srk2cob/disk2/"
-MACHINE = "beaglebone-yocto"
+MACHINE = "beaglebone-yocto-srk"
 DL_DIR ?= "${DISK2}/downloads"
 SSTATE_DIR ?= "${DISK2}/sstate-cache"
 DISTRO ?= "poky"
@@ -47,4 +47,4 @@ INHERIT:remove = "buildhistory"
 #IMAGE_INSTALL:append = " gdb gdbserver strace ltrace tcpdump i2c-tools devmem2"
 
 # Kernel configuration for NFS development
-PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-bbb"
+PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk"
