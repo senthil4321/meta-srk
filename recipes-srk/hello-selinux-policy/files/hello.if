@@ -1,0 +1,45 @@
+## <summary>Hello World SELinux Demo Policy</summary>
+
+########################################
+## <summary>
+##	Execute hello in the hello domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed to transition.
+##	</summary>
+## </param>
+#
+interface(`hello_domtrans',`
+	gen_require(`
+		type hello_t, hello_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, hello_exec_t, hello_t)
+')
+
+########################################
+## <summary>
+##	Execute hello in the hello domain, and
+##	allow the specified role the hello domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed to transition.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+#
+interface(`hello_run',`
+	gen_require(`
+		type hello_t;
+	')
+
+	hello_domtrans($1)
+	role $2 types hello_t;
+')

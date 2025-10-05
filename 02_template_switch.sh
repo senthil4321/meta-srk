@@ -21,9 +21,11 @@ declare -A TEMPLATES=(
     ["nfs-dev"]="meta-srk/conf/templates/nfs-dev"
     ["production"]="meta-srk/conf/templates/production"
     ["conf-srk-tiny"]="meta-srk/conf/templates/conf-srk-tiny"
+    ["conf-srk-03-selinux"]="meta-srk/conf/templates/conf-srk-03-selinux"
     ["dev"]="meta-srk/conf/templates/nfs-dev"  # Alias
     ["prod"]="meta-srk/conf/templates/production"  # Alias
     ["tiny"]="meta-srk/conf/templates/conf-srk-tiny"  # Alias
+    ["selinux"]="meta-srk/conf/templates/conf-srk-03-selinux" # Alias
 )
 
 # Function to show usage
@@ -105,6 +107,8 @@ apply_template() {
         echo -e "${RED}❌ Failed to change directory to meta-srk${NC}"
         [ "$0" = "$BASH_SOURCE" ] && exit 1 || return 1
     }
+    
+    echo -e "${RED}local.conf version from build directory"
     cat ~/project/poky/build/conf/local.conf | head -n 2
     echo -e "${GREEN}✅ Template applied successfully!${NC}"
     echo -e "${BLUE}Bitbake location: $(which bitbake)${NC}"

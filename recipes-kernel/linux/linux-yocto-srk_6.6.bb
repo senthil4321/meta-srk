@@ -4,7 +4,8 @@ DESCRIPTION = "Custom Linux kernel based on linux-yocto from srk"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://defconfig"
+SRC_URI += "file://selinux.cfg"
 
 KCONFIG_MODE = "alldefconfig"
 
-COMPATIBLE_MACHINE = "beaglebone-yocto"
+COMPATIBLE_MACHINE = "beaglebone-yocto|beaglebone-yocto-srk"

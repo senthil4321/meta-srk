@@ -1,0 +1,43 @@
+# Hello World SELinux Policy Module
+policy_module(hello, 1.0.0)
+
+# Declare hello_t type for hello application
+type hello_t;
+type hello_exec_t;
+
+# Make hello_t a domain and hello_exec_t an executable
+domain_type(hello_t)
+files_type(hello_exec_t)
+
+# Allow hello_t to be transitioned to from unconfined_t
+domain_auto_trans(unconfined_t, hello_exec_t, hello_t)
+
+# Basic permissions for hello application
+allow hello_t self:capability { setuid setgid };
+allow hello_t self:process { fork signal_perms };
+
+# Allow hello to access standard file descriptors
+allow hello_t self:fd use;
+allow hello_t self:fifo_file rw_fifo_file_perms;
+
+# Allow hello to write to console/terminal
+allow hello_t devtty_t:chr_file rw_file_perms;
+allow hello_t console_device_t:chr_file rw_file_perms;
+
+# Allow hello to read/write to standard streams
+files_read_etc_files(hello_t)
+libs_use_ld_so(hello_t)
+libs_use_shared_libs(hello_t)
+
+# Allow hello to execute itself
+allow hello_t hello_exec_t:file execute;
+
+# Standard domain template
+corecmd_exec_bin(hello_t)
+corecmd_exec_shell(hello_t)
+
+# Allow logging
+logging_send_syslog_msg(hello_t)
+
+# Allow network access if needed
+sysnet_dns_name_resolve(hello_t)
