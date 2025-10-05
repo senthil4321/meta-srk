@@ -1,4 +1,4 @@
-# conf-srk-tiny V1
+# conf-srk-tiny V1.0
 DISK2="/media/srk2cob/disk2/"
 
 MACHINE = "beaglebone-yocto-srk-tiny"

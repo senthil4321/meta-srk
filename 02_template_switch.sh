@@ -89,11 +89,17 @@ apply_template() {
     export TEMPLATECONF="$template_path"
     
     # Source the build environment (this will create new conf files from templates)
-    source oe-init-build-env > /dev/null 2>&1 || {
+    cd ~/project/poky/
+    source oe-init-build-env build > /dev/null 2>&1 || {
         echo -e "${RED}❌ Failed to initialize build environment${NC}"
         exit 1
     }
-    
+    cd ~/project/poky/meta-srk || {
+        echo -e "${RED}❌ Failed to change directory to meta-srk${NC}"
+        exit 1
+    }
+    cat ~/project/poky/build/conf/local.conf | head -n 2
+
     echo -e "${GREEN}✅ Template applied successfully!${NC}"
 }
 
@@ -189,8 +195,8 @@ main() {
     echo ""
     
     # Step 1: Backup existing configuration
-    backup_config
-    echo ""
+    #backup_config
+    #echo ""
     
     # Step 2: Delete old configuration files
     delete_old_config

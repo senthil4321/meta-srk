@@ -1,4 +1,4 @@
-# Template configuration for Production builds
+# prod V1.0
 # Optimized for minimal size and production deployment
 
 DISK2="/media/srk2cob/disk2/"

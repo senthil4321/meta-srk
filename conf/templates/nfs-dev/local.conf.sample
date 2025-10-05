@@ -1,4 +1,4 @@
-# Template configuration for NFS Development builds
+# vfs-dev V1.0
 # Optimized for rapid development cycles with NFS root filesystem
 
 DISK2="/media/srk2cob/disk2/"
