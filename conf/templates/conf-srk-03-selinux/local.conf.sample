@@ -46,3 +46,56 @@ EXTRA_IMAGEDEPENDS:remove = "qemu-native qemu-helper-native"
 # Remove buildhistory to reduce metadata
 INHERIT:remove = "buildhistory"
 IMAGE_INSTALL:remove = "libx11 libgl mesa"
+# SELinux configuration for core-image-tiny-initramfs-srk-10-selinux
+DISTRO_FEATURES:append = " selinux"
+
+# SELinux policy configuration
+PREFERRED_VERSION_refpolicy = "2.%"
+DISTRO_FEATURES:append = " pam"
+# ===============================================
+# Disable SDKs, QEMU, and emulated build/test tools
+# ===============================================
+
+# Prevent QEMU- or SDK-related tasks from being used
+INHERIT:remove = "testimage qemuboot populate_sdk populate_sdk_qt5 populate_sdk_base toolchain-scripts"
+
+# Remove any image/test/virtualization classes that use QEMU
+IMAGE_CLASSES:remove = "testimage qemuboot"
+
+# Remove optional distro features
+DISTRO_FEATURES:remove = "ptest virtualization"
+
+# Disable SDK image features
+SDKIMAGE_FEATURES = ""
+SDK_IMAGE_FEATURES = ""
+IMAGE_FEATURES:remove = "tools-sdk tools-debug dev-pkgs dbg-pkgs"
+
+# Mask QEMU and SDK-related recipes
+BBMASK += " \
+    meta/recipes-devtools/qemu/ \
+    meta/recipes-devtools/nativesdk-* \
+    meta/recipes-devtools/gcc/gcc-crosssdk* \
+    meta/recipes-devtools/libtool/libtool-crosssdk* \
+    meta/recipes-core/meta/meta-environment* \
+"
+
+# Prevent SDK providers from being considered
+PREFERRED_PROVIDER_virtual/nativesdk-qemuwrapper-cross = ""
+PREFERRED_PROVIDER_nativesdk-qemuwrapper-cross = ""
+
+# Prevent them from appearing in world builds
+EXCLUDE_FROM_WORLD_pn-nativesdk-qemuwrapper-cross = "1"
+EXCLUDE_FROM_WORLD_pn-populate_sdk_base = "1"
+EXCLUDE_FROM_WORLD_pn-populate_sdk = "1"
+EXCLUDE_FROM_WORLD_pn-populate_sdk_qt5 = "1"
+EXCLUDE_FROM_WORLD_pn-testimage = "1"
+EXCLUDE_FROM_WORLD_pn-qemuboot = "1"
+
+# (Important) Remove any invalid SDKMACHINE override
+# SDKMACHINE = "none"  <-- REMOVE THIS LINE COMPLETELY
+# Disable SDK and QEMU native dependencies
+EXTRA_IMAGEDEPENDS:remove = "qemu-native qemu-helper-native nativesdk-qemuwrapper-cross"
+
+# Disable SDK features
+DISTRO_FEATURES:remove = "api-documentation"
+INHERIT:remove = "testimage testsdk"
