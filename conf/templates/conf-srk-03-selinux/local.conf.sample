@@ -1,22 +1,33 @@
-# conf-srk-03-selinux V1.0
-# This provides reproducible build configuration for BeagleBone Black development
+#
+# SELinux Embedded System Configuration
+#
+# This configuration is specifically designed for building
+# core-image-tiny-initramfs-srk-10-selinux with systemd and SELinux support
+#
 
+# Machine and Distribution Configuration
+MACHINE = "beaglebone-yocto"
+DISTRO = "poky"
 DISK2="/media/srk2cob/disk2/"
-
-MACHINE = "beaglebone-yocto-srk"
 DL_DIR ?= "${DISK2}/downloads"
 SSTATE_DIR ?= "${DISK2}/sstate-cache"
-#TMPDIR = "${TOPDIR}/tmp"
-DISTRO ?= "poky"
 
+# SELinux and systemd support
+DISTRO_FEATURES:append = " selinux systemd pam"
+DISTRO_FEATURES:remove = " sysvinit"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+
+# SELinux policy configuration
+PREFERRED_VERSION_refpolicy = "2.%"
+
+# Download and cache directories
+
+
+# Debug and development features
 EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
-
 USER_CLASSES ?= "buildstats"
-PATCHRESOLVE = "noop"
-# Disable SPDX creation for faster builds
-SPDX_CREATE = "0"
 
-# Monitor the disk space during the build. If there is less that 1GB of space or less
+# Disk space monitoring
 BB_DISKMON_DIRS ??= "\
     STOPTASKS,${TMPDIR},1G,100K \
     STOPTASKS,${DL_DIR},1G,100K \
@@ -27,75 +38,40 @@ BB_DISKMON_DIRS ??= "\
     HALT,${SSTATE_DIR},100M,1K \
     HALT,/tmp,10M,1K"
 
+# Patch resolution
+PATCHRESOLVE = "noop"
+
+# Configuration version
 CONF_VERSION = "2"
-INHERIT+="toaster"
 
-EXTRA_IMAGEDEPENDS:remove = " virtual/bootloader virtual/kernel qemu-native qemu-helper-native"
-DISTRO_FEATURES:remove = "package-management"
+# Build tools integration
+INHERIT += "toaster buildhistory"
 
-DISTRO_FEATURES:append = " systemd usrmerge"
+# Network settings for deployment
 
+
+# Remove unnecessary dependencies for initramfs
+EXTRA_IMAGEDEPENDS:remove = " virtual/bootloader qemu-native qemu-helper-native"
+# Use our custom kernel
 PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk"
-PREFERRED_PROVIDER_virtual/bootloader = ""
 
 
+# =================================================
+# Minimal SELinux Settings
+# =================================================
+DISTRO_FEATURES:append = " selinux pam systemd usrmerge"
+PREFERRED_PROVIDER_virtual/refpolicy ?= "refpolicy-targeted"
+PREFERRED_VERSION_refpolicy = "2.%"
+
+# Install SELinux userland libraries and policy
+IMAGE_INSTALL:append = " libselinux refpolicy-targeted"
+
+# Kernel must support SELinux
+PREFERRED_PROVIDER_virtual/kernel = "linux-yocto"
 
 DISTRO_FEATURES:remove = "x11 wayland opengl vulkan"
-EXTRA_IMAGEDEPENDS:remove = "qemu-native qemu-helper-native"
-
-# Remove buildhistory to reduce metadata
-INHERIT:remove = "buildhistory"
+PREFERRED_PROVIDER_virtual/bootloader = ""
 IMAGE_INSTALL:remove = "libx11 libgl mesa"
-# SELinux configuration for core-image-tiny-initramfs-srk-10-selinux
-DISTRO_FEATURES:append = " selinux"
 
-# SELinux policy configuration
-PREFERRED_VERSION_refpolicy = "2.%"
-DISTRO_FEATURES:append = " pam"
-# ===============================================
-# Disable SDKs, QEMU, and emulated build/test tools
-# ===============================================
-
-# Prevent QEMU- or SDK-related tasks from being used
-INHERIT:remove = "testimage qemuboot populate_sdk populate_sdk_qt5 populate_sdk_base toolchain-scripts"
-
-# Remove any image/test/virtualization classes that use QEMU
-IMAGE_CLASSES:remove = "testimage qemuboot"
-
-# Remove optional distro features
-DISTRO_FEATURES:remove = "ptest virtualization"
-
-# Disable SDK image features
-SDKIMAGE_FEATURES = ""
-SDK_IMAGE_FEATURES = ""
-IMAGE_FEATURES:remove = "tools-sdk tools-debug dev-pkgs dbg-pkgs"
-
-# Mask QEMU and SDK-related recipes
-BBMASK += " \
-    meta/recipes-devtools/qemu/ \
-    meta/recipes-devtools/nativesdk-* \
-    meta/recipes-devtools/gcc/gcc-crosssdk* \
-    meta/recipes-devtools/libtool/libtool-crosssdk* \
-    meta/recipes-core/meta/meta-environment* \
-"
-
-# Prevent SDK providers from being considered
-PREFERRED_PROVIDER_virtual/nativesdk-qemuwrapper-cross = ""
-PREFERRED_PROVIDER_nativesdk-qemuwrapper-cross = ""
-
-# Prevent them from appearing in world builds
-EXCLUDE_FROM_WORLD_pn-nativesdk-qemuwrapper-cross = "1"
-EXCLUDE_FROM_WORLD_pn-populate_sdk_base = "1"
-EXCLUDE_FROM_WORLD_pn-populate_sdk = "1"
-EXCLUDE_FROM_WORLD_pn-populate_sdk_qt5 = "1"
-EXCLUDE_FROM_WORLD_pn-testimage = "1"
-EXCLUDE_FROM_WORLD_pn-qemuboot = "1"
-
-# (Important) Remove any invalid SDKMACHINE override
-# SDKMACHINE = "none"  <-- REMOVE THIS LINE COMPLETELY
-# Disable SDK and QEMU native dependencies
-EXTRA_IMAGEDEPENDS:remove = "qemu-native qemu-helper-native nativesdk-qemuwrapper-cross"
-
-# Disable SDK features
-DISTRO_FEATURES:remove = "api-documentation"
-INHERIT:remove = "testimage testsdk"
+EXTRA_IMAGEDEPENDS:remove = " virtual/bootloader qemu-native qemu-helper-native"
+DISTRO_FEATURES:remove = "package-management"
