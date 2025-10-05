@@ -1,4 +1,12 @@
-# POKY_BBLAYERS_CONF_VERSION is increased each time build/conf/bblayers.conf
+# POKY_BBLAYERS ?= " \
+  ~/project/poky/meta \
+  ~/project/poky/meta-poky \
+  ~/project/poky/meta-yocto-bsp \
+  ~/project/poky/meta-openembedded/meta-oe \
+  ~/project/poky/meta-openembedded/meta-python \
+  ~/project/poky/meta-openembedded/meta-networking \
+  ~/project/poky/meta-srk \
+  "S_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
 POKY_BBLAYERS_CONF_VERSION = "2"
 

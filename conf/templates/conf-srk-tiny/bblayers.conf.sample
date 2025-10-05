@@ -6,11 +6,11 @@ BBPATH = "${TOPDIR}"
 BBFILES ?= ""
 
 BBLAYERS ?= " \
-  ${TOPDIR}/../meta \
-  ${TOPDIR}/../meta-poky \
-  ${TOPDIR}/../meta-yocto-bsp \
-  ${TOPDIR}/../meta-openembedded/meta-oe \
-  ${TOPDIR}/../meta-openembedded/meta-python \
-  ${TOPDIR}/../meta-openembedded/meta-networking \
-  ${TOPDIR}/../meta-srk \
+  ~/project/poky/meta \
+  ~/project/poky/meta-poky \
+  ~/project/poky/meta-yocto-bsp \
+  ~/project/poky/meta-openembedded/meta-oe \
+  ~/project/poky/meta-openembedded/meta-python \
+  ~/project/poky/meta-openembedded/meta-networking \
+  ~/project/poky/meta-srk \
   "

@@ -44,7 +44,7 @@ INHERIT:remove = "buildhistory"
 #IMAGE_FSTYPES = "tar.bz2 ext4"
 
 # Enable debugging tools for development
-IMAGE_INSTALL:append = " gdb gdbserver strace ltrace tcpdump i2c-tools devmem2"
+#IMAGE_INSTALL:append = " gdb gdbserver strace ltrace tcpdump i2c-tools devmem2"
 
 # Kernel configuration for NFS development
 PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-srk-bbb"
