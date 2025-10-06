@@ -20,7 +20,7 @@
 
 #define NULL ((void*)0)
 
-#define LED_COUNT   2
+#define LED_COUNT   4
 
 // System call implementations using Linux nolibc style
 // Based on Linux kernel nolibc examples
@@ -121,10 +121,6 @@ void sys_exit(int status) {
     my_syscall1(SYS_EXIT, status);
 }
 
-int sys_fcntl(int fd, int cmd, long arg) {
-    return my_syscall3(SYS_FCNTL, fd, cmd, arg);
-}
-
 // Simple string length
 int strlen(const char *s) {
     const char *p = s;
@@ -141,15 +137,9 @@ void log_msg(const char *msg) {
 // Check for 'c' key press (non-blocking)
 int check_cancel() {
     char c;
-    int flags = sys_fcntl(0, F_GETFL, 0);
-    sys_fcntl(0, F_SETFL, flags | O_NONBLOCK);
-    
     int result = sys_read(0, &c, 1);
-    
-    sys_fcntl(0, F_SETFL, flags); // restore original flags
-    
-    if (result > 0 && (c == 'c' || c == 'C')) {
-        return 1; // cancel requested
+    if (result > 0 && c == 'c') {
+        return 1;
     }
     return 0;
 }
@@ -158,12 +148,14 @@ int check_cancel() {
 // File descriptors
 #define AT_FDCWD -100
 
-// LED paths and constants - using available LEDs
-const char* led_paths[] = {
-    "/sys/class/leds/ACT/brightness",
-    "/sys/class/leds/PWR/brightness"
-};
-const char* led_names[] = {"ACT", "PWR"};
+// LED paths and constants - try multiple possibilities
+const char led_base_path1[] = "/sys/class/leds/beaglebone:green:usr";
+const char led_base_path2[] = "/sys/class/leds/green:usr";
+const char led_base_path3[] = "/sys/class/leds/usr";
+const char* led_base_paths[] = {led_base_path1, led_base_path2, led_base_path3};
+#define LED_PATH_COUNT 3
+const char trigger_suffix[] = "/trigger";
+const char brightness_suffix[] = "/brightness";
 const char none_str[] = "none";
 const char zero_str[] = "0";
 const char one_str[] = "1";
@@ -198,15 +190,27 @@ void int_to_str(int num, char *str) {
 
 // Set LED brightness
 void set_led_brightness(int led_num, int brightness) {
+    char path[256];
+    char num_str[2];
     char log_buf[64];
+    int fd = -1;
+    int path_idx;
 
-    if (led_num >= LED_COUNT) return;
+    // Try different LED path possibilities
+    for (path_idx = 0; path_idx < LED_PATH_COUNT && fd < 0; path_idx++) {
+        // Build path: /sys/class/leds/[path]/usrX/brightness
+        strcpy(path, led_base_paths[path_idx]);
+        int_to_str(led_num, num_str);
+        strcat(path, num_str);
+        strcat(path, brightness_suffix);
 
-    // Open brightness file
-    int fd = sys_open(led_paths[led_num], O_WRONLY);
+        // Try to open brightness file
+        fd = sys_open(path, O_WRONLY);
+    }
+    
     if (fd < 0) {
         strcpy(log_buf, "Failed to open LED ");
-        strcat(log_buf, led_names[led_num]);
+        strcat(log_buf, num_str);
         strcat(log_buf, " - check LED paths");
         log_msg(log_buf);
         return;
@@ -216,31 +220,13 @@ void set_led_brightness(int led_num, int brightness) {
     if (brightness) {
         sys_write(fd, one_str, 1);
         strcpy(log_buf, "LED ");
-        strcat(log_buf, led_names[led_num]);
+        strcat(log_buf, num_str);
         strcat(log_buf, " ON");
         log_msg(log_buf);
     } else {
         sys_write(fd, zero_str, 1);
         strcpy(log_buf, "LED ");
-        strcat(log_buf, led_names[led_num]);
-        strcat(log_buf, " OFF");
-        log_msg(log_buf);
-    }
-
-    sys_close(fd);
-}
-
-    // Write brightness value
-    if (brightness) {
-        sys_write(fd, one_str, 1);
-        strcpy(log_buf, "LED ");
-        strcat(log_buf, led_names[led_num]);
-        strcat(log_buf, " ON");
-        log_msg(log_buf);
-    } else {
-        sys_write(fd, zero_str, 1);
-        strcpy(log_buf, "LED ");
-        strcat(log_buf, led_names[led_num]);
+        strcat(log_buf, num_str);
         strcat(log_buf, " OFF");
         log_msg(log_buf);
     }
@@ -250,10 +236,15 @@ void set_led_brightness(int led_num, int brightness) {
 
 void _start() {
     int led;
+    int flags;
 
     log_msg("BBB LED Blink nolibc application started");
-    log_msg("Available LEDs: ACT, PWR");
+    log_msg("Blinking LEDs 0-3 in sequence");
     log_msg("Press 'c' to cancel");
+
+    // Set stdin to non-blocking mode
+    flags = sys_fcntl(0, F_GETFL, 0);
+    sys_fcntl(0, F_SETFL, flags | O_NONBLOCK);
 
     // Infinite loop blinking LEDs
     while (1) {
@@ -267,9 +258,8 @@ void _start() {
             // Turn LED on
             set_led_brightness(led, 1);
 
-            // Sleep 500ms
-            struct timespec short_delay = {0, 500000000};
-            sys_nanosleep(&short_delay, NULL);
+            // Sleep 1 second
+            sys_nanosleep(&delay, NULL);
 
             // Check for cancellation again
             if (check_cancel()) {
@@ -280,8 +270,8 @@ void _start() {
             // Turn LED off
             set_led_brightness(led, 0);
 
-            // Sleep 500ms
-            sys_nanosleep(&short_delay, NULL);
+            // Sleep 1 second
+            sys_nanosleep(&delay, NULL);
         }
     }
 
