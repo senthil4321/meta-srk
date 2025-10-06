@@ -9,13 +9,18 @@
 #define SYS_READ    3
 #define SYS_NANOSLEEP 162
 #define SYS_EXIT    1
+#define SYS_FCNTL   55
 
 #define O_WRONLY    1
 #define O_RDONLY    0
+#define O_NONBLOCK  2048
+
+#define F_GETFL     3
+#define F_SETFL     4
 
 #define NULL ((void*)0)
 
-#define LED_COUNT   4
+#define LED_COUNT   2
 
 // System call implementations using Linux nolibc style
 // Based on Linux kernel nolibc examples
@@ -96,8 +101,16 @@ int sys_close(int fd) {
     return my_syscall1(SYS_CLOSE, fd);
 }
 
+int sys_fcntl(int fd, int cmd, long arg) {
+    return my_syscall3(SYS_FCNTL, fd, cmd, arg);
+}
+
 int sys_write(int fd, const char *buf, int count) {
     return my_syscall3(SYS_WRITE, fd, (long)buf, count);
+}
+
+int sys_read(int fd, void *buf, int count) {
+    return my_syscall3(SYS_READ, fd, (long)buf, count);
 }
 
 int sys_nanosleep(struct timespec *req, struct timespec *rem) {
@@ -106,6 +119,10 @@ int sys_nanosleep(struct timespec *req, struct timespec *rem) {
 
 void sys_exit(int status) {
     my_syscall1(SYS_EXIT, status);
+}
+
+int sys_fcntl(int fd, int cmd, long arg) {
+    return my_syscall3(SYS_FCNTL, fd, cmd, arg);
 }
 
 // Simple string length
@@ -121,14 +138,32 @@ void log_msg(const char *msg) {
     sys_write(1, "\n", 1);
 }
 
+// Check for 'c' key press (non-blocking)
+int check_cancel() {
+    char c;
+    int flags = sys_fcntl(0, F_GETFL, 0);
+    sys_fcntl(0, F_SETFL, flags | O_NONBLOCK);
+    
+    int result = sys_read(0, &c, 1);
+    
+    sys_fcntl(0, F_SETFL, flags); // restore original flags
+    
+    if (result > 0 && (c == 'c' || c == 'C')) {
+        return 1; // cancel requested
+    }
+    return 0;
+}
+
 // System call numbers for ARM
 // File descriptors
 #define AT_FDCWD -100
 
-// LED paths and constants
-const char led_base_path[] = "/sys/class/leds/beaglebone:green:usr";
-const char trigger_suffix[] = "/trigger";
-const char brightness_suffix[] = "/brightness";
+// LED paths and constants - using available LEDs
+const char* led_paths[] = {
+    "/sys/class/leds/ACT/brightness",
+    "/sys/class/leds/PWR/brightness"
+};
+const char* led_names[] = {"ACT", "PWR"};
 const char none_str[] = "none";
 const char zero_str[] = "0";
 const char one_str[] = "1";
@@ -163,21 +198,16 @@ void int_to_str(int num, char *str) {
 
 // Set LED brightness
 void set_led_brightness(int led_num, int brightness) {
-    char path[256];
-    char num_str[2];
     char log_buf[64];
 
-    // Build path: /sys/class/leds/beaglebone:green:usrX/brightness
-    strcpy(path, led_base_path);
-    int_to_str(led_num, num_str);
-    strcat(path, num_str);
-    strcat(path, brightness_suffix);
+    if (led_num >= LED_COUNT) return;
 
     // Open brightness file
-    int fd = sys_open(path, O_WRONLY);
+    int fd = sys_open(led_paths[led_num], O_WRONLY);
     if (fd < 0) {
         strcpy(log_buf, "Failed to open LED ");
-        strcat(log_buf, num_str);
+        strcat(log_buf, led_names[led_num]);
+        strcat(log_buf, " - check LED paths");
         log_msg(log_buf);
         return;
     }
@@ -186,13 +216,31 @@ void set_led_brightness(int led_num, int brightness) {
     if (brightness) {
         sys_write(fd, one_str, 1);
         strcpy(log_buf, "LED ");
-        strcat(log_buf, num_str);
+        strcat(log_buf, led_names[led_num]);
         strcat(log_buf, " ON");
         log_msg(log_buf);
     } else {
         sys_write(fd, zero_str, 1);
         strcpy(log_buf, "LED ");
-        strcat(log_buf, num_str);
+        strcat(log_buf, led_names[led_num]);
+        strcat(log_buf, " OFF");
+        log_msg(log_buf);
+    }
+
+    sys_close(fd);
+}
+
+    // Write brightness value
+    if (brightness) {
+        sys_write(fd, one_str, 1);
+        strcpy(log_buf, "LED ");
+        strcat(log_buf, led_names[led_num]);
+        strcat(log_buf, " ON");
+        log_msg(log_buf);
+    } else {
+        sys_write(fd, zero_str, 1);
+        strcpy(log_buf, "LED ");
+        strcat(log_buf, led_names[led_num]);
         strcat(log_buf, " OFF");
         log_msg(log_buf);
     }
@@ -204,22 +252,36 @@ void _start() {
     int led;
 
     log_msg("BBB LED Blink nolibc application started");
-    log_msg("Blinking LEDs 0-3 in sequence");
+    log_msg("Available LEDs: ACT, PWR");
+    log_msg("Press 'c' to cancel");
 
     // Infinite loop blinking LEDs
     while (1) {
         for (led = 0; led < LED_COUNT; led++) {
+            // Check for cancellation
+            if (check_cancel()) {
+                log_msg("Cancelled by user");
+                sys_exit(0);
+            }
+
             // Turn LED on
             set_led_brightness(led, 1);
 
-            // Sleep 1 second
-            sys_nanosleep(&delay, NULL);
+            // Sleep 500ms
+            struct timespec short_delay = {0, 500000000};
+            sys_nanosleep(&short_delay, NULL);
+
+            // Check for cancellation again
+            if (check_cancel()) {
+                log_msg("Cancelled by user");
+                sys_exit(0);
+            }
 
             // Turn LED off
             set_led_brightness(led, 0);
 
-            // Sleep 1 second
-            sys_nanosleep(&delay, NULL);
+            // Sleep 500ms
+            sys_nanosleep(&short_delay, NULL);
         }
     }
 
