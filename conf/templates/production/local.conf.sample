@@ -49,7 +49,7 @@ DISTRO_FEATURES:remove = "x11 wayland opengl vulkan"
 EXTRA_IMAGEDEPENDS:remove = "qemu-native qemu-helper-native"
 
 # Remove buildhistory to reduce metadata
-INHERIT:remove = "buildhistory"
+INHERIT += "toaster buildhistory"
 
 # Production image formats
 IMAGE_FSTYPES = "squashfs"
