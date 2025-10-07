@@ -4,7 +4,8 @@ DISK2="/media/srk2cob/disk2/"
 MACHINE = "beaglebone-yocto-srk-tiny"
 DL_DIR ?= "${DISK2}/downloads"
 SSTATE_DIR ?= "${DISK2}/sstate-cache"
-DISTRO ?= "poky"
+#Distro has an influenc on the final kernel size
+DISTRO ?= "srk-distro"
 
 EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
 USER_CLASSES ?= "buildstats"
