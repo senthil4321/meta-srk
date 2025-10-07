@@ -8,17 +8,34 @@ inherit core-image
 
 # Do not pull in busybox
 IMAGE_INSTALL = "helloloop"
+IMAGE_INSTALL:remove = "run-postinsts"
 IMAGE_FEATURES = ""
+IMAGE_FEATURES:remove = "postinsts"
+
+# Force PACKAGE_INSTALL to only include what we want
+PACKAGE_INSTALL = "helloloop"
 SPDX_CREATE = "0"
 
-BAD_RECOMMENDATIONS += "busybox shadow shadow-base shadow-securetty"
+BAD_RECOMMENDATIONS += "busybox shadow shadow-base shadow-securetty run-postinsts"
 IMAGE_LINGUAS = ""
 GLIBC_GENERATE_LOCALES = ""
 ENABLE_LOCALE_GENERATION = "0"
 
 DISTRO_FEATURES:remove = " x11 wayland opengl vulkan bluetooth wifi usbhost usbgadget pcmcia pci 3g nfc zeroconf pulseaudio alsa ptest gobject-introspection-data debuginfod nfs "
 
+# Disable postinstall scripts
+ROOTFS_POSTINSTALL_COMMAND = ""
+
 ROOTFS_POSTPROCESS_COMMAND += "install_minimal_init; create_minimal_devnodes; "
+
+# Remove run-postinsts from package list before dnf install
+python remove_run_postinsts() {
+    import re
+    d.setVar('PACKAGE_INSTALL', d.getVar('PACKAGE_INSTALL').replace(' run-postinsts', ''))
+    d.setVar('PACKAGE_INSTALL', d.getVar('PACKAGE_INSTALL').replace('run-postinsts ', ''))
+}
+
+ROOTFS_PREPROCESS_COMMAND += "remove_run_postinsts; "
 
 python install_minimal_init () {
     bb.warn("Running install_minimal_init")

@@ -21,4 +21,9 @@ do_install() {
 }
 
 FILES:${PN} = "${base_sbindir}/helloloop"
+FILES:${PN}-dev = ""
+FILES:${PN}-dbg = ""
+
+# Ensure main package is created
+PACKAGES = "${PN} ${PN}-dev ${PN}-dbg"
 
