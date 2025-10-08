@@ -5,7 +5,7 @@ DISK2="/media/srk2cob/disk2/"
 MACHINE = "beaglebone-yocto-srk"
 DL_DIR ?= "${DISK2}/downloads"
 SSTATE_DIR ?= "${DISK2}/sstate-cache"
-DISTRO ?= "poky"
+DISTRO ?= "srk-minimal-squashfs-distro"
 
 EXTRA_IMAGE_FEATURES ?= "debug-tweaks ssh-server-dropbear"
 
