@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+# Set PATH
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+
+# Set TERM if not already set
+if [ -z "$TERM" ]; then
+    export TERM=linux
+fi
+
+# Set prompt that works with both ash and bash
+# For ash (busybox), use simple prompt
+# For bash, use more advanced prompt
+if [ -n "$BASH_VERSION" ]; then
+    # Running under bash
+    export PS1='\u@\h:\w\$ '
+else
+    # Running under ash or other shell
+    # Get hostname and current directory manually
+    HOSTNAME=$(cat /etc/hostname 2>/dev/null || echo "unknown")
+    USER=$(whoami 2>/dev/null || echo "user")
+    export PS1="$USER@$HOSTNAME:\$PWD\$ "
+fi
+
+# Source user's bashrc if it exists
+if [ -f "$HOME/.bashrc" ]; then
+    . "$HOME/.bashrc"
+fi

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# Set a proper prompt for busybox ash
+if [ -z "$BASH_VERSION" ]; then
+    # Running under ash (busybox)
+    HOSTNAME=$(cat /etc/hostname 2>/dev/null || echo "device")
+    USER=$(whoami 2>/dev/null || echo "user")
+    
+    # Function to update prompt with current directory
+    update_prompt() {
+        export PS1="$USER@$HOSTNAME:$PWD\$ "
+    }
+    
+    # Set initial prompt
+    update_prompt
+    
+    # Override cd to update prompt
+    cd() {
+        command cd "$@" && update_prompt
+    }
+else
+    # Running under bash
+    export PS1='\u@\h:\w\$ '
+fi
+
+# Set terminal properties
+export TERM=linux
+
+# Some useful aliases
+alias ll='ls -l'
+alias la='ls -la'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# History settings for bash
+if [ -n "$BASH_VERSION" ]; then
+    export HISTSIZE=1000
+    export HISTFILESIZE=2000
+fi
