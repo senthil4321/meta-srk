@@ -62,8 +62,8 @@ Version: $VERSION
 EOF
 }
 
-# Default machine target
-MACHINE_TARGET="beaglebone-yocto"
+# Default machine target (will be set later if not specified)
+MACHINE_TARGET=""
 
 # Parse command line arguments manually to handle flexible argument order
 VERSION_ARG=""
@@ -151,6 +151,11 @@ fi
 if [ -z "$VERSION_ARG" ]; then
     echo "Missing version argument or alias. See --help (-h) for options."
     exit 1
+fi
+
+# Set default machine if not specified
+if [ -z "$MACHINE_TARGET" ]; then
+    MACHINE_TARGET="beaglebone-yocto"
 fi
 
 # Function to map alias to image name
