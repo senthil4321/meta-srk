@@ -9,7 +9,7 @@ IMAGE_FSTYPES = "cpio.gz"
 inherit core-image
 
 # Include systemd, busybox, bash, and shadow in the rootfs
-IMAGE_INSTALL = "systemd busybox bash shadow nfs-utils"
+IMAGE_INSTALL = "systemd busybox bash bash-completion shadow nfs-utils bbb-02-led-blink bbb-03-led-blink-nolibc"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
@@ -39,6 +39,12 @@ fix_shell_prompt() {
     echo 'export PATH="/bin:/sbin:/usr/bin:/usr/sbin"' >> ${IMAGE_ROOTFS}/etc/profile
     echo 'export TERM=linux' >> ${IMAGE_ROOTFS}/etc/profile
     echo 'export PS1="\u@\h:\w\$ "' >> ${IMAGE_ROOTFS}/etc/profile
+    echo '# Enable bash completion globally' >> ${IMAGE_ROOTFS}/etc/profile
+    echo 'if [ -f /etc/bash_completion ]; then' >> ${IMAGE_ROOTFS}/etc/profile
+    echo '    . /etc/bash_completion' >> ${IMAGE_ROOTFS}/etc/profile
+    echo 'elif [ -f /usr/share/bash-completion/bash_completion ]; then' >> ${IMAGE_ROOTFS}/etc/profile
+    echo '    . /usr/share/bash-completion/bash_completion' >> ${IMAGE_ROOTFS}/etc/profile
+    echo 'fi' >> ${IMAGE_ROOTFS}/etc/profile
     
     chmod +x ${IMAGE_ROOTFS}/etc/profile
     
@@ -51,12 +57,24 @@ fix_shell_prompt() {
     echo 'export PS1="\u@\h:\w\$ "' > ${IMAGE_ROOTFS}/root/.bashrc
     echo 'export PATH="/bin:/sbin:/usr/bin:/usr/sbin"' >> ${IMAGE_ROOTFS}/root/.bashrc
     echo 'export TERM=linux' >> ${IMAGE_ROOTFS}/root/.bashrc
+    echo '# Enable bash completion' >> ${IMAGE_ROOTFS}/root/.bashrc
+    echo 'if [ -f /etc/bash_completion ]; then' >> ${IMAGE_ROOTFS}/root/.bashrc
+    echo '    . /etc/bash_completion' >> ${IMAGE_ROOTFS}/root/.bashrc
+    echo 'elif [ -f /usr/share/bash-completion/bash_completion ]; then' >> ${IMAGE_ROOTFS}/root/.bashrc
+    echo '    . /usr/share/bash-completion/bash_completion' >> ${IMAGE_ROOTFS}/root/.bashrc
+    echo 'fi' >> ${IMAGE_ROOTFS}/root/.bashrc
     
     # Create home directory for srk user and setup .bashrc
     mkdir -p ${IMAGE_ROOTFS}/home/srk
     echo 'export PS1="\u@\h:\w\$ "' > ${IMAGE_ROOTFS}/home/srk/.bashrc
     echo 'export PATH="/bin:/sbin:/usr/bin:/usr/sbin"' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
     echo 'export TERM=linux' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
+    echo '# Enable bash completion' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
+    echo 'if [ -f /etc/bash_completion ]; then' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
+    echo '    . /etc/bash_completion' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
+    echo 'elif [ -f /usr/share/bash-completion/bash_completion ]; then' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
+    echo '    . /usr/share/bash-completion/bash_completion' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
+    echo 'fi' >> ${IMAGE_ROOTFS}/home/srk/.bashrc
     
     # Set proper ownership for srk home directory (will be applied at runtime)
     chown -R 1000:1000 ${IMAGE_ROOTFS}/home/srk 2>/dev/null || true
