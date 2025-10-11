@@ -319,6 +319,41 @@ This information is crucial for:
 * Confirming the system is running the expected version
 * Performance analysis and optimization
 
+## Test Suites
+
+The project includes comprehensive test suites for validating different image configurations:
+
+### Available Test Suites
+
+* `kernel_boot` - Basic kernel boot verification
+* `default` - Minimal test set for basic functionality
+* `image_11` - Full hardware tests for core-image-minimal-srk
+* `image_11_tiny` - Boot verification for tiny image variants
+* `image_2_bash` - **NEW** Comprehensive bash functionality tests
+
+### Using the Bash Test Suite
+
+The `image_2_bash` test suite validates the new bash-enabled image (`core-image-tiny-initramfs-srk-2-bash`):
+
+```bash
+# Run the bash functionality test suite
+python3 test_serial_hello.py --test-suite image_2_bash
+
+# Build and deploy the bash image
+bitbake core-image-tiny-initramfs-srk-2-bash
+./03_copy_initramfs.sh p 2_bash
+```
+
+### Test Coverage
+
+The bash test suite includes:
+
+* Login sequence validation
+* Bash shell functionality (history, tab completion, aliases)
+* System validation (systemd, file operations)
+* Hardware tests (LED programs, GPIO)
+* Advanced bash features (command substitution, pipes, redirection)
+
 ### Requirements
 
 * Python 3.8+

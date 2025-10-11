@@ -95,3 +95,58 @@ IMAGE_11_TEST_SUITE_TINY = [
     ["CAPTURE_LOG_ASSERT", "Verify boot message", None, "Hello World", "Message not found", {"capture_name": "root-shell-boot"}],
 
 ]
+
+IMAGE_2_BASH_TEST_SUITE = [
+    # [test_type, description, command, expected_value, failure_message, kwargs]
+
+    # Base system checks with login
+    ["ASSERT_IN_BUFFER", "Check U-Boot logs", None, "U-Boot", "U-Boot not found in logs"],
+    ["ASSERT_IN_BUFFER", "Check kernel logs", None, "Linux version", "Kernel logs not found"],
+    # ["WAIT_FOR_CONDITION", "Wait for login prompt", None, "srk-device login:|srk-device:~$", "No login or shell prompt found", {"timeout": 90}],
+
+    # Login sequence for srk user
+    # ["SEND_COMMAND", "Send username", "srk", None, "Username sent"],
+    # ["WAIT_FOR_CONDITION", "Wait for password prompt", None, "Password:", "Password prompt not found", {"timeout": 10}],
+    # ["SEND_COMMAND", "Send password", "newsrkpass", None, "Password sent"],
+    # ["WAIT_FOR_CONDITION", "Wait for shell prompt", None, "srk@srk-device:", "Shell prompt not found", {"timeout": 30}],
+
+    # Bash functionality tests
+    # ["COMMAND_AND_ASSERT", "Test bash shell", "echo $0", "bash", "Bash shell not detected"],
+    ["COMMAND_AND_ASSERT", "Test hostname", "hostname", "srk-device", "Hostname not set correctly"],
+    ["COMMAND_AND_ASSERT", "Test prompt variable", "echo $PS1", "\\u@\\h:\\w\\$", "PS1 prompt not set correctly"],
+    
+    # User and environment tests
+    ["COMMAND_AND_ASSERT", "Check current user", "whoami", "srk", "Current user verification failed"],
+    ["COMMAND_AND_ASSERT", "Check home directory", "pwd", "/home/srk", "Home directory not correct"],
+    ["COMMAND_AND_ASSERT", "Test PATH variable", "echo $PATH", "/bin:/sbin:/usr/bin:/usr/sbin", "PATH variable not set correctly"],
+
+    # Bash completion tests
+    ["COMMAND_AND_ASSERT", "Check bash completion", "type _completion_loader", "_completion_loader is a function", "Bash completion not available"],
+    ["COMMAND_AND_ASSERT", "Test completion files", "ls /usr/share/bash-completion/", "bash_completion", "Bash completion files not found"],
+
+    # BeagleBone LED program tests
+    ["COMMAND_AND_ASSERT", "Check LED blink program 1", "which bbb-02-led-blink", "/usr/bin/bbb-02-led-blink", "bbb-02-led-blink not found"],
+    ["COMMAND_AND_ASSERT", "Check LED blink program 2", "which bbb-03-led-blink-nolibc", "/usr/bin/bbb-03-led-blink-nolibc", "bbb-03-led-blink-nolibc not found"],
+
+    # Systemd tests
+    ["COMMAND_AND_ASSERT", "Check systemd status", "systemctl is-system-running", "running", "Systemd not running properly"],
+    ["COMMAND_AND_ASSERT", "Check init process", "ps -p 1", "systemd", "Systemd not PID 1"],
+
+    # File system tests
+    ["COMMAND_AND_ASSERT", "Test file creation", "touch /tmp/test && ls /tmp/test", "/tmp/test", "File creation failed"],
+    ["COMMAND_AND_ASSERT", "Test file removal", "rm /tmp/test && test ! -f /tmp/test && echo 'removed'", "removed", "File removal failed"],
+
+    # Network utilities test (NFS)
+    ["COMMAND_AND_ASSERT", "Check NFS utilities", "which mount.nfs", "/sbin/mount.nfs", "NFS utilities not found"],
+
+    # System information
+    ["COMMAND_AND_EXTRACT", "Check kernel version", "uname -r", "6.", "Kernel version check failed", {"extract_pattern": "6."}],
+    ["COMMAND_AND_EXTRACT", "Check system uptime", "uptime", "up", "Uptime check failed", {"extract_pattern": "up"}],
+    ["COMMAND_AND_EXTRACT", "Check memory info", "free -h", "Mem:", "Memory info check failed", {"extract_pattern": "Mem:"}],
+
+    # Advanced bash features
+    ["COMMAND_AND_ASSERT", "Test command history", "history | tail -1", "history", "Command history not working"],
+    ["COMMAND_AND_ASSERT", "Test bash variables", "TEST_VAR=hello && echo $TEST_VAR", "hello", "Bash variables not working"],
+    ["COMMAND_AND_ASSERT", "Test command substitution", "echo $(whoami)", "srk", "Command substitution not working"],
+
+]

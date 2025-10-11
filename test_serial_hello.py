@@ -21,7 +21,7 @@ import warnings
 import subprocess
 import copy
 import json
-from test_suites import DEFAULT_TEST_SUITE, IMAGE_11_TEST_SUITE, IMAGE_11_TEST_SUITE_TINY
+from test_suites import DEFAULT_TEST_SUITE, IMAGE_11_TEST_SUITE, IMAGE_11_TEST_SUITE_TINY, IMAGE_2_BASH_TEST_SUITE
 from test_report import TestReportGenerator
 
 # Suppress deprecation warnings from Paramiko
@@ -636,6 +636,9 @@ class TestSerialHello(unittest.TestCase):
         elif test_suite == "image_11":
             steps = IMAGE_11_TEST_SUITE
             print("🧪 Running IMAGE_11_TEST_SUITE (includes hardware tests)")
+        elif test_suite == "image_2_bash":
+            steps = IMAGE_2_BASH_TEST_SUITE
+            print("🧪 Running IMAGE_2_BASH_TEST_SUITE (bash functionality tests)")
         elif test_suite == "default":
             steps = DEFAULT_TEST_SUITE
             print("🧪 Running DEFAULT_TEST_SUITE (minimal test set)")
@@ -675,7 +678,7 @@ class TestSerialHello(unittest.TestCase):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SRK Serial Test Script")
     parser.add_argument("--save-report", type=str, help="Save test report to specified file")
-    parser.add_argument("--test-suite", type=str, choices=["kernel_boot", "default", "image_11", "image_11_tiny"], 
+    parser.add_argument("--test-suite", type=str, choices=["kernel_boot", "default", "image_11", "image_11_tiny", "image_2_bash"], 
                        help="Built-in test suite to run")
     parser.add_argument("--test-suite-file", type=str, help="Load test suite from JSON file")
 
