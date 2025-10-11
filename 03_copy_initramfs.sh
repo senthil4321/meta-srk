@@ -55,7 +55,7 @@ Notes:
     - Uses SSH alias 'p' configured in ~/.ssh/config
     - SSH key-based authentication is used (no password required)
     - Supports multiple machine targets: beaglebone-yocto (default), beaglebone-yocto-srk, beaglebone-yocto-srk-tiny
-    - Short aliases: -srk, -tiny for common machine variants
+    - Short aliases: srk, tiny for common machine variants
     - Images are deployed to /srv/nfs/ on remote target
 
 Version: $VERSION
