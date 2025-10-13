@@ -33,6 +33,7 @@ Arguments:
 
 <alias> can be one of:
     2-bash         -> core-image-tiny-initramfs-srk-2-bash
+    2-bash-ssh     -> core-image-tiny-initramfs-srk-2-bash-ssh (bash + SSH support)
 
 Options:
     -m <machine>   Machine target (default: beaglebone-yocto)
@@ -48,6 +49,7 @@ Examples:
     ./03_copy_initramfs.sh 9 tiny                               # Uses tiny machine variant
     ./03_copy_initramfs.sh 2-bash beaglebone-yocto-srk          # Uses alias directly (no -a needed)
     ./03_copy_initramfs.sh 2-bash srk                           # Uses alias with machine short alias  
+    ./03_copy_initramfs.sh 2-bash-ssh srk                       # Uses SSH-enabled bash image
     ./03_copy_initramfs.sh -m srk 2                             # Alternative: -m option with version
     ./03_copy_initramfs.sh -m srk 2-bash                        # Alternative: -m option with alias
 
@@ -165,6 +167,9 @@ map_alias_to_image() {
         2-bash)
             echo "core-image-tiny-initramfs-srk-2-bash"
             ;;
+        2-bash-ssh)
+            echo "core-image-tiny-initramfs-srk-2-bash-ssh"
+            ;;
         *)
             echo ""  # Invalid alias
             ;;
@@ -254,7 +259,8 @@ if [ -z "$IMAGE_BASE" ]; then
     echo "  11 -> core-image-tiny-initramfs-srk-11-bbb-examples" >&2
     echo "Or use hyphenated format like '11-custom' for core-image-tiny-initramfs-srk-11-custom" >&2
     echo "Supported aliases:" >&2
-    echo "  2-bash -> core-image-tiny-initramfs-srk-2-bash" >&2
+    echo "  2-bash     -> core-image-tiny-initramfs-srk-2-bash" >&2
+    echo "  2-bash-ssh -> core-image-tiny-initramfs-srk-2-bash-ssh" >&2
     exit 1
 fi
 

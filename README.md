@@ -331,6 +331,39 @@ The project includes comprehensive test suites for validating different image co
 * `image_11_tiny` - Boot verification for tiny image variants
 * `image_2_bash` - **NEW** Comprehensive bash functionality tests
 
+## SSH Support
+
+A new SSH-enabled variant of the bash image is available: `core-image-tiny-initramfs-srk-2-bash-ssh`
+
+### Features
+
+* Full bash shell with tab completion
+* Dropbear SSH server (lightweight SSH implementation)
+* SSH key-based and password authentication
+* Automatic host key generation at boot
+* Systemd integration for SSH service management
+
+### Usage
+
+```bash
+# Build SSH-enabled image
+bitbake core-image-tiny-initramfs-srk-2-bash-ssh
+
+# Deploy to target
+./03_copy_initramfs.sh p 2-bash-ssh
+
+# Connect via SSH (after device boots)
+ssh srk@192.168.1.200  # Use device IP address
+ssh root@192.168.1.200 # Or connect as root
+```
+
+### Default Credentials
+
+* **root** user: password set via build recipe
+* **srk** user: password set via build recipe  
+* SSH service runs on port 22
+* Both password and key-based authentication supported
+
 ### Using the Bash Test Suite
 
 The `image_2_bash` test suite validates the new bash-enabled image (`core-image-tiny-initramfs-srk-2-bash`):
@@ -341,7 +374,11 @@ python3 test_serial_hello.py --test-suite image_2_bash
 
 # Build and deploy the bash image
 bitbake core-image-tiny-initramfs-srk-2-bash
-./03_copy_initramfs.sh p 2_bash
+./03_copy_initramfs.sh p 2-bash
+
+# Build and deploy the SSH-enabled bash image
+bitbake core-image-tiny-initramfs-srk-2-bash-ssh
+./03_copy_initramfs.sh p 2-bash-ssh
 ```
 
 ### Test Coverage
