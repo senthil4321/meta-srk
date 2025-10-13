@@ -13,6 +13,8 @@ IMAGE_INSTALL = "systemd busybox bash bash-completion shadow nfs-utils bbb-02-le
 
 # Add SSH support packages (using Dropbear for lighter footprint)
 IMAGE_INSTALL:append = " dropbear"
+# Add util-linux for login utilities
+IMAGE_INSTALL:append = " util-linux"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
@@ -90,7 +92,7 @@ configure_ssh() {
     # Configure Dropbear SSH (lightweight SSH server)
     # Allow root login and password authentication
     mkdir -p ${IMAGE_ROOTFS}/etc/default
-    echo 'DROPBEAR_EXTRA_ARGS="-w -g -B"' > ${IMAGE_ROOTFS}/etc/default/dropbear
+    echo 'DROPBEAR_EXTRA_ARGS="-w -g"' > ${IMAGE_ROOTFS}/etc/default/dropbear
     echo 'DROPBEAR_PORT=22' >> ${IMAGE_ROOTFS}/etc/default/dropbear
     
     # Create .ssh directories for users
@@ -103,6 +105,11 @@ configure_ssh() {
     # Set ownership for srk user
     chown -R 1000:1000 ${IMAGE_ROOTFS}/home/srk/.ssh 2>/dev/null || true
     
+    # Create runtime directories needed by systemd-logind
+    mkdir -p ${IMAGE_ROOTFS}/run/systemd/users
+    mkdir -p ${IMAGE_ROOTFS}/run/systemd/sessions
+    mkdir -p ${IMAGE_ROOTFS}/var/lib/systemd/linger
+    
     # Create a simple banner
     echo "Welcome to SRK Embedded Device" > ${IMAGE_ROOTFS}/etc/issue.net
     echo "SSH access enabled via Dropbear" >> ${IMAGE_ROOTFS}/etc/issue.net
@@ -110,45 +117,47 @@ configure_ssh() {
     # Enable Dropbear service at boot
     mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
     
+    # Create a simple startup script for Dropbear that handles key generation
+    mkdir -p ${IMAGE_ROOTFS}/usr/local/bin
+    cat > ${IMAGE_ROOTFS}/usr/local/bin/dropbear-start.sh << 'EOF'
+#!/bin/bash
+# Generate Dropbear SSH keys if they don't exist
+if [ ! -f /etc/dropbear/dropbear_rsa_host_key ]; then
+    echo "Generating Dropbear RSA host key..."
+    /usr/bin/dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key -s 2048
+fi
+
+if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
+    echo "Generating Dropbear DSS host key..."
+    /usr/bin/dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
+fi
+
+echo "Starting Dropbear SSH server..."
+exec /usr/sbin/dropbear -F -E
+EOF
+    chmod +x ${IMAGE_ROOTFS}/usr/local/bin/dropbear-start.sh
+
     # Create Dropbear systemd service file
     mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system
     cat > ${IMAGE_ROOTFS}/etc/systemd/system/dropbear.service << 'EOF'
 [Unit]
 Description=Dropbear SSH server
-After=syslog.target network.target
-Requires=dropbear-keygen.service
-After=dropbear-keygen.service
+After=syslog.target network.target systemd-user-sessions.service
+Wants=network.target
 
 [Service]
-Type=notify
-ExecStart=/usr/sbin/dropbear -F -E
+Type=simple
+ExecStart=/usr/local/bin/dropbear-start.sh
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-    # Create Dropbear key generation service
-    cat > ${IMAGE_ROOTFS}/etc/systemd/system/dropbear-keygen.service << 'EOF'
-[Unit]
-Description=Generate Dropbear SSH keys
-Before=dropbear.service
-ConditionPathExists=!/etc/dropbear/dropbear_rsa_host_key
-
-[Service]
-Type=oneshot
-ExecStart=/bin/sh -c 'test -f /etc/dropbear/dropbear_rsa_host_key || /usr/bin/dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key -s 2048'
-ExecStart=/bin/sh -c 'test -f /etc/dropbear/dropbear_dss_host_key || /usr/bin/dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key'
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    # Enable the services
-    ln -sf ../dropbear-keygen.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dropbear-keygen.service
+    # Enable the service
     ln -sf ../dropbear.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dropbear.service
 }
 
