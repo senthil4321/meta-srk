@@ -13,8 +13,16 @@ IMAGE_INSTALL = "systemd busybox bash bash-completion shadow nfs-utils bbb-02-le
 
 # Add SSH support packages (using Dropbear for lighter footprint)
 IMAGE_INSTALL:append = " dropbear"
-# Add util-linux for login utilities
+# Add util-linux for login utilities and systemd support
 IMAGE_INSTALL:append = " util-linux"
+# Add packages needed for systemd-logind to work properly
+IMAGE_INSTALL:append = " systemd-serialgetty"
+# Add dbus for proper systemd communication
+IMAGE_INSTALL:append = " dbus"
+# Add PAM for proper authentication
+IMAGE_INSTALL:append = " libpam"
+# Add cgroup utilities for systemd-logind resource management
+IMAGE_INSTALL:append = " util-linux-mount"
 
 # Do not include any additional features
 IMAGE_FEATURES = ""
@@ -105,14 +113,89 @@ configure_ssh() {
     # Set ownership for srk user
     chown -R 1000:1000 ${IMAGE_ROOTFS}/home/srk/.ssh 2>/dev/null || true
     
-    # Create runtime directories needed by systemd-logind
+    # Create runtime directories needed by systemd-logind and proper permissions
     mkdir -p ${IMAGE_ROOTFS}/run/systemd/users
     mkdir -p ${IMAGE_ROOTFS}/run/systemd/sessions
+    mkdir -p ${IMAGE_ROOTFS}/run/systemd/seats
     mkdir -p ${IMAGE_ROOTFS}/var/lib/systemd/linger
+    mkdir -p ${IMAGE_ROOTFS}/var/lib/systemd/pstore
+    mkdir -p ${IMAGE_ROOTFS}/run/user
+    mkdir -p ${IMAGE_ROOTFS}/run/lock
+    
+    # Create proper device directory structure for systemd
+    mkdir -p ${IMAGE_ROOTFS}/dev/pts
+    mkdir -p ${IMAGE_ROOTFS}/dev/shm
+    
+    # Ensure proper permissions for runtime directories
+    chmod 755 ${IMAGE_ROOTFS}/run/systemd
+    chmod 755 ${IMAGE_ROOTFS}/run/user
+    chmod 1777 ${IMAGE_ROOTFS}/run/lock
     
     # Create a simple banner
     echo "Welcome to SRK Embedded Device" > ${IMAGE_ROOTFS}/etc/issue.net
     echo "SSH access enabled via Dropbear" >> ${IMAGE_ROOTFS}/etc/issue.net
+    
+    # Create basic PAM configuration for SSH authentication
+    mkdir -p ${IMAGE_ROOTFS}/etc/pam.d
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/dropbear << 'EOF'
+#%PAM-1.0
+auth       required     pam_unix.so
+account    required     pam_unix.so
+password   required     pam_unix.so
+session    required     pam_unix.so
+session    optional     pam_systemd.so
+EOF
+
+    # Create common-auth for system authentication
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/common-auth << 'EOF'
+#%PAM-1.0
+auth    [success=1 default=ignore]      pam_unix.so nullok_secure
+auth    requisite                       pam_deny.so
+auth    required                        pam_permit.so
+EOF
+
+    # Create common-account for account management
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/common-account << 'EOF'
+#%PAM-1.0
+account [success=1 new_authtok_reqd=done default=ignore] pam_unix.so
+account requisite                       pam_deny.so
+account required                        pam_permit.so
+EOF
+
+    # Create common-password for password management
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/common-password << 'EOF'
+#%PAM-1.0
+password [success=1 default=ignore]     pam_unix.so obscure sha512
+password requisite                      pam_deny.so
+password required                       pam_permit.so
+EOF
+
+    # Create common-session for session management
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/common-session << 'EOF'
+#%PAM-1.0
+session [default=1]                     pam_permit.so
+session requisite                       pam_deny.so
+session required                        pam_permit.so
+session optional                        pam_systemd.so
+EOF
+
+    # Create system-auth PAM file
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/system-auth << 'EOF'
+#%PAM-1.0
+auth       include      common-auth
+account    include      common-account
+password   include      common-password
+session    include      common-session
+EOF
+
+    # Fix Dropbear PAM configuration to use proper includes
+    cat > ${IMAGE_ROOTFS}/etc/pam.d/dropbear << 'EOF'
+#%PAM-1.0
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth
+EOF
     
     # Enable Dropbear service at boot
     mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
@@ -142,8 +225,9 @@ EOF
     cat > ${IMAGE_ROOTFS}/etc/systemd/system/dropbear.service << 'EOF'
 [Unit]
 Description=Dropbear SSH server
-After=syslog.target network.target systemd-user-sessions.service
+After=syslog.target network.target systemd-user-sessions.service systemd-logind.service dbus.service
 Wants=network.target
+Requires=dbus.service
 
 [Service]
 Type=simple
@@ -152,12 +236,165 @@ ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
 RestartSec=5
+Environment="DROPBEAR_EXTRA_ARGS=-w -g"
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-    # Enable the service
+    # Create systemd-logind configuration to fix login management
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/logind.conf.d
+    cat > ${IMAGE_ROOTFS}/etc/systemd/logind.conf.d/10-srk.conf << 'EOF'
+[Login]
+NAutoVTs=0
+ReserveVT=0
+KillUserProcesses=no
+KillOnlyUsers=
+KillExcludeUsers=root
+InhibitDelayMaxSec=5
+HandlePowerKey=ignore
+HandleSuspendKey=ignore
+HandleHibernateKey=ignore
+HandleLidSwitch=ignore
+IdleAction=ignore
+IdleActionSec=30min
+RuntimeDirectorySize=10%
+RemoveIPC=no
+UserTasksMax=infinity
+InhibitorsMax=8192
+SessionsMax=8192
+EOF
+
+    # Ensure systemd-logind service is properly enabled
+    # The service file is provided by systemd package, just ensure it's enabled
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/dbus-org.freedesktop.login1.service.wants
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
+    
+    # Create machine-id for systemd (required for logind)
+    systemd-machine-id-setup --root=${IMAGE_ROOTFS} || echo "dummy-machine-id-$(date +%s)" > ${IMAGE_ROOTFS}/etc/machine-id
+
+    # Enable D-Bus (required for systemd-logind)
+    ln -sf ../dbus.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dbus.service 2>/dev/null || true
+    
+    # Enable systemd-tmpfiles to create runtime directories
+    ln -sf ../systemd-tmpfiles-setup.service ${IMAGE_ROOTFS}/etc/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup.service 2>/dev/null || true
+    
+    # Create an early setup service for systemd-logind directories
+    cat > ${IMAGE_ROOTFS}/etc/systemd/system/systemd-logind-dirs.service << 'EOF'
+[Unit]
+Description=Create systemd-logind runtime directories
+DefaultDependencies=false
+Before=systemd-logind.service
+Before=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/mkdir -p /run/systemd/seats
+ExecStart=/bin/mkdir -p /run/systemd/users
+ExecStart=/bin/mkdir -p /run/systemd/sessions
+ExecStart=/bin/mkdir -p /run/user
+ExecStart=/bin/chmod 755 /run/systemd
+ExecStart=/bin/chmod 755 /run/user
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
+EOF
+
+    # Enable the early setup service
+    ln -sf ../systemd-logind-dirs.service ${IMAGE_ROOTFS}/etc/systemd/system/sysinit.target.wants/systemd-logind-dirs.service
+    
+    # Create simple environment for systemd-logind to work
+    # Create utmp/wtmp files for login tracking
+    touch ${IMAGE_ROOTFS}/var/log/wtmp
+    touch ${IMAGE_ROOTFS}/var/log/btmp
+    touch ${IMAGE_ROOTFS}/var/run/utmp
+    chmod 664 ${IMAGE_ROOTFS}/var/log/wtmp
+    chmod 600 ${IMAGE_ROOTFS}/var/log/btmp
+    chmod 664 ${IMAGE_ROOTFS}/var/run/utmp
+    
+    # Create additional required directories and files for systemd-logind
+    mkdir -p ${IMAGE_ROOTFS}/var/lib/systemd/linger
+    mkdir -p ${IMAGE_ROOTFS}/var/lib/systemd/pstore
+    mkdir -p ${IMAGE_ROOTFS}/run/systemd/seats
+    mkdir -p ${IMAGE_ROOTFS}/run/systemd/users
+    mkdir -p ${IMAGE_ROOTFS}/run/systemd/sessions
+    mkdir -p ${IMAGE_ROOTFS}/run/user
+    mkdir -p ${IMAGE_ROOTFS}/sys/fs/cgroup/systemd
+    
+    # Create systemd-logind required files
+    touch ${IMAGE_ROOTFS}/var/lib/systemd/linger/.keep
+    touch ${IMAGE_ROOTFS}/run/systemd/seats/.keep
+    touch ${IMAGE_ROOTFS}/run/systemd/users/.keep
+    touch ${IMAGE_ROOTFS}/run/systemd/sessions/.keep
+    
+    # Ensure proper permissions for systemd directories
+    chmod 755 ${IMAGE_ROOTFS}/run/systemd
+    chmod 755 ${IMAGE_ROOTFS}/var/lib/systemd
+    chmod 755 ${IMAGE_ROOTFS}/run/user
+    
+    # Create systemd override directory and configuration
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/systemd-logind.service.d
+    cat > ${IMAGE_ROOTFS}/etc/systemd/system/systemd-logind.service.d/override.conf << 'EOF'
+[Unit]
+# Completely clear all conditions to bypass problematic checks
+ConditionPathExists=
+ConditionPathIsDirectory=
+ConditionDirectoryNotEmpty=
+ConditionVirtualization=
+ConditionCapability=
+
+[Service]
+# Create all required directories before starting the service
+ExecStartPre=/bin/mkdir -p /run/systemd/seats
+ExecStartPre=/bin/mkdir -p /run/systemd/users
+ExecStartPre=/bin/mkdir -p /run/systemd/sessions
+ExecStartPre=/bin/mkdir -p /run/user
+ExecStartPre=/bin/mkdir -p /var/lib/systemd/linger
+ExecStartPre=/bin/mkdir -p /var/lib/systemd/pstore
+ExecStartPre=/bin/chmod 755 /run/systemd
+ExecStartPre=/bin/chmod 755 /run/user
+ExecStartPre=/bin/chmod 755 /var/lib/systemd
+# Reduce security restrictions for embedded environment
+PrivateDevices=no
+ProtectSystem=no
+ProtectHome=no
+RestrictRealtime=no
+SystemCallFilter=
+MemoryDenyWriteExecute=no
+LockPersonality=no
+RestrictNamespaces=no
+EOF
+
+    # Enable systemd-logind service
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
+    ln -sf /usr/lib/systemd/system/systemd-logind.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/systemd-logind.service
+    
+    # Create systemd preset to ensure service is enabled
+    mkdir -p ${IMAGE_ROOTFS}/usr/lib/systemd/system-preset
+    cat > ${IMAGE_ROOTFS}/usr/lib/systemd/system-preset/90-systemd-logind-srk.preset << 'EOF'
+# Enable systemd-logind for SSH authentication
+enable systemd-logind.service
+enable dbus.service
+EOF
+
+    # Create tmpfiles configuration for systemd-logind
+    mkdir -p ${IMAGE_ROOTFS}/usr/lib/tmpfiles.d
+    cat > ${IMAGE_ROOTFS}/usr/lib/tmpfiles.d/systemd-logind-srk.conf << 'EOF'
+# Runtime directories for systemd-logind
+d /run/systemd/seats 0755 root root -
+d /run/systemd/users 0755 root root -
+d /run/systemd/sessions 0755 root root -
+d /run/user 0755 root root -
+d /var/lib/systemd/linger 0755 root root -
+
+# Login tracking files
+f /var/log/wtmp 0664 root utmp -
+f /var/log/btmp 0600 root utmp -
+f /run/utmp 0664 root utmp -
+EOF
+
+    # Enable the services
     ln -sf ../dropbear.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dropbear.service
 }
 
