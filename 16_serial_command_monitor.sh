@@ -4,7 +4,7 @@ Serial Command Monitor Script
 Sends a command to serial console and monitors response
 """
 
-VERSION="1.0.0"
+VERSION="2.0.0"
 TIMEOUT=30
 COMMAND=""
 EXPECTED_RESPONSE=""
@@ -90,7 +90,7 @@ echo ""
 
 # Start serial monitoring in background and save to file
 # Add overall timeout to prevent hanging
-timeout $((TIMEOUT + 10)) ssh p "timeout ${TIMEOUT} socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl" | tee "$LOG_FILE" &
+timeout $((TIMEOUT + 2)) ssh p "timeout ${TIMEOUT} socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl" | tee "$LOG_FILE" &
 MONITOR_PID=$!
 
 # Wait a moment for monitoring to start
