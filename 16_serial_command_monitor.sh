@@ -97,8 +97,8 @@ MONITOR_PID=$!
 sleep 2
 
 echo "📤 Sending command to serial console..."
-# Send command to serial console
-echo "$COMMAND" | ssh p "socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl"
+# Send command to serial console with timeout protection
+timeout 2 echo "$COMMAND" | timeout 2 ssh p "socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl"
 
 # Monitor for expected response if enabled
 if [ -n "$EXPECTED_RESPONSE" ] && [ "$STOP_ON_RESPONSE" = "true" ]; then
@@ -107,7 +107,7 @@ if [ -n "$EXPECTED_RESPONSE" ] && [ "$STOP_ON_RESPONSE" = "true" ]; then
         # Check for timeout to prevent infinite loop
         CURRENT_TIME=$(date +%s)
         ELAPSED=$((CURRENT_TIME - START_TIME))
-        if [ $ELAPSED -gt $((TIMEOUT + 15)) ]; then
+        if [ $ELAPSED -gt $((TIMEOUT + 2)) ]; then
             echo "⏰ Monitoring timeout reached, stopping..."
             kill $MONITOR_PID 2>/dev/null
             break
@@ -122,8 +122,19 @@ if [ -n "$EXPECTED_RESPONSE" ] && [ "$STOP_ON_RESPONSE" = "true" ]; then
     done
 fi
 
-# Wait for monitoring to complete or timeout
-wait $MONITOR_PID
+# Wait for monitoring to complete or timeout with safety timeout
+START_WAIT=$(date +%s)
+while kill -0 $MONITOR_PID 2>/dev/null; do
+    CURRENT_TIME=$(date +%s)
+    ELAPSED=$((CURRENT_TIME - START_WAIT))
+    if [ $ELAPSED -gt $((TIMEOUT + 15)) ]; then
+        echo "⏰ Wait timeout reached, forcing exit..."
+        kill $MONITOR_PID 2>/dev/null
+        break
+    fi
+    sleep 1
+done
+wait $MONITOR_PID 2>/dev/null
 
 echo ""
 echo "📄 Full log saved in: $LOG_FILE"
