@@ -6,6 +6,7 @@ Quick Boot Monitor Script - Simplified version
 VERSION="1.0.0"
 TIMEOUT=30
 SEARCH_PATTERN=""
+STOP_ON_MATCH=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -18,10 +19,15 @@ while [[ $# -gt 0 ]]; do
             TIMEOUT="$2"
             shift 2
             ;;
+        -s|--stop-on-match)
+            STOP_ON_MATCH=true
+            shift
+            ;;
         --help)
-            echo "Usage: $0 [-g PATTERN] [-t SECONDS] [--grep PATTERN] [--timeout SECONDS]"
+            echo "Usage: $0 [-g PATTERN] [-t SECONDS] [-s] [--grep PATTERN] [--timeout SECONDS] [--stop-on-match]"
             echo "  -g, --grep PATTERN: Text pattern to search for in the log file (optional)"
             echo "  -t, --timeout SECONDS: Monitoring timeout in seconds (default: 30)"
+            echo "  -s, --stop-on-match: Stop monitoring early when pattern is found"
             echo "  --help: Show this help message"
             echo "  --version: Show version information"
             exit 0
@@ -51,6 +57,9 @@ echo "📄 Saving log to: $LOG_FILE"
 echo "⏰ Timeout: ${TIMEOUT}s"
 if [ -n "$SEARCH_PATTERN" ]; then
     echo "🔍 Search pattern: $SEARCH_PATTERN"
+    if [ "$STOP_ON_MATCH" = "true" ]; then
+        echo "🎯 Will stop early on match"
+    fi
 fi
 echo ""
 
@@ -63,6 +72,18 @@ sleep 2
 
 echo "🔄 Triggering reset..."
 ./13_remote_reset_bbb.sh
+
+# Monitor for early pattern match if enabled
+if [ -n "$SEARCH_PATTERN" ] && [ "$STOP_ON_MATCH" = "true" ]; then
+    while kill -0 $MONITOR_PID 2>/dev/null; do
+        if grep -q "$SEARCH_PATTERN" "$LOG_FILE"; then
+            echo "🎯 Pattern found early! Stopping monitoring..."
+            kill $MONITOR_PID
+            break
+        fi
+        sleep 2
+    done
+fi
 
 # Wait for monitoring to complete or timeout
 wait $MONITOR_PID
