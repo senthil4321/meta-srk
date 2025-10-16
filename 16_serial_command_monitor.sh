@@ -10,6 +10,17 @@ COMMAND=""
 EXPECTED_RESPONSE=""
 STOP_ON_RESPONSE=false
 
+# Cleanup function to kill background processes
+cleanup() {
+    if [ ! -z "$MONITOR_PID" ] && kill -0 $MONITOR_PID 2>/dev/null; then
+        kill $MONITOR_PID 2>/dev/null
+        wait $MONITOR_PID 2>/dev/null
+    fi
+}
+
+# Set trap to cleanup on script exit
+trap cleanup EXIT
+
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -78,7 +89,8 @@ fi
 echo ""
 
 # Start serial monitoring in background and save to file
-ssh p "timeout ${TIMEOUT} socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl" | tee "$LOG_FILE" &
+# Add overall timeout to prevent hanging
+timeout $((TIMEOUT + 10)) ssh p "timeout ${TIMEOUT} socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl" | tee "$LOG_FILE" &
 MONITOR_PID=$!
 
 # Wait a moment for monitoring to start
@@ -90,7 +102,17 @@ echo "$COMMAND" | ssh p "socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl"
 
 # Monitor for expected response if enabled
 if [ -n "$EXPECTED_RESPONSE" ] && [ "$STOP_ON_RESPONSE" = "true" ]; then
+    START_TIME=$(date +%s)
     while kill -0 $MONITOR_PID 2>/dev/null; do
+        # Check for timeout to prevent infinite loop
+        CURRENT_TIME=$(date +%s)
+        ELAPSED=$((CURRENT_TIME - START_TIME))
+        if [ $ELAPSED -gt $((TIMEOUT + 15)) ]; then
+            echo "⏰ Monitoring timeout reached, stopping..."
+            kill $MONITOR_PID 2>/dev/null
+            break
+        fi
+
         if grep -q "$EXPECTED_RESPONSE" "$LOG_FILE"; then
             echo "🎯 Expected response found early! Stopping monitoring..."
             kill $MONITOR_PID
