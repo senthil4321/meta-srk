@@ -1,9 +1,42 @@
 #!/bin/bash
 """
-Quick Boot Monitor Script - Simple version for immediate use
+Quick Boot Monitor Script - Simplified version
 """
 
+VERSION="1.0.0"
 TIMEOUT=30
+SEARCH_PATTERN=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -g|--grep)
+            SEARCH_PATTERN="$2"
+            shift 2
+            ;;
+        -t|--timeout)
+            TIMEOUT="$2"
+            shift 2
+            ;;
+        --help)
+            echo "Usage: $0 [-g PATTERN] [-t SECONDS] [--grep PATTERN] [--timeout SECONDS]"
+            echo "  -g, --grep PATTERN: Text pattern to search for in the log file (optional)"
+            echo "  -t, --timeout SECONDS: Monitoring timeout in seconds (default: 30)"
+            echo "  --help: Show this help message"
+            echo "  --version: Show version information"
+            exit 0
+            ;;
+        --version)
+            echo "$0 version $VERSION"
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Use --help for usage"
+            exit 1
+            ;;
+    esac
+done
 
 # Use local temp directory in project folder for easy access
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,6 +49,9 @@ echo "🔧 Quick BeagleBone Black Boot Monitor"
 echo "===================================="
 echo "📄 Saving log to: $LOG_FILE"
 echo "⏰ Timeout: ${TIMEOUT}s"
+if [ -n "$SEARCH_PATTERN" ]; then
+    echo "🔍 Search pattern: $SEARCH_PATTERN"
+fi
 echo ""
 
 # Start serial monitoring in background and save to file
@@ -32,38 +68,16 @@ echo "🔄 Triggering reset..."
 wait $MONITOR_PID
 
 echo ""
-echo "📊 Quick Analysis:"
-echo "=================="
-
-# Extract key timings from log
-if grep -q "U-Boot SPL" "$LOG_FILE"; then
-    echo "✅ Boot detected"
-else
-    echo "❌ No boot detected"
-fi
-
-if grep -q "Hello World 1970-01-01 00:00:00" "$LOG_FILE"; then
-    echo "✅ Application started"
-else
-    echo "❌ Application start not detected"
-fi
-
-# Count TI SYSC errors
-SYSC_ERRORS=$(grep -c "ti-sysc: probe.*failed with error -16" "$LOG_FILE" 2>/dev/null || echo "0")
-echo "⚠️  TI SYSC errors: $SYSC_ERRORS"
-
-# Show memory info
-MEMORY_LINE=$(grep "Memory:.*available" "$LOG_FILE" 2>/dev/null | head -1)
-if [ -n "$MEMORY_LINE" ]; then
-    echo "💾 $MEMORY_LINE"
-fi
-
-# Show init timing
-INIT_TIME=$(grep -o "\[.*\] Run /init as init process" "$LOG_FILE" 2>/dev/null | grep -o "\[.*\]" | tr -d '[]' | awk '{print $1}')
-if [ -n "$INIT_TIME" ]; then
-    echo "🚀 Kernel to init: ${INIT_TIME}s"
-fi
-
-echo ""
 echo "📄 Full log saved in: $LOG_FILE"
-echo "🔍 Run: cat $LOG_FILE | grep -E '(U-Boot|Starting kernel|console.*enabled|Run /init|Hello World)'"
+
+# Search for pattern if provided
+if [ -n "$SEARCH_PATTERN" ]; then
+    echo "🔍 Searching log for pattern: $SEARCH_PATTERN"
+    if grep -q "$SEARCH_PATTERN" "$LOG_FILE"; then
+        echo "✅ Pattern found"
+        echo "Matching lines:"
+        grep "$SEARCH_PATTERN" "$LOG_FILE"
+    else
+        echo "❌ Pattern not found"
+    fi
+fi
