@@ -90,7 +90,7 @@ echo ""
 
 # Start serial monitoring in background and save to file
 # Add overall timeout to prevent hanging
-timeout $((TIMEOUT + 2)) ssh p "timeout ${TIMEOUT} socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl" | tee "$LOG_FILE" &
+timeout $((TIMEOUT + 2)) ssh p "timeout ${TIMEOUT} socat - /dev/ttyUSB0,b115200,raw,echo=0" | tee "$LOG_FILE" &
 MONITOR_PID=$!
 
 # Wait a moment for monitoring to start
@@ -98,7 +98,7 @@ sleep 2
 
 echo "📤 Sending command to serial console..."
 # Send command to serial console with timeout protection
-timeout 2 echo "$COMMAND" | timeout 2 ssh p "socat - /dev/ttyUSB0,b115200,raw,echo=0,crnl"
+timeout 2 echo "$COMMAND" | timeout 2 ssh p "socat - /dev/ttyUSB0,b115200,raw,echo=0"
 
 # Monitor for expected response if enabled
 if [ -n "$EXPECTED_RESPONSE" ] && [ "$STOP_ON_RESPONSE" = "true" ]; then
