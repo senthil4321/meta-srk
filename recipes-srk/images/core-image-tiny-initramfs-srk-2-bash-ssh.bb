@@ -41,7 +41,7 @@ EXTRA_USERS_PARAMS = "\
     "
 
 # Fix shell prompt for bash and configure SSH
-ROOTFS_POSTPROCESS_COMMAND += "fix_shell_prompt; configure_ssh; "
+ROOTFS_POSTPROCESS_COMMAND += "fix_shell_prompt; configure_ssh; install_bash_completions; "
 
 fix_shell_prompt() {
     # Set hostname
@@ -200,43 +200,41 @@ EOF
     # Enable Dropbear service at boot
     mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
     
-    # Create a simple startup script for Dropbear that handles key generation
+    # Create a simple startup script that starts dropbear directly
     mkdir -p ${IMAGE_ROOTFS}/usr/local/bin
-    cat > ${IMAGE_ROOTFS}/usr/local/bin/dropbear-start.sh << 'EOF'
+    cat > ${IMAGE_ROOTFS}/usr/local/bin/start-sshd.sh << 'EOF'
 #!/bin/bash
+# Start SSH server directly (bypass systemd issues)
+
 # Generate Dropbear SSH keys if they don't exist
 if [ ! -f /etc/dropbear/dropbear_rsa_host_key ]; then
     echo "Generating Dropbear RSA host key..."
-    /usr/bin/dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key -s 2048
+    /usr/bin/dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key -s 2048 2>/dev/null
 fi
 
 if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
     echo "Generating Dropbear DSS host key..."
-    /usr/bin/dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
+    /usr/bin/dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key 2>/dev/null
 fi
 
+# Start dropbear in background
 echo "Starting Dropbear SSH server..."
-exec /usr/sbin/dropbear -F -E
+/usr/sbin/dropbear -F -E -w -g &
 EOF
-    chmod +x ${IMAGE_ROOTFS}/usr/local/bin/dropbear-start.sh
+    chmod +x ${IMAGE_ROOTFS}/usr/local/bin/start-sshd.sh
 
-    # Create Dropbear systemd service file
+    # Create Dropbear systemd service file (simplified)
     mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system
     cat > ${IMAGE_ROOTFS}/etc/systemd/system/dropbear.service << 'EOF'
 [Unit]
 Description=Dropbear SSH server
-After=syslog.target network.target systemd-user-sessions.service systemd-logind.service dbus.service
-Wants=network.target
-Requires=dbus.service
+After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/dropbear-start.sh
-ExecReload=/bin/kill -HUP $MAINPID
-KillMode=process
+ExecStart=/usr/local/bin/start-sshd.sh
 Restart=always
 RestartSec=5
-Environment="DROPBEAR_EXTRA_ARGS=-w -g"
 
 [Install]
 WantedBy=multi-user.target
@@ -343,18 +341,22 @@ ConditionPathIsDirectory=
 ConditionDirectoryNotEmpty=
 ConditionVirtualization=
 ConditionCapability=
+# Remove problematic dependencies
+After=dbus.service
+Wants=dbus.service
 
 [Service]
-# Create all required directories before starting the service
-ExecStartPre=/bin/mkdir -p /run/systemd/seats
-ExecStartPre=/bin/mkdir -p /run/systemd/users
-ExecStartPre=/bin/mkdir -p /run/systemd/sessions
-ExecStartPre=/bin/mkdir -p /run/user
-ExecStartPre=/bin/mkdir -p /var/lib/systemd/linger
-ExecStartPre=/bin/mkdir -p /var/lib/systemd/pstore
-ExecStartPre=/bin/chmod 755 /run/systemd
-ExecStartPre=/bin/chmod 755 /run/user
-ExecStartPre=/bin/chmod 755 /var/lib/systemd
+# Create all required directories before starting the service with error tolerance
+ExecStartPre=-/bin/mkdir -p /run/systemd/seats
+ExecStartPre=-/bin/mkdir -p /run/systemd/users
+ExecStartPre=-/bin/mkdir -p /run/systemd/sessions
+ExecStartPre=-/bin/mkdir -p /run/user
+ExecStartPre=-/bin/mkdir -p /var/lib/systemd/linger
+ExecStartPre=-/bin/mkdir -p /var/lib/systemd/pstore
+ExecStartPre=-/bin/mkdir -p /sys/fs/cgroup/systemd
+ExecStartPre=-/bin/chmod 755 /run/systemd
+ExecStartPre=-/bin/chmod 755 /run/user
+ExecStartPre=-/bin/chmod 755 /var/lib/systemd
 # Reduce security restrictions for embedded environment
 PrivateDevices=no
 ProtectSystem=no
@@ -364,11 +366,34 @@ SystemCallFilter=
 MemoryDenyWriteExecute=no
 LockPersonality=no
 RestrictNamespaces=no
+# Increase resource limits
+TasksMax=infinity
+DefaultTasksMax=infinity
+# Set restart policy
+Restart=no
+EOF
+
+    # Create a helper service to prepare systemd-logind environment
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system
+    cat > ${IMAGE_ROOTFS}/etc/systemd/system/prepare-systemd-logind.service << 'EOF'
+[Unit]
+Description=Prepare systemd-logind environment
+Before=systemd-logind.service
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'mkdir -p /run/systemd/{seats,users,sessions} /run/user /var/lib/systemd/{linger,pstore} /sys/fs/cgroup/systemd && chmod 755 /run/systemd /run/user /var/lib/systemd'
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
     # Enable systemd-logind service
     mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
     ln -sf /usr/lib/systemd/system/systemd-logind.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/systemd-logind.service
+    ln -sf /etc/systemd/system/prepare-systemd-logind.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/prepare-systemd-logind.service
     
     # Create systemd preset to ensure service is enabled
     mkdir -p ${IMAGE_ROOTFS}/usr/lib/systemd/system-preset
@@ -396,6 +421,81 @@ EOF
 
     # Enable the services
     ln -sf ../dropbear.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dropbear.service
+}
+
+install_bash_completions() {
+    # Install basic bash completion scripts for common commands
+    mkdir -p ${IMAGE_ROOTFS}/usr/share/bash-completion/completions
+    
+    # Create ls completion
+    cat > ${IMAGE_ROOTFS}/usr/share/bash-completion/completions/ls << 'EOF'
+# ls(1) completion
+
+_ls()
+{
+    local cur prev words cword
+    _init_completion || return
+
+    case $prev in
+        --help|--version)
+            return
+            ;;
+        --color)
+            COMPREPLY=( $( compgen -W 'always never auto' -- "$cur" ) )
+            return
+            ;;
+        --sort)
+            COMPREPLY=( $( compgen -W 'none time size extension version' -- "$cur" ) )
+            return
+            ;;
+        --time)
+            COMPREPLY=( $( compgen -W 'atime access mtime modify ctime status' -- "$cur" ) )
+            return
+            ;;
+        --format)
+            COMPREPLY=( $( compgen -W 'verbose long commasep horizontal across vertical single-column' -- "$cur" ) )
+            return
+            ;;
+    esac
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $( compgen -W '$( _parse_help "$1" --help )' -- "$cur" ) )
+        return
+    fi
+
+    _filedir
+} &&
+complete -F _ls ls
+EOF
+
+    # Create cd completion
+    cat > ${IMAGE_ROOTFS}/usr/share/bash-completion/completions/cd << 'EOF'
+# cd(1) completion
+
+_cd()
+{
+    local cur prev words cword
+    _init_completion || return
+
+    case $prev in
+        --help|--version)
+            return
+            ;;
+    esac
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $( compgen -W '$( _parse_help "$1" --help )' -- "$cur" ) )
+        return
+    fi
+
+    _filedir -d
+} &&
+complete -F _cd cd
+EOF
+
+    # Set proper permissions
+    chmod 644 ${IMAGE_ROOTFS}/usr/share/bash-completion/completions/ls
+    chmod 644 ${IMAGE_ROOTFS}/usr/share/bash-completion/completions/cd
 }
 
 # Enable essential systemd services
