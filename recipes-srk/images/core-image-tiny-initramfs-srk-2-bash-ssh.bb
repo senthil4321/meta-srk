@@ -57,7 +57,13 @@ fix_shell_prompt() {
     echo '    . /etc/bash_completion' >> ${IMAGE_ROOTFS}/etc/profile
     echo 'elif [ -f /usr/share/bash-completion/bash_completion ]; then' >> ${IMAGE_ROOTFS}/etc/profile
     echo '    . /usr/share/bash-completion/bash_completion' >> ${IMAGE_ROOTFS}/etc/profile
-    echo 'fi' >> ${IMAGE_ROOTFS}/etc/profile
+    # Create /etc/shells with valid login shells
+    cat > ${IMAGE_ROOTFS}/etc/shells << 'EOF'
+# /etc/shells: valid login shells
+/bin/sh
+/bin/bash
+/usr/bin/bash
+EOF
     
     chmod +x ${IMAGE_ROOTFS}/etc/profile
     
@@ -100,7 +106,7 @@ configure_ssh() {
     # Configure Dropbear SSH (lightweight SSH server)
     # Allow root login and password authentication
     mkdir -p ${IMAGE_ROOTFS}/etc/default
-    echo 'DROPBEAR_EXTRA_ARGS="-w -g"' > ${IMAGE_ROOTFS}/etc/default/dropbear
+    echo 'DROPBEAR_EXTRA_ARGS=""' > ${IMAGE_ROOTFS}/etc/default/dropbear
     echo 'DROPBEAR_PORT=22' >> ${IMAGE_ROOTFS}/etc/default/dropbear
     
     # Create .ssh directories for users
