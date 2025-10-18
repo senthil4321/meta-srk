@@ -41,7 +41,7 @@ EXTRA_USERS_PARAMS = "\
     "
 
 # Fix shell prompt for bash and configure SSH
-ROOTFS_POSTPROCESS_COMMAND += "fix_shell_prompt; configure_ssh; install_bash_completions; "
+ROOTFS_POSTPROCESS_COMMAND += "fix_shell_prompt; configure_ssh; install_bash_completions; fix_systemd_services; "
 
 fix_shell_prompt() {
     # Set hostname
@@ -496,6 +496,35 @@ EOF
     # Set proper permissions
     chmod 644 ${IMAGE_ROOTFS}/usr/share/bash-completion/completions/ls
     chmod 644 ${IMAGE_ROOTFS}/usr/share/bash-completion/completions/cd
+}
+
+fix_systemd_services() {
+    # Fix systemd journal permissions
+    mkdir -p ${IMAGE_ROOTFS}/var/volatile/log/journal
+    chmod 2755 ${IMAGE_ROOTFS}/var/volatile/log/journal
+    chown root:systemd-journal ${IMAGE_ROOTFS}/var/volatile/log/journal 2>/dev/null || true
+    
+    # Simplify systemd-logind override
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/systemd-logind.service.d
+    cat > ${IMAGE_ROOTFS}/etc/systemd/system/systemd-logind.service.d/override.conf << 'EOF'
+[Unit]
+ConditionPathExists=
+After=dbus.service
+Wants=dbus.service
+
+[Service]
+ExecStartPre=-/bin/mkdir -p /run/systemd/seats
+ExecStartPre=-/bin/mkdir -p /run/systemd/users  
+ExecStartPre=-/bin/mkdir -p /run/systemd/sessions
+ExecStartPre=-/bin/mkdir -p /run/user
+ExecStartPre=-/bin/chmod 755 /run/systemd
+ExecStartPre=-/bin/chmod 755 /run/user
+Restart=always
+RestartSec=5
+EOF
+
+    # Enable D-Bus service
+    ln -sf /usr/lib/systemd/system/dbus.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dbus.service
 }
 
 # Enable essential systemd services
