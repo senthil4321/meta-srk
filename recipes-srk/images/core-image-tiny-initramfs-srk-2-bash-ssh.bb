@@ -524,8 +524,6 @@ ExecStartPre=/usr/bin/bash.bash -c 'mkdir -p /run/systemd/seats'
 ExecStartPre=/usr/bin/bash.bash -c 'mkdir -p /run/systemd/users'  
 ExecStartPre=/usr/bin/bash.bash -c 'mkdir -p /run/systemd/sessions'
 ExecStartPre=/usr/bin/bash.bash -c 'mkdir -p /run/user'
-ExecStartPre=/usr/bin/bash.bash -c 'chmod 755 /run/systemd'
-ExecStartPre=/usr/bin/bash.bash -c 'chmod 755 /run/user'
 Restart=always
 RestartSec=5
 EOF
