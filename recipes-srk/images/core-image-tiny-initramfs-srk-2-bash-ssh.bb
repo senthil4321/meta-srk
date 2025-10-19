@@ -57,6 +57,7 @@ fix_shell_prompt() {
     echo '    . /etc/bash_completion' >> ${IMAGE_ROOTFS}/etc/profile
     echo 'elif [ -f /usr/share/bash-completion/bash_completion ]; then' >> ${IMAGE_ROOTFS}/etc/profile
     echo '    . /usr/share/bash-completion/bash_completion' >> ${IMAGE_ROOTFS}/etc/profile
+    echo 'fi' >> ${IMAGE_ROOTFS}/etc/profile
     # Create /etc/shells with valid login shells
     cat > ${IMAGE_ROOTFS}/etc/shells << 'EOF'
 # /etc/shells: valid login shells
