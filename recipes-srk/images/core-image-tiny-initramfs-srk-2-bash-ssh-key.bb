@@ -41,7 +41,7 @@ EXTRA_USERS_PARAMS = "\
     "
 
 # Fix shell prompt for bash and configure SSH
-ROOTFS_POSTPROCESS_COMMAND += "fix_shell_prompt; configure_ssh; install_bash_completions; fix_systemd_services; install_ssh_keys; "
+ROOTFS_POSTPROCESS_COMMAND += "fix_shell_prompt; configure_ssh; install_bash_completions; fix_systemd_services; install_ssh_keys; configure_network; "
 
 fix_shell_prompt() {
     # Set hostname
@@ -426,6 +426,59 @@ f /var/log/btmp 0600 root utmp -
 f /run/utmp 0664 root utmp -
 EOF
 
+    # Create tmpfiles configuration for systemd-timesyncd and systemd-resolved
+    cat > ${IMAGE_ROOTFS}/usr/lib/tmpfiles.d/systemd-time-resolve.conf << 'EOF'
+# Runtime directories for systemd-timesyncd and systemd-resolved
+d /run/systemd/timesync 0755 systemd-timesync systemd-timesync -
+d /var/lib/systemd/timesync 0755 systemd-timesync systemd-timesync -
+d /run/systemd/resolve 0755 systemd-resolve systemd-resolve -
+EOF
+
+    # Create service override for systemd-timesyncd to reduce security restrictions
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/systemd-timesyncd.service.d
+    cat > ${IMAGE_ROOTFS}/etc/systemd/system/systemd-timesyncd.service.d/override.conf << 'EOF'
+[Service]
+# Reduce security restrictions for embedded environment
+PrivateDevices=no
+PrivateTmp=no
+ProtectProc=default
+ProtectControlGroups=no
+ProtectHome=no
+ProtectHostname=no
+ProtectKernelLogs=no
+ProtectKernelModules=no
+ProtectKernelTunables=no
+ProtectSystem=no
+RestrictNamespaces=no
+RestrictRealtime=no
+RestrictSUIDSGID=no
+SystemCallFilter=
+MemoryDenyWriteExecute=no
+LockPersonality=no
+EOF
+
+    # Create service override for systemd-resolved to reduce security restrictions
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/systemd-resolved.service.d
+    cat > ${IMAGE_ROOTFS}/etc/systemd/system/systemd-resolved.service.d/override.conf << 'EOF'
+[Service]
+# Reduce security restrictions for embedded environment
+PrivateDevices=no
+PrivateTmp=no
+ProtectClock=no
+ProtectControlGroups=no
+ProtectHome=no
+ProtectKernelLogs=no
+ProtectKernelModules=no
+ProtectKernelTunables=no
+ProtectSystem=no
+RestrictNamespaces=no
+RestrictRealtime=no
+RestrictSUIDSGID=no
+SystemCallFilter=
+MemoryDenyWriteExecute=no
+LockPersonality=no
+EOF
+
     # Enable the services
     ln -sf ../dropbear.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/dropbear.service
 }
@@ -537,12 +590,15 @@ install_ssh_keys() {
     # This function installs the public key from the build host to enable passwordless SSH
     
     # Define the SSH public key (from ~/.ssh/id_rsa.pub on build host)
-    # Replace this with your actual public key
-    SSH_PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9PzRqiOQMTVbMf8jAo6Ue7roNGjQp+R6ncUJ+FJZOYCyraoR+T5Ct28ZKUMW6jnV01QuR4k4tGVmljjZr8vDbFVWvF1k4gmumQWkHZy25JPb4OLwi1tkX8o1OiTiVBhNMwNdToBsmRzPcL6f+cauIDCfvr+uOaCt4pfCl+7vA2F95HtoXxH99HCKPjmd/S0OoWIjZGSWt0fz08esfBZmL8k8A2JdXBlvWhzHRKsYtXk2bHXqkluOtL0DRlJW9LuEBF3TgD/5uKhDR8yRD2HYXET2V88k+5EL32M307m96t739IvV96U+cihcXAsUwMDEa2w5NHuljwuzD8mrx9SZjq/YQL/Z1AHGacITIfyq2F4FxF5Ma7ZrScKhk2JN8PqZ/iKIvWwNno/SrVLAvbxJBAZEH/dWjO0zJ0BjtGmWgUjNV7zqgoyh7twC7Bvx9NzAcA+AYvnP0EiIujVHkIiwLL4fHRhQXDzvxpU/v8S0dGm26St5ka+tQCm2ee2sxPdoDiQTkUrAq4QiDvFtHsmlD6BhinCI0wYVuRX6JfRVJrGxcb68asmJCHjDyjUxq4394qhG1r34wLdxUZBEwFoX/GjvAJl6R1aPU3j01AKHAR7S4JGy7w16vnGFWQh2lKFXBxHxOAnviyTVaO/gZriRPP0kmHpgMsHcC3ON3zvMw== srk2cob@srk2cob-vm"
+    # CRITICAL: Key must be on a SINGLE line with no line breaks in the base64 data
+    # Use printf instead of echo to avoid any shell word wrapping or interpretation
     
     # Install authorized_keys for root user
     if [ -d "${IMAGE_ROOTFS}/root/.ssh" ]; then
-        echo "${SSH_PUBLIC_KEY}" > ${IMAGE_ROOTFS}/root/.ssh/authorized_keys
+        # Write key using cat with heredoc to ensure no line breaks
+        cat > ${IMAGE_ROOTFS}/root/.ssh/authorized_keys << 'EOFKEY'
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9PzRqiOQMTVbMf8jAo6Ue7roNGjQp+R6ncUJ+FJZOYCyraoR+T5Ct28ZKUMW6jnV01QuR4k4tGVmljjZr8vDbFVWvF1k4gmumQWkHZy25JPb4OLwi1tkX8o1OiT56iVBhNMwNdToBsmRzPcL6f+cauIDCfvr+uOaCt4pfCl+7vA2F95HtoXxH99HCKPjmd/S0OoWIjZGSWt0fz08esfBZmL8k8A2JdXBlvWhzHRKsYtXk2bHXqkluOtL0DRlJW9LuEBF3TgD/5uKhDR8yRD2HYXET2V88k+5EL32M307m96t739IvV96U+cihcXAsUwMDEa2w5NHuljwuzD8mrx9SZjq/YQL/Z1AHGacITIfyq2F4FxF5Ma7ZrScKhk2JN8PqZ/iKIvWwNno/SrVLAvbxJBAZEH/dWjO0zJ0BjtGmWgUjNV7zqgoyh7twC7Bvx9NzAcA+AYvnP0EiIujVHkIiwLL4fHRhQXDzvxpU/v8S0dGm26St5ka+tQCm2ee2sxPdoDiQTkUrAq4QiDvFtHsmlD6BhinCI0wYVuRX6JfRVJrGxcb68asmJCHjDyjUxq4394qhG1r34wLdxUZBEwFoX/GjvAJl6R1aPU3j01AKHAR7S4JGy7w16vnGFWQh2lKFXBxHxOAnviyTVaO/gZriRPP0kmHpgMsHcC3ON3zvMw== srk2cob@srk2cob-vm
+EOFKEY
         chmod 600 ${IMAGE_ROOTFS}/root/.ssh/authorized_keys
         chown root:root ${IMAGE_ROOTFS}/root/.ssh/authorized_keys 2>/dev/null || true
         bbnote "Installed SSH public key for root user"
@@ -552,7 +608,10 @@ install_ssh_keys() {
     
     # Install authorized_keys for srk user
     if [ -d "${IMAGE_ROOTFS}/home/srk/.ssh" ]; then
-        echo "${SSH_PUBLIC_KEY}" > ${IMAGE_ROOTFS}/home/srk/.ssh/authorized_keys
+        # Write key using cat with heredoc to ensure no line breaks
+        cat > ${IMAGE_ROOTFS}/home/srk/.ssh/authorized_keys << 'EOFKEY'
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC9PzRqiOQMTVbMf8jAo6Ue7roNGjQp+R6ncUJ+FJZOYCyraoR+T5Ct28ZKUMW6jnV01QuR4k4tGVmljjZr8vDbFVWvF1k4gmumQWkHZy25JPb4OLwi1tkX8o1OiT56iVBhNMwNdToBsmRzPcL6f+cauIDCfvr+uOaCt4pfCl+7vA2F95HtoXxH99HCKPjmd/S0OoWIjZGSWt0fz08esfBZmL8k8A2JdXBlvWhzHRKsYtXk2bHXqkluOtL0DRlJW9LuEBF3TgD/5uKhDR8yRD2HYXET2V88k+5EL32M307m96t739IvV96U+cihcXAsUwMDEa2w5NHuljwuzD8mrx9SZjq/YQL/Z1AHGacITIfyq2F4FxF5Ma7ZrScKhk2JN8PqZ/iKIvWwNno/SrVLAvbxJBAZEH/dWjO0zJ0BjtGmWgUjNV7zqgoyh7twC7Bvx9NzAcA+AYvnP0EiIujVHkIiwLL4fHRhQXDzvxpU/v8S0dGm26St5ka+tQCm2ee2sxPdoDiQTkUrAq4QiDvFtHsmlD6BhinCI0wYVuRX6JfRVJrGxcb68asmJCHjDyjUxq4394qhG1r34wLdxUZBEwFoX/GjvAJl6R1aPU3j01AKHAR7S4JGy7w16vnGFWQh2lKFXBxHxOAnviyTVaO/gZriRPP0kmHpgMsHcC3ON3zvMw== srk2cob@srk2cob-vm
+EOFKEY
         chmod 600 ${IMAGE_ROOTFS}/home/srk/.ssh/authorized_keys
         chown 1000:1000 ${IMAGE_ROOTFS}/home/srk/.ssh/authorized_keys 2>/dev/null || true
         bbnote "Installed SSH public key for srk user"
@@ -562,6 +621,35 @@ install_ssh_keys() {
     
     # Note: This enables both password and key-based authentication
     # Dropbear will try key-based first, then fall back to password if key auth fails
+}
+
+configure_network() {
+    # Configure static IP and default gateway for internet access
+    # This allows the target to access the internet through a gateway (e.g., Raspberry Pi with NAT)
+    
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/network
+    
+    # Create systemd-networkd configuration for eth0
+    cat > ${IMAGE_ROOTFS}/etc/systemd/network/10-eth0.network << 'EOF'
+[Match]
+Name=eth0
+
+[Network]
+Address=192.168.1.200/24
+Gateway=192.168.1.100
+DNS=8.8.8.8
+DNS=8.8.4.4
+
+[Link]
+# Optional: Set a fixed MAC address if needed
+# MACAddress=e4:15:f6:f7:ed:c2
+EOF
+
+    # Ensure systemd-networkd is enabled
+    mkdir -p ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants
+    ln -sf /usr/lib/systemd/system/systemd-networkd.service ${IMAGE_ROOTFS}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service 2>/dev/null || true
+    
+    bbnote "Network configuration created: eth0 with gateway 192.168.1.100"
 }
 
 # Enable essential systemd services
