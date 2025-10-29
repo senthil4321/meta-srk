@@ -35,6 +35,7 @@ Arguments:
     2-bash         -> core-image-tiny-initramfs-srk-2-bash
     2-bash-ssh     -> core-image-tiny-initramfs-srk-2-bash-ssh (bash + SSH support)
     2-bash-ssh-key -> core-image-tiny-initramfs-srk-2-bash-ssh-key (bash + SSH + key auth)
+    2-bash-ssh-key-recipe -> core-image-tiny-initramfs-srk-2-bash-ssh-key-recipe (modular version)
 
 Options:
     -m <machine>   Machine target (default: beaglebone-yocto)
@@ -175,6 +176,9 @@ map_alias_to_image() {
         2-bash-ssh-key)
             echo "core-image-tiny-initramfs-srk-2-bash-ssh-key"
             ;;
+        2-bash-ssh-key-recipe)
+            echo "core-image-tiny-initramfs-srk-2-bash-ssh-key-recipe"
+            ;;
         *)
             echo ""  # Invalid alias
             ;;
@@ -267,6 +271,7 @@ if [ -z "$IMAGE_BASE" ]; then
     echo "  2-bash         -> core-image-tiny-initramfs-srk-2-bash" >&2
     echo "  2-bash-ssh     -> core-image-tiny-initramfs-srk-2-bash-ssh" >&2
     echo "  2-bash-ssh-key -> core-image-tiny-initramfs-srk-2-bash-ssh-key" >&2
+    echo "  2-bash-ssh-key-recipe -> core-image-tiny-initramfs-srk-2-bash-ssh-key-recipe" >&2
     exit 1
 fi
 
