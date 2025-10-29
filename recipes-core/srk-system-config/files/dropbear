@@ -1,0 +1,4 @@
+# Dropbear configuration for SRK system
+# Allow root login with password and key-based authentication
+DROPBEAR_EXTRA_ARGS=""
+DROPBEAR_PORT=22

@@ -45,6 +45,7 @@ SYSTEMD_AUTO_ENABLE = "enable"
 SYSTEMD_DEFAULT_TARGET = "multi-user.target"
 
 ROOTFS_POSTPROCESS_COMMAND += "customize_system_files; "
+ROOTFS_POSTPROCESS_COMMAND += "configure_dropbear; "
 ROOTFS_POSTPROCESS_COMMAND += "enable_systemd_services; "
 
 # Customize system configuration files that are provided by base-files
@@ -85,6 +86,18 @@ done
 unset i
 EOF
     chmod 755 ${IMAGE_ROOTFS}/etc/profile
+}
+
+# Configure Dropbear to allow root login
+configure_dropbear() {
+    # Override the default Dropbear configuration to allow root login
+    cat > ${IMAGE_ROOTFS}/etc/default/dropbear <<EOF
+# Dropbear configuration for SRK system
+# Allow root login with password and key-based authentication
+DROPBEAR_EXTRA_ARGS=""
+DROPBEAR_PORT=22
+EOF
+    chmod 644 ${IMAGE_ROOTFS}/etc/default/dropbear
 }
 
 # Enable and configure systemd services
