@@ -37,6 +37,7 @@ SRKPWD = "\$6\$aab45c9549d33a6c\$QZTIyCbqHKNsmndsq9j/fXY8Ex6rUmR2Jpnr0LXYNIGWJ9f
 
 EXTRA_USERS_PARAMS = "\
     usermod -p '${PASSWD}' root; \
+    usermod -d /root root; \
     usermod -s /bin/bash root; \
     useradd -p '${SRKPWD}' -u 1000 -d /home/srk -s /bin/bash srk; \
 "
