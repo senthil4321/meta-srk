@@ -1,0 +1,12 @@
+# Global bash profile for all users
+
+export PATH="/bin:/sbin:/usr/bin:/usr/sbin"
+export TERM=linux
+export PS1="\u@\h:\w\$ "
+
+# Enable bash completion globally
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+elif [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+fi
