@@ -182,6 +182,32 @@ else
     print_fail "Dropbear SSH server not found"
 fi
 
+# Test 15: CPU Information
+print_test "15. Testing CPU information..."
+CPU_MODEL=$(ssh -o ConnectTimeout=${TIMEOUT} root@${BBB_IP} "grep 'model name' /proc/cpuinfo | head | sed -n '1p' | cut -d':' -f2 | xargs" 2>/dev/null | tr -d '\n\r')
+BOGOMIPS=$(ssh -o ConnectTimeout=${TIMEOUT} root@${BBB_IP} "grep 'BogoMIPS' /proc/cpuinfo | head | sed -n '1p' | awk '{print \$3}'" 2>/dev/null | tr -d '\n\r')
+if [ -n "$CPU_MODEL" ] && [ -n "$BOGOMIPS" ]; then
+    print_pass "CPU: ${CPU_MODEL}, BogoMIPS: ${BOGOMIPS}"
+else
+    print_fail "Could not read CPU information"
+fi
+
+# Test 16: AES Hardware Accelerator
+print_test "16. Testing AES hardware accelerator..."
+AES_MODULE=$(ssh -o ConnectTimeout=${TIMEOUT} root@${BBB_IP} "lsmod 2>/dev/null | grep -E 'omap_aes|aes_' || cat /proc/crypto 2>/dev/null | grep -A5 'name.*aes' | grep module" 2>/dev/null)
+if [ -n "$AES_MODULE" ]; then
+    print_pass "AES hardware accelerator available"
+    # Show crypto capabilities
+    CRYPTO_INFO=$(ssh -o ConnectTimeout=${TIMEOUT} root@${BBB_IP} "cat /proc/crypto 2>/dev/null | grep -E 'name|driver|module|type' | grep -A3 'name.*aes' | head -8" 2>/dev/null)
+    if [ -n "$CRYPTO_INFO" ]; then
+        echo "$CRYPTO_INFO" | while IFS= read -r line; do
+            echo "  $line"
+        done
+    fi
+else
+    print_fail "AES hardware accelerator not found"
+fi
+
 echo ""
 echo "=========================================="
 echo "Test Summary"
