@@ -71,5 +71,13 @@ CONFFILES:${PN} += "\
     ${sysconfdir}/systemd/network/10-eth0.network \
 "
 
+# Fix permissions at runtime (SSH requires .ssh directory to be mode 700 and /root to be mode 700)
+pkg_postinst_ontarget:${PN}() {
+    chmod 700 /root
+    chmod 700 /root/.ssh
+    chmod 600 /root/.ssh/authorized_keys
+    chown -R root:root /root/.ssh
+}
+
 # Runtime dependencies
 RDEPENDS:${PN} = "bash systemd"
