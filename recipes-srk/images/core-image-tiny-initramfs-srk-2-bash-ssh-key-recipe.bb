@@ -31,6 +31,8 @@ IMAGE_INSTALL = "\
     bc \
     coreutils \
     procps \
+    curl \
+    iproute2 \
     python3-core \
     system-monitor-web \
 "
