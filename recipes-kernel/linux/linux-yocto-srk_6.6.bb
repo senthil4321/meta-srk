@@ -12,6 +12,9 @@ SRC_URI += "file://omap-hwcrypto.cfg"
 # Add LED support for BeagleBone user LEDs
 SRC_URI += "file://leds.cfg"
 
+# Add kernel printk timestamps
+SRC_URI += "file://printk_time.cfg"
+
 KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto|beaglebone-yocto-srk"
