@@ -217,16 +217,23 @@ echo "========================================="
 echo "SHA Algorithm Performance (OpenSSL speed)"
 echo "========================================="
 if [ -n "${RESULTS_SHA[SHA1]}" ]; then
-    SHA1_MBS=$(echo "scale=2; ${RESULTS_SHA[SHA1]} / 1024" | bc)
-    echo "SHA-1:   ${RESULTS_SHA[SHA1]} KB/s (~${SHA1_MBS} MB/s)"
+    SHA1_KBPS="${RESULTS_SHA[SHA1]}"
+    # Remove the 'k' suffix if present
+    SHA1_NUM=$(echo "$SHA1_KBPS" | sed 's/k$//')
+    SHA1_MBS=$(echo "scale=2; $SHA1_NUM / 1024" | bc)
+    echo "SHA-1:   ${SHA1_KBPS} KB/s (~${SHA1_MBS} MB/s)"
 fi
 if [ -n "${RESULTS_SHA[SHA256]}" ]; then
-    SHA256_MBS=$(echo "scale=2; ${RESULTS_SHA[SHA256]} / 1024" | bc)
-    echo "SHA-256: ${RESULTS_SHA[SHA256]} KB/s (~${SHA256_MBS} MB/s)"
+    SHA256_KBPS="${RESULTS_SHA[SHA256]}"
+    SHA256_NUM=$(echo "$SHA256_KBPS" | sed 's/k$//')
+    SHA256_MBS=$(echo "scale=2; $SHA256_NUM / 1024" | bc)
+    echo "SHA-256: ${SHA256_KBPS} KB/s (~${SHA256_MBS} MB/s)"
 fi
 if [ -n "${RESULTS_SHA[SHA512]}" ]; then
-    SHA512_MBS=$(echo "scale=2; ${RESULTS_SHA[SHA512]} / 1024" | bc)
-    echo "SHA-512: ${RESULTS_SHA[SHA512]} KB/s (~${SHA512_MBS} MB/s)"
+    SHA512_KBPS="${RESULTS_SHA[SHA512]}"
+    SHA512_NUM=$(echo "$SHA512_KBPS" | sed 's/k$//')
+    SHA512_MBS=$(echo "scale=2; $SHA512_NUM / 1024" | bc)
+    echo "SHA-512: ${SHA512_KBPS} KB/s (~${SHA512_MBS} MB/s)"
 fi
 echo ""
 
