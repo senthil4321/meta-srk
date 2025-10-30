@@ -39,6 +39,9 @@ IMAGE_INSTALL = "\
     boot-banner \
     build-info \
     systemd-logging-config \
+    libcap \
+    libcap-bin \
+    capabilities-demo \
 "
 
 # Allow larger initramfs for additional tools and Python
@@ -52,12 +55,14 @@ COMPATIBLE_HOST = "(i.86|x86_64|aarch64|arm).*-linux"
 inherit extrausers
 PASSWD = "\$6\$6ce3bbe55510f53b\$AJ.SC2nRGeqQa9DSsS1ZtQTMIvoKFFdnFF9j6E8WSXxc1I73fyM7BOA2u.FyfhcCZR.Fd0johBQemiqc3Uj3E." 
 SRKPWD = "\$6\$aab45c9549d33a6c\$QZTIyCbqHKNsmndsq9j/fXY8Ex6rUmR2Jpnr0LXYNIGWJ9f90dR8ZbQFJ1G6m8oDjc0.e1sbBXKXknYq.CRsT0" 
+CAPPWD = "\$6\$7c8d3ac7b8e4c31f\$vXJi8qF7B0y9zT3H1pQ8.jK6L2nM4oP5rS6tU7vW8xY9zA0bC1dE2fG3hI4jK5lM6nO7pQ8rS9tU0vW1xY2zA3" 
 
 EXTRA_USERS_PARAMS = "\
     usermod -p '${PASSWD}' root; \
     usermod -d /root root; \
     usermod -s /bin/bash root; \
     useradd -p '${SRKPWD}' -u 1000 -d /home/srk -s /bin/bash srk; \
+    useradd -p '${CAPPWD}' -u 1001 -d /home/capuser -s /bin/bash capuser; \
 "
 
 SYSTEMD_AUTO_ENABLE = "enable"
