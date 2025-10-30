@@ -29,10 +29,12 @@ IMAGE_INSTALL = "\
     openssl-bin \
     libkcapi \
     bc \
+    coreutils \
+    procps \
 "
 
 # Allow larger initramfs for additional tools
-INITRAMFS_MAXSIZE = "262144"
+INITRAMFS_MAXSIZE = "393216"
 
 
 IMAGE_FEATURES = ""
