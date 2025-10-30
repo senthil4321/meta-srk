@@ -216,6 +216,27 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                     Started: <span id="boot-time">--</span>
                 </div>
             </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">🔥 Temperature</div>
+                <div class="metric-value" id="temp-value">--</div>
+                <div class="metric-label" id="temp-details">--</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">⚙️ Processes</div>
+                <div class="metric-value" id="proc-total">--</div>
+                <div class="metric-label">
+                    Running: <span id="proc-running" class="status-ok">--</span> | 
+                    Sleeping: <span id="proc-sleeping">--</span> | 
+                    Zombie: <span id="proc-zombie" class="status-error">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="metric-card" id="disk-card" style="display: none;">
+            <div class="metric-title">💾 Disk Usage</div>
+            <div id="disk-stats"></div>
         </div>
         
         <div class="metric-card">
@@ -314,6 +335,55 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                 document.getElementById('uptime-value').textContent = formatUptime(data.uptime.uptime);
                 document.getElementById('boot-time').textContent = data.uptime.boot_time;
                 
+                // Update Temperature
+                if (data.temperature && data.temperature.status !== 'not available') {
+                    const temps = Object.entries(data.temperature);
+                    if (temps.length > 0) {
+                        const avgTemp = temps.reduce((sum, [_, temp]) => sum + temp, 0) / temps.length;
+                        document.getElementById('temp-value').textContent = avgTemp.toFixed(1) + '°C';
+                        document.getElementById('temp-details').innerHTML = temps.map(([zone, temp]) => 
+                            `${zone}: ${temp.toFixed(1)}°C`
+                        ).join('<br>');
+                    } else {
+                        document.getElementById('temp-value').textContent = 'N/A';
+                        document.getElementById('temp-details').textContent = 'No sensors found';
+                    }
+                } else {
+                    document.getElementById('temp-value').textContent = 'N/A';
+                    document.getElementById('temp-details').textContent = 'Not available';
+                }
+                
+                // Update Processes
+                document.getElementById('proc-total').textContent = data.processes.total;
+                document.getElementById('proc-running').textContent = data.processes.running;
+                document.getElementById('proc-sleeping').textContent = data.processes.sleeping;
+                document.getElementById('proc-zombie').textContent = data.processes.zombie;
+                
+                // Update Disk
+                if (data.disk && Object.keys(data.disk).length > 0) {
+                    document.getElementById('disk-card').style.display = 'block';
+                    const diskDiv = document.getElementById('disk-stats');
+                    diskDiv.innerHTML = '';
+                    
+                    for (const [mount, stats] of Object.entries(data.disk)) {
+                        const diskItem = document.createElement('div');
+                        diskItem.style.marginBottom = '15px';
+                        diskItem.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong>${mount}</strong>
+                                <span>${stats.percent.toFixed(1)}% used</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${stats.percent}%">
+                                    ${formatBytes(stats.used)} / ${formatBytes(stats.total)}
+                                </div>
+                            </div>
+                            <div class="metric-label">${stats.filesystem} (${stats.type})</div>
+                        `;
+                        diskDiv.appendChild(diskItem);
+                    }
+                }
+                
                 // Update Network
                 const tbody = document.getElementById('network-tbody');
                 tbody.innerHTML = '';
@@ -362,7 +432,10 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             'cpu': self.get_cpu_stats(),
             'memory': self.get_memory_stats(),
             'network': self.get_network_stats(),
-            'uptime': self.get_uptime_stats()
+            'uptime': self.get_uptime_stats(),
+            'disk': self.get_disk_stats(),
+            'processes': self.get_process_stats(),
+            'temperature': self.get_temperature()
         }
         
         self.send_response(200)
@@ -538,6 +611,142 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             return 'ARM Processor'
         except:
             return 'unknown'
+    
+    def get_disk_stats(self):
+        """Get disk usage statistics"""
+        stats = {}
+        try:
+            with open('/proc/mounts', 'r') as f:
+                for line in f:
+                    parts = line.split()
+                    if len(parts) < 2:
+                        continue
+                    
+                    mount_point = parts[1]
+                    fs_type = parts[2]
+                    
+                    # Skip virtual filesystems
+                    if fs_type in ['proc', 'sysfs', 'devtmpfs', 'devpts', 'tmpfs', 
+                                   'cgroup', 'cgroup2', 'pstore', 'configfs', 'debugfs',
+                                   'tracefs', 'securityfs', 'bpf', 'fusectl', 'mqueue']:
+                        continue
+                    
+                    try:
+                        st = os.statvfs(mount_point)
+                        total = st.f_blocks * st.f_frsize
+                        free = st.f_bfree * st.f_frsize
+                        available = st.f_bavail * st.f_frsize
+                        used = total - free
+                        
+                        if total > 0:  # Only include if there's actual storage
+                            stats[mount_point] = {
+                                'total': total,
+                                'used': used,
+                                'free': free,
+                                'available': available,
+                                'percent': (used / total * 100) if total > 0 else 0,
+                                'filesystem': parts[0],
+                                'type': fs_type
+                            }
+                    except:
+                        pass
+        except:
+            pass
+        
+        return stats
+    
+    def get_process_stats(self):
+        """Get process statistics"""
+        try:
+            # Count processes
+            proc_count = 0
+            running = 0
+            sleeping = 0
+            zombie = 0
+            
+            for pid in os.listdir('/proc'):
+                if not pid.isdigit():
+                    continue
+                
+                proc_count += 1
+                try:
+                    with open(f'/proc/{pid}/stat', 'r') as f:
+                        stat = f.read().split()
+                        state = stat[2] if len(stat) > 2 else '?'
+                        
+                        if state == 'R':
+                            running += 1
+                        elif state == 'S':
+                            sleeping += 1
+                        elif state == 'Z':
+                            zombie += 1
+                except:
+                    pass
+            
+            return {
+                'total': proc_count,
+                'running': running,
+                'sleeping': sleeping,
+                'zombie': zombie
+            }
+        except:
+            return {'total': 0, 'running': 0, 'sleeping': 0, 'zombie': 0}
+    
+    def get_temperature(self):
+        """Get CPU/SoC temperature if available"""
+        temps = {}
+        try:
+            # Try thermal zones
+            thermal_dir = '/sys/class/thermal'
+            if os.path.exists(thermal_dir):
+                for zone in os.listdir(thermal_dir):
+                    if zone.startswith('thermal_zone'):
+                        try:
+                            with open(f'{thermal_dir}/{zone}/temp', 'r') as f:
+                                temp = int(f.read().strip()) / 1000.0  # Convert from millidegrees
+                            
+                            # Get zone type/name
+                            try:
+                                with open(f'{thermal_dir}/{zone}/type', 'r') as f:
+                                    zone_type = f.read().strip()
+                            except:
+                                zone_type = zone
+                            
+                            temps[zone_type] = temp
+                        except:
+                            pass
+            
+            # Try hwmon
+            hwmon_dir = '/sys/class/hwmon'
+            if os.path.exists(hwmon_dir):
+                for hwmon in os.listdir(hwmon_dir):
+                    hwmon_path = os.path.join(hwmon_dir, hwmon)
+                    try:
+                        # Get hwmon name
+                        with open(f'{hwmon_path}/name', 'r') as f:
+                            hwmon_name = f.read().strip()
+                        
+                        # Look for temp inputs
+                        for temp_file in os.listdir(hwmon_path):
+                            if temp_file.startswith('temp') and temp_file.endswith('_input'):
+                                with open(f'{hwmon_path}/{temp_file}', 'r') as f:
+                                    temp = int(f.read().strip()) / 1000.0
+                                
+                                # Try to get label
+                                label_file = temp_file.replace('_input', '_label')
+                                try:
+                                    with open(f'{hwmon_path}/{label_file}', 'r') as f:
+                                        label = f.read().strip()
+                                except:
+                                    label = f'{hwmon_name}_{temp_file}'
+                                
+                                temps[label] = temp
+                    except:
+                        pass
+        except:
+            pass
+        
+        return temps if temps else {'status': 'not available'}
     
     def log_message(self, format, *args):
         """Override to reduce console spam"""
