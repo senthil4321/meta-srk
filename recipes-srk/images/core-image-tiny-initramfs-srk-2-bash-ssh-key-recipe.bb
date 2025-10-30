@@ -27,6 +27,7 @@ IMAGE_INSTALL = "\
     srk-user-config \
     openssl \
     openssl-bin \
+    libkcapi \
 "
 
 IMAGE_FEATURES = ""
