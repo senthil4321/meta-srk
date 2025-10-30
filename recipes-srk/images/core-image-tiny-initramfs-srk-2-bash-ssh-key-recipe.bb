@@ -25,6 +25,8 @@ IMAGE_INSTALL = "\
     kernel-modules \
     srk-system-config \
     srk-user-config \
+    openssl \
+    openssl-bin \
 "
 
 IMAGE_FEATURES = ""
