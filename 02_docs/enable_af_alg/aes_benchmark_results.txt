@@ -1,0 +1,99 @@
+==========================================
+AES Hardware Accelerator Benchmark
+BeagleBone Black (TI AM335x)
+==========================================
+
+[0;34mINFO:[0m Checking if BeagleBone Black is reachable at 192.168.1.200...
+[0;32m✓[0m Device is reachable
+
+[0;34mINFO:[0m System Information:
+==========================================
+MemTotal:         496272 kB
+MemFree:          419728 kB
+MemAvailable:     445288 kB
+
+[0;34mINFO:[0m Checking OpenSSL availability...
+[0;32m✓[0m OpenSSL found: OpenSSL 3.3.1 4 Jun 2024 (Library: OpenSSL 3.3.1 4 Jun 2024)
+
+[0;34mINFO:[0m Available Crypto Algorithms:
+==========================================
+
+[0;34mAES Cipher Algorithms:[0m
+  Name: cbc(aes), Driver: cbc(aes-generic), Module: kernel
+  Name: aes, Driver: aes-generic, Module: kernel
+
+[0;34mINFO:[0m No OMAP hardware accelerator detected - using software implementation
+
+[0;34mINFO:[0m Total crypto algorithms available: 40
+
+[0;34mINFO:[0m Loaded Crypto Kernel Modules:
+==========================================
+Built into kernel
+
+==========================================
+Part 1: OpenSSL Speed Benchmark
+==========================================
+
+[1;33mTEST:[0m Running OpenSSL speed test for AES-128-CBC...
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes  16384 bytes
+
+[1;33mTEST:[0m Running OpenSSL speed test for AES-256-CBC...
+type             16 bytes     64 bytes    256 bytes   1024 bytes   8192 bytes  16384 bytes
+
+==========================================
+Part 2: Real-World Encryption Benchmark
+==========================================
+
+[1;33mTEST:[0m Creating 10MB test file...
+[0;32m✓[0m Test file created: 10MB
+  10+0 records out
+
+[1;33mTEST:[0m Testing AES-128-CBC encryption (10MB)...
+[0;31m✗[0m Encryption time measurement failed
+[1;33mTEST:[0m Testing AES-128-CBC decryption (10MB)...
+[0;32m✓[0m Decryption time: 1s, Throughput: 10.00 MB/s
+
+[1;33mTEST:[0m Testing AES-256-CBC encryption (10MB)...
+[0;32m✓[0m Encryption time: 1s, Throughput: 10.00 MB/s
+[1;33mTEST:[0m Testing AES-256-CBC decryption (10MB)...
+[0;32m✓[0m Decryption time: 1s, Throughput: 10.00 MB/s
+
+[1;33mTEST:[0m Verifying data integrity...
+[0;32m✓[0m AES-128-CBC: Data integrity verified
+[0;32m✓[0m AES-256-CBC: Data integrity verified
+
+[1;33mTEST:[0m Checking system load...
+[0;34mINFO:[0m Load average: 0.70 0.51 0.24 2/101 492
+[0;34mINFO:[0m Memory status after tests:
+MemFree:          367804 kB
+MemAvailable:     393400 kB
+
+[0;34mINFO:[0m Cleaning up test files...
+[0;32m✓[0m Cleanup complete
+
+==========================================
+Summary & Analysis
+==========================================
+
+[0;34mINFO:[0m Hardware Crypto Acceleration Status:
+  ℹ Using software AES implementation (aes-generic)
+  ℹ Hardware acceleration may not be enabled in kernel
+
+[0;34mINFO:[0m Performance Notes:
+  - BeagleBone Black (AM335x) has hardware crypto acceleration
+  - To enable hardware acceleration, kernel must be configured with:
+    CONFIG_CRYPTO_DEV_OMAP_AES=y or =m
+    CONFIG_CRYPTO_DEV_OMAP_SHAM=y or =m
+  - Hardware accelerator offloads CPU for better performance
+  - Software implementation (aes-generic) is portable but slower
+
+[0;34mINFO:[0m Typical Performance Comparison:
+  Software AES (aes-generic):
+    - ~5-15 MB/s on ARM Cortex-A8
+    - Higher CPU usage
+
+  Hardware AES (omap-aes):
+    - ~20-40 MB/s on AM335x
+    - Lower CPU usage
+    - Better power efficiency
+
