@@ -24,6 +24,8 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             self.serve_system_info()
         elif self.path == '/api/leds':
             self.serve_led_status()
+        elif self.path == '/api/ipsec':
+            self.serve_ipsec_status()
         else:
             self.send_error(404)
     
@@ -218,6 +220,84 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             opacity: 0.8;
         }
         
+        .ipsec-tunnel {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .ipsec-tunnel.active {
+            border-left-color: #4caf50;
+            background: #f0f8f0;
+        }
+        .ipsec-tunnel.inactive {
+            border-left-color: #f44336;
+            background: #fff0f0;
+        }
+        .ipsec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .ipsec-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .ipsec-state {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .ipsec-state.established {
+            background: #4caf50;
+            color: white;
+        }
+        .ipsec-state.connecting {
+            background: #ff9800;
+            color: white;
+        }
+        .ipsec-state.down {
+            background: #f44336;
+            color: white;
+        }
+        .ipsec-detail {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .ipsec-detail-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .ipsec-detail-value {
+            color: #333;
+        }
+        .ipsec-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .ipsec-stat {
+            text-align: center;
+        }
+        .ipsec-stat-label {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .ipsec-stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
         @media (max-width: 768px) {
             h1 { font-size: 1.8em; }
             .metric-value { font-size: 2em; }
@@ -299,6 +379,13 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                     <div>LED 3</div>
                     <div class="led-label">USR3</div>
                 </button>
+            </div>
+        </div>
+        
+        <div class="metric-card" id="ipsec-card">
+            <div class="metric-title">🔒 IPsec Tunnel Status</div>
+            <div id="ipsec-status">
+                <div class="metric-label">Loading...</div>
             </div>
         </div>
         
@@ -403,6 +490,67 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                 }
             } catch (error) {
                 console.error('Error fetching LED status:', error);
+            }
+        }
+        
+        async function updateIPsecStatus() {
+            try {
+                const response = await fetch('/api/ipsec');
+                const data = await response.json();
+                
+                const ipsecDiv = document.getElementById('ipsec-status');
+                
+                if (!data.available) {
+                    ipsecDiv.innerHTML = '<div class="metric-label">IPsec not available or not running</div>';
+                    return;
+                }
+                
+                if (data.tunnels && data.tunnels.length > 0) {
+                    ipsecDiv.innerHTML = data.tunnels.map(tunnel => `
+                        <div class="ipsec-tunnel ${tunnel.state === 'ESTABLISHED' ? 'active' : 'inactive'}">
+                            <div class="ipsec-header">
+                                <div class="ipsec-name">${tunnel.name}</div>
+                                <div class="ipsec-state ${tunnel.state.toLowerCase()}">${tunnel.state}</div>
+                            </div>
+                            <div class="ipsec-detail">
+                                <div class="ipsec-detail-label">Local:</div>
+                                <div class="ipsec-detail-value">${tunnel.local_host} [${tunnel.local_id}]</div>
+                                <div class="ipsec-detail-label">Remote:</div>
+                                <div class="ipsec-detail-value">${tunnel.remote_host} [${tunnel.remote_id}]</div>
+                                <div class="ipsec-detail-label">Encryption:</div>
+                                <div class="ipsec-detail-value">${tunnel.encryption || 'N/A'}</div>
+                                <div class="ipsec-detail-label">Established:</div>
+                                <div class="ipsec-detail-value">${tunnel.established || 'N/A'}</div>
+                            </div>
+                            ${tunnel.child_sas && tunnel.child_sas.length > 0 ? `
+                                <div class="ipsec-stats">
+                                    <div class="ipsec-stat">
+                                        <div class="ipsec-stat-label">Bytes In</div>
+                                        <div class="ipsec-stat-value">${formatBytes(tunnel.child_sas[0].bytes_in || 0)}</div>
+                                    </div>
+                                    <div class="ipsec-stat">
+                                        <div class="ipsec-stat-label">Bytes Out</div>
+                                        <div class="ipsec-stat-value">${formatBytes(tunnel.child_sas[0].bytes_out || 0)}</div>
+                                    </div>
+                                    <div class="ipsec-stat">
+                                        <div class="ipsec-stat-label">Packets In</div>
+                                        <div class="ipsec-stat-value">${(tunnel.child_sas[0].packets_in || 0).toLocaleString()}</div>
+                                    </div>
+                                    <div class="ipsec-stat">
+                                        <div class="ipsec-stat-label">Packets Out</div>
+                                        <div class="ipsec-stat-value">${(tunnel.child_sas[0].packets_out || 0).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    ipsecDiv.innerHTML = '<div class="metric-label">No active tunnels</div>';
+                }
+            } catch (error) {
+                console.error('Error fetching IPsec status:', error);
+                document.getElementById('ipsec-status').innerHTML = 
+                    '<div class="metric-label">Error loading IPsec status</div>';
             }
         }
         
@@ -558,11 +706,14 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         updateSystemInfo();
         updateMetrics();
         updateLEDStatus();
+        updateIPsecStatus();
         
         // Auto-refresh every 2 seconds
         setInterval(updateMetrics, 2000);
         // Update LED status every 5 seconds
         setInterval(updateLEDStatus, 5000);
+        // Update IPsec status every 5 seconds
+        setInterval(updateIPsecStatus, 5000);
     </script>
 </body>
 </html>
@@ -1045,6 +1196,16 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(led_status).encode())
     
+    def serve_ipsec_status(self):
+        """Serve IPsec tunnel status"""
+        ipsec_status = self.get_ipsec_status()
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Cache-Control', 'no-cache')
+        self.end_headers()
+        self.wfile.write(json.dumps(ipsec_status).encode())
+    
     def control_led(self):
         """Control LED via POST request"""
         try:
@@ -1150,6 +1311,152 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         except Exception as e:
             print(f"Error setting LED {led_num}: {e}")
             return False
+    
+    def get_ipsec_status(self):
+        """Get IPsec tunnel status from swanctl"""
+        import subprocess
+        import re
+        
+        result = {
+            'available': False,
+            'tunnels': []
+        }
+        
+        try:
+            # Check if swanctl is available
+            if not os.path.exists('/usr/sbin/swanctl'):
+                return result
+            
+            # Run swanctl --list-sas
+            proc = subprocess.run(
+                ['/usr/sbin/swanctl', '--list-sas'],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            
+            if proc.returncode != 0:
+                return result
+            
+            result['available'] = True
+            
+            # Parse swanctl output
+            output = proc.stdout
+            
+            # Pattern to match tunnel info
+            # Example: bbb-ipsec: #1, ESTABLISHED, IKEv2, ...
+            tunnel_pattern = r'^(\S+):\s+#(\d+),\s+(\w+),\s+IKEv([12])'
+            local_pattern = r"^\s+local\s+'?([^']+?)'?\s+@\s+(\S+)\[(\d+)\]"
+            remote_pattern = r"^\s+remote\s+'?([^']+?)'?\s+@\s+(\S+)\[(\d+)\]"
+            encryption_pattern = r'^\s+(\S+/\S+/\S+/\S+)'
+            established_pattern = r'established\s+(.+?)\s+ago'
+            child_pattern = r'^\s+(\S+):\s+#(\d+),.*reqid\s+(\d+),\s+(\w+),\s+(\w+),\s+ESP'
+            bytes_pattern = r'^\s+in\s+(\w+),\s+(\d+)\s+bytes,\s+(\d+)\s+packets'
+            bytes_out_pattern = r'^\s+out\s+(\w+),\s+(\d+)\s+bytes,\s+(\d+)\s+packets'
+            
+            current_tunnel = None
+            current_child = None
+            
+            for line in output.split('\n'):
+                # New tunnel
+                tunnel_match = re.match(tunnel_pattern, line)
+                if tunnel_match:
+                    if current_tunnel:
+                        result['tunnels'].append(current_tunnel)
+                    
+                    current_tunnel = {
+                        'name': tunnel_match.group(1),
+                        'unique_id': tunnel_match.group(2),
+                        'state': tunnel_match.group(3),
+                        'ikev': tunnel_match.group(4),
+                        'local_id': '',
+                        'local_host': '',
+                        'local_port': '',
+                        'remote_id': '',
+                        'remote_host': '',
+                        'remote_port': '',
+                        'encryption': '',
+                        'established': '',
+                        'child_sas': []
+                    }
+                    current_child = None
+                    continue
+                
+                if not current_tunnel:
+                    continue
+                
+                # Local endpoint
+                local_match = re.match(local_pattern, line)
+                if local_match:
+                    current_tunnel['local_id'] = local_match.group(1)
+                    current_tunnel['local_host'] = local_match.group(2)
+                    current_tunnel['local_port'] = local_match.group(3)
+                    continue
+                
+                # Remote endpoint
+                remote_match = re.match(remote_pattern, line)
+                if remote_match:
+                    current_tunnel['remote_id'] = remote_match.group(1)
+                    current_tunnel['remote_host'] = remote_match.group(2)
+                    current_tunnel['remote_port'] = remote_match.group(3)
+                    continue
+                
+                # Encryption
+                enc_match = re.match(encryption_pattern, line)
+                if enc_match:
+                    current_tunnel['encryption'] = enc_match.group(1)
+                    continue
+                
+                # Established time
+                est_match = re.search(established_pattern, line)
+                if est_match:
+                    current_tunnel['established'] = est_match.group(1) + ' ago'
+                    continue
+                
+                # Child SA
+                child_match = re.match(child_pattern, line)
+                if child_match:
+                    current_child = {
+                        'name': child_match.group(1),
+                        'unique_id': child_match.group(2),
+                        'reqid': child_match.group(3),
+                        'state': child_match.group(4),
+                        'mode': child_match.group(5),
+                        'bytes_in': 0,
+                        'packets_in': 0,
+                        'bytes_out': 0,
+                        'packets_out': 0
+                    }
+                    current_tunnel['child_sas'].append(current_child)
+                    continue
+                
+                # Bytes in
+                if current_child:
+                    bytes_in_match = re.match(bytes_pattern, line)
+                    if bytes_in_match:
+                        current_child['bytes_in'] = int(bytes_in_match.group(2))
+                        current_child['packets_in'] = int(bytes_in_match.group(3))
+                        continue
+                    
+                    # Bytes out
+                    bytes_out_match = re.match(bytes_out_pattern, line)
+                    if bytes_out_match:
+                        current_child['bytes_out'] = int(bytes_out_match.group(2))
+                        current_child['packets_out'] = int(bytes_out_match.group(3))
+                        continue
+            
+            # Add last tunnel
+            if current_tunnel:
+                result['tunnels'].append(current_tunnel)
+        
+        except subprocess.TimeoutExpired:
+            result['error'] = 'Command timeout'
+        except FileNotFoundError:
+            result['error'] = 'swanctl not found'
+        except Exception as e:
+            result['error'] = str(e)
+        
+        return result
     
     def log_message(self, format, *args):
         """Override to reduce console spam"""
