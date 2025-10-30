@@ -22,6 +22,14 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             self.serve_metrics()
         elif self.path == '/api/system-info':
             self.serve_system_info()
+        elif self.path == '/api/leds':
+            self.serve_led_status()
+        else:
+            self.send_error(404)
+    
+    def do_POST(self):
+        if self.path.startswith('/api/led/'):
+            self.control_led()
         else:
             self.send_error(404)
     
@@ -167,6 +175,49 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         .status-warning { color: #ff9800; font-weight: bold; }
         .status-error { color: #f44336; font-weight: bold; }
         
+        .led-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .led-button {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .led-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .led-button:active {
+            transform: translateY(0);
+        }
+        .led-on {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+        .led-off {
+            background: linear-gradient(135deg, #ccc 0%, #999 100%);
+            color: #333;
+        }
+        .led-unavailable {
+            background: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        .led-label {
+            font-size: 0.9em;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        
         @media (max-width: 768px) {
             h1 { font-size: 1.8em; }
             .metric-value { font-size: 2em; }
@@ -240,6 +291,28 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         </div>
         
         <div class="metric-card">
+            <div class="metric-title">💡 LED Control</div>
+            <div class="led-controls" id="led-controls">
+                <button class="led-button led-off" id="led-0" onclick="toggleLED(0)">
+                    <div>LED 0</div>
+                    <div class="led-label">USR0</div>
+                </button>
+                <button class="led-button led-off" id="led-1" onclick="toggleLED(1)">
+                    <div>LED 1</div>
+                    <div class="led-label">USR1</div>
+                </button>
+                <button class="led-button led-off" id="led-2" onclick="toggleLED(2)">
+                    <div>LED 2</div>
+                    <div class="led-label">USR2</div>
+                </button>
+                <button class="led-button led-off" id="led-3" onclick="toggleLED(3)">
+                    <div>LED 3</div>
+                    <div class="led-label">USR3</div>
+                </button>
+            </div>
+        </div>
+        
+        <div class="metric-card">
             <div class="metric-title">🌐 Network Interfaces</div>
             <table class="network-table" id="network-table">
                 <thead>
@@ -280,6 +353,57 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             if (days > 0) return `${days}d ${hours}h`;
             if (hours > 0) return `${hours}h ${mins}m`;
             return `${mins} min`;
+        }
+        
+        async function toggleLED(ledNum) {
+            try {
+                const response = await fetch(`/api/led/${ledNum}/toggle`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateLEDButton(ledNum, data.state);
+                } else {
+                    console.error('Failed to toggle LED', ledNum);
+                }
+            } catch (error) {
+                console.error('Error toggling LED:', error);
+            }
+        }
+        
+        function updateLEDButton(ledNum, state) {
+            const button = document.getElementById(`led-${ledNum}`);
+            if (!button) return;
+            
+            button.className = 'led-button';
+            if (state === 1) {
+                button.classList.add('led-on');
+            } else {
+                button.classList.add('led-off');
+            }
+        }
+        
+        async function updateLEDStatus() {
+            try {
+                const response = await fetch('/api/leds');
+                const data = await response.json();
+                
+                for (let i = 0; i < 4; i++) {
+                    const ledKey = `usr${i}`;
+                    const button = document.getElementById(`led-${i}`);
+                    
+                    if (data[ledKey] && data[ledKey].available) {
+                        button.disabled = false;
+                        updateLEDButton(i, data[ledKey].brightness);
+                    } else {
+                        button.disabled = true;
+                        button.className = 'led-button led-unavailable';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching LED status:', error);
+            }
         }
         
         async function updateSystemInfo() {
@@ -413,9 +537,12 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         // Initial load
         updateSystemInfo();
         updateMetrics();
+        updateLEDStatus();
         
         // Auto-refresh every 2 seconds
         setInterval(updateMetrics, 2000);
+        // Update LED status every 5 seconds
+        setInterval(updateLEDStatus, 5000);
     </script>
 </body>
 </html>
@@ -747,6 +874,122 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             pass
         
         return temps if temps else {'status': 'not available'}
+    
+    def serve_led_status(self):
+        """Serve current LED status"""
+        led_status = self.get_led_status()
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Cache-Control', 'no-cache')
+        self.end_headers()
+        self.wfile.write(json.dumps(led_status).encode())
+    
+    def control_led(self):
+        """Control LED via POST request"""
+        try:
+            # Parse URL: /api/led/<led_num>/<action>
+            parts = self.path.split('/')
+            if len(parts) < 5:
+                self.send_error(400, "Invalid LED control path")
+                return
+            
+            led_num = int(parts[3])
+            action = parts[4]  # 'on', 'off', or 'toggle'
+            
+            if led_num < 0 or led_num > 3:
+                self.send_error(400, "LED number must be 0-3")
+                return
+            
+            if action not in ['on', 'off', 'toggle']:
+                self.send_error(400, "Action must be 'on', 'off', or 'toggle'")
+                return
+            
+            # Execute LED control
+            success = self.set_led_state(led_num, action)
+            
+            if success:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                response = {
+                    'status': 'success',
+                    'led': led_num,
+                    'action': action,
+                    'state': self.get_led_brightness(led_num)
+                }
+                self.wfile.write(json.dumps(response).encode())
+            else:
+                self.send_error(500, "Failed to control LED")
+        
+        except Exception as e:
+            self.send_error(500, f"Error controlling LED: {str(e)}")
+    
+    def get_led_status(self):
+        """Get status of all LEDs"""
+        leds = {}
+        for i in range(4):
+            led_path = f"/sys/class/leds/beaglebone:green:usr{i}"
+            if os.path.exists(led_path):
+                leds[f'usr{i}'] = {
+                    'number': i,
+                    'brightness': self.get_led_brightness(i),
+                    'trigger': self.get_led_trigger(i),
+                    'available': True
+                }
+            else:
+                leds[f'usr{i}'] = {
+                    'number': i,
+                    'available': False
+                }
+        return leds
+    
+    def get_led_brightness(self, led_num):
+        """Get LED brightness (0 or 1)"""
+        try:
+            with open(f"/sys/class/leds/beaglebone:green:usr{led_num}/brightness", 'r') as f:
+                return int(f.read().strip())
+        except:
+            return 0
+    
+    def get_led_trigger(self, led_num):
+        """Get current LED trigger"""
+        try:
+            with open(f"/sys/class/leds/beaglebone:green:usr{led_num}/trigger", 'r') as f:
+                triggers = f.read().strip()
+                # Extract current trigger (marked with [])
+                import re
+                match = re.search(r'\[(\w+)\]', triggers)
+                return match.group(1) if match else 'unknown'
+        except:
+            return 'unknown'
+    
+    def set_led_state(self, led_num, action):
+        """Set LED state (on, off, or toggle)"""
+        try:
+            led_path = f"/sys/class/leds/beaglebone:green:usr{led_num}"
+            
+            # First set trigger to 'none' for manual control
+            with open(f"{led_path}/trigger", 'w') as f:
+                f.write('none')
+            
+            # Determine new brightness
+            if action == 'toggle':
+                current = self.get_led_brightness(led_num)
+                new_brightness = 0 if current == 1 else 1
+            elif action == 'on':
+                new_brightness = 1
+            else:  # off
+                new_brightness = 0
+            
+            # Set brightness
+            with open(f"{led_path}/brightness", 'w') as f:
+                f.write(str(new_brightness))
+            
+            return True
+        except Exception as e:
+            print(f"Error setting LED {led_num}: {e}")
+            return False
     
     def log_message(self, format, *args):
         """Override to reduce console spam"""

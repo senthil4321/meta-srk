@@ -9,6 +9,9 @@ SRC_URI += "file://defconfig"
 # Add OMAP hardware crypto configuration fragment
 SRC_URI += "file://omap-hwcrypto.cfg"
 
+# Add LED support for BeagleBone user LEDs
+SRC_URI += "file://leds.cfg"
+
 KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto|beaglebone-yocto-srk"
