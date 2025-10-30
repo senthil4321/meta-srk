@@ -16,6 +16,7 @@ IMAGE_INSTALL = "\
     nfs-utils \
     bbb-02-led-blink \
     bbb-03-led-blink-nolibc \
+    bbb-03-rtc \
     dropbear \
     util-linux \
     util-linux-mount \
