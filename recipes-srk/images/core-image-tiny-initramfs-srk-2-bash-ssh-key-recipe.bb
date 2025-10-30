@@ -35,6 +35,9 @@ IMAGE_INSTALL = "\
     iproute2 \
     python3-core \
     system-monitor-web \
+    boot-banner \
+    build-info \
+    systemd-logging-config \
 "
 
 # Allow larger initramfs for additional tools and Python
@@ -62,6 +65,17 @@ SYSTEMD_DEFAULT_TARGET = "multi-user.target"
 ROOTFS_POSTPROCESS_COMMAND += "customize_system_files; "
 ROOTFS_POSTPROCESS_COMMAND += "configure_dropbear; "
 ROOTFS_POSTPROCESS_COMMAND += "enable_systemd_services; "
+ROOTFS_POSTPROCESS_COMMAND += "update_build_info_rootfs; "
+
+# Update build-info with rootfs-specific information
+update_build_info_rootfs() {
+    if [ -f ${IMAGE_ROOTFS}/etc/build-info ]; then
+        # Update rootfs image name and build time (without quotes)
+        ROOTFS_BUILD_TIME="$(date '+%Y-%m-%d %H:%M:%S %Z')"
+        sed -i "s|^ROOTFS_IMAGE=.*|ROOTFS_IMAGE=${IMAGE_BASENAME}|" ${IMAGE_ROOTFS}/etc/build-info
+        sed -i "s|^ROOTFS_BUILD_TIME=.*|ROOTFS_BUILD_TIME=${ROOTFS_BUILD_TIME}|" ${IMAGE_ROOTFS}/etc/build-info
+    fi
+}
 
 # Customize system configuration files that are provided by base-files
 customize_system_files() {

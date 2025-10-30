@@ -1,0 +1,14 @@
+[Unit]
+Description=Boot Banner - Display build information
+DefaultDependencies=no
+Before=sysinit.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/boot-banner.sh
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=sysinit.target

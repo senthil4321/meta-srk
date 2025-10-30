@@ -229,16 +229,6 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
     <div class="container">
         <h1>🖥️ BeagleBone Black System Monitor</h1>
         
-        <div class="system-info">
-            <h2>System Information</h2>
-            <div class="info-grid" id="system-info">
-                <div class="info-item">
-                    <div class="info-label">Loading...</div>
-                    <div class="info-value">...</div>
-                </div>
-            </div>
-        </div>
-        
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-title">💻 CPU Usage</div>
@@ -331,6 +321,16 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             </table>
         </div>
         
+        <div class="system-info">
+            <h2>System Information</h2>
+            <div class="info-grid" id="system-info">
+                <div class="info-item">
+                    <div class="info-label">Loading...</div>
+                    <div class="info-value">...</div>
+                </div>
+            </div>
+        </div>
+        
         <div class="timestamp">
             Last updated: <span id="timestamp">--</span> | Auto-refresh every 2 seconds
         </div>
@@ -418,8 +418,20 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                         <div class="info-value">${data.hostname}</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Kernel</div>
-                        <div class="info-value">${data.kernel}</div>
+                        <div class="info-label">Machine</div>
+                        <div class="info-value">${data.machine}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Rootfs Image</div>
+                        <div class="info-value">${data.rootfs_image || 'unknown'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kernel Recipe</div>
+                        <div class="info-value">${data.kernel_name || data.kernel}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">OS Release</div>
+                        <div class="info-value">${data.os_release || 'Linux'}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Architecture</div>
@@ -428,6 +440,14 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                     <div class="info-item">
                         <div class="info-label">CPU Model</div>
                         <div class="info-value">${data.cpu_model}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kernel Build Time</div>
+                        <div class="info-value">${data.kernel_build_time || 'unknown'}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Rootfs Build Time</div>
+                        <div class="info-value">${data.rootfs_build_time || data.build_time || 'unknown'}</div>
                     </div>
                 `;
             } catch (error) {
@@ -576,8 +596,15 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         info = {
             'hostname': self.get_hostname(),
             'kernel': self.get_kernel_version(),
+            'kernel_name': self.get_kernel_name(),
+            'kernel_build_time': self.get_kernel_build_time(),
             'architecture': self.get_architecture(),
-            'cpu_model': self.get_cpu_model()
+            'cpu_model': self.get_cpu_model(),
+            'machine': self.get_machine_name(),
+            'build_time': self.get_build_time(),
+            'rootfs_build_time': self.get_rootfs_build_time(),
+            'os_release': self.get_os_release(),
+            'rootfs_image': self.get_rootfs_image()
         }
         
         self.send_response(200)
@@ -738,6 +765,139 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             return 'ARM Processor'
         except:
             return 'unknown'
+    
+    def get_build_info(self):
+        """Read build information from /etc/build-info"""
+        info = {}
+        try:
+            if os.path.exists('/etc/build-info'):
+                with open('/etc/build-info', 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#') and '=' in line:
+                            key, value = line.split('=', 1)
+                            info[key] = value.strip()
+        except:
+            pass
+        return info
+    
+    def get_kernel_name(self):
+        """Get kernel recipe name from build-info or /proc/version"""
+        # Try to get from build-info first
+        build_info = self.get_build_info()
+        if 'KERNEL_RECIPE' in build_info:
+            return build_info['KERNEL_RECIPE']
+        
+        # Fallback to /proc/version
+        try:
+            with open('/proc/version', 'r') as f:
+                version_str = f.read()
+                # Extract kernel name (e.g., "Linux version 6.6.75-yocto-standard")
+                parts = version_str.split()
+                if len(parts) >= 3:
+                    return parts[2]  # Returns something like "6.6.75-yocto-standard"
+            return 'unknown'
+        except:
+            return 'unknown'
+    
+    def get_machine_name(self):
+        """Get machine name from build-info or device tree"""
+        # Try to get from build-info first
+        build_info = self.get_build_info()
+        if 'MACHINE' in build_info:
+            return build_info['MACHINE']
+        
+        # Fallback to device tree model
+        try:
+            # Try to get from device tree model
+            with open('/proc/device-tree/model', 'r') as f:
+                model = f.read().strip('\x00').strip()
+                if model:
+                    return model
+        except:
+            pass
+        
+        # Fallback to machine info from /etc/os-release or other sources
+        try:
+            if os.path.exists('/etc/machine-info'):
+                with open('/etc/machine-info', 'r') as f:
+                    for line in f:
+                        if 'MACHINE=' in line:
+                            return line.split('=')[1].strip().strip('"')
+        except:
+            pass
+        
+        return 'unknown'
+    
+    def get_kernel_build_time(self):
+        """Get kernel build timestamp from build-info"""
+        build_info = self.get_build_info()
+        if 'KERNEL_BUILD_TIME' in build_info:
+            return build_info['KERNEL_BUILD_TIME']
+        
+        # Fallback to kernel version string
+        try:
+            with open('/proc/version', 'r') as f:
+                version_str = f.read()
+                # Extract build time (usually after #1 and before compiler info)
+                import re
+                match = re.search(r'#\d+\s+[A-Z]+\s+(.+?)\s+\d{4}', version_str)
+                if match:
+                    return match.group(0)
+                # Try simpler pattern
+                match = re.search(r'#\d+\s+(.+)', version_str)
+                if match:
+                    build_info_str = match.group(1).split('(')[0].strip()
+                    return build_info_str
+        except:
+            pass
+        
+        return 'unknown'
+    
+    def get_rootfs_build_time(self):
+        """Get rootfs build timestamp from build-info"""
+        build_info = self.get_build_info()
+        if 'ROOTFS_BUILD_TIME' in build_info:
+            return build_info['ROOTFS_BUILD_TIME']
+        return 'unknown'
+    
+    def get_build_time(self):
+        """Get generic build timestamp (deprecated, use get_rootfs_build_time)"""
+        # For backwards compatibility
+        return self.get_rootfs_build_time()
+    
+    def get_rootfs_image(self):
+        """Get rootfs image name from build-info"""
+        build_info = self.get_build_info()
+        if 'ROOTFS_IMAGE' in build_info:
+            return build_info['ROOTFS_IMAGE']
+        return 'unknown'
+    
+    def get_os_release(self):
+        """Get OS/Image information from /etc/os-release"""
+        try:
+            info = {}
+            if os.path.exists('/etc/os-release'):
+                with open('/etc/os-release', 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if '=' in line:
+                            key, value = line.split('=', 1)
+                            info[key] = value.strip('"')
+            
+            # Return formatted string with key information
+            name = info.get('NAME', 'Linux')
+            version = info.get('VERSION', '')
+            pretty_name = info.get('PRETTY_NAME', '')
+            
+            if pretty_name:
+                return pretty_name
+            elif version:
+                return f"{name} {version}"
+            else:
+                return name
+        except:
+            return 'Linux'
     
     def get_disk_stats(self):
         """Get disk usage statistics"""
