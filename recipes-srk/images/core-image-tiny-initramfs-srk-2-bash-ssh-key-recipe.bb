@@ -31,10 +31,12 @@ IMAGE_INSTALL = "\
     bc \
     coreutils \
     procps \
+    python3-core \
+    system-monitor-web \
 "
 
-# Allow larger initramfs for additional tools
-INITRAMFS_MAXSIZE = "393216"
+# Allow larger initramfs for additional tools and Python
+INITRAMFS_MAXSIZE = "524288"
 
 
 IMAGE_FEATURES = ""

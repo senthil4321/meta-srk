@@ -1,0 +1,14 @@
+[Unit]
+Description=System Monitor Web Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/system-monitor
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
