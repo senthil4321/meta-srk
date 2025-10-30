@@ -28,7 +28,12 @@ IMAGE_INSTALL = "\
     openssl \
     openssl-bin \
     libkcapi \
+    bc \
 "
+
+# Allow larger initramfs for additional tools
+INITRAMFS_MAXSIZE = "262144"
+
 
 IMAGE_FEATURES = ""
 
