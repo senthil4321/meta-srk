@@ -42,6 +42,9 @@ IMAGE_INSTALL = "\
     libcap \
     libcap-bin \
     capabilities-demo \
+    strongswan \
+    ipsec-config \
+    ipsec-modules-loader \
 "
 
 # Allow larger initramfs for additional tools and Python

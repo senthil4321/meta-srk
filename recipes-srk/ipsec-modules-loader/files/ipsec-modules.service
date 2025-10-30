@@ -1,0 +1,15 @@
+[Unit]
+Description=Load IPsec kernel modules
+Before=strongswan.service
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/modprobe esp4
+ExecStart=/sbin/modprobe ah4
+ExecStart=/sbin/modprobe xfrm_user
+ExecStart=/sbin/modprobe xfrm_algo
+
+[Install]
+WantedBy=sysinit.target
