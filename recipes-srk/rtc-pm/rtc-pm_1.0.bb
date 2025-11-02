@@ -10,6 +10,8 @@ SRC_URI = "\
     file://rtc-pm.service \
     file://rtc-sync.sh \
     file://rtc-sync.service \
+    file://README.md \
+    file://QUICK-REFERENCE.md \
 "
 
 S = "${WORKDIR}/sources"
@@ -29,6 +31,11 @@ do_install() {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/rtc-pm.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/rtc-sync.service ${D}${systemd_system_unitdir}/
+    
+    # Install documentation
+    install -d ${D}${docdir}/${PN}
+    install -m 0644 ${S}/README.md ${D}${docdir}/${PN}/
+    install -m 0644 ${S}/QUICK-REFERENCE.md ${D}${docdir}/${PN}/
 }
 
 FILES:${PN} += "\
@@ -38,6 +45,8 @@ FILES:${PN} += "\
     ${sbindir}/rtc-sync.sh \
     ${systemd_system_unitdir}/rtc-pm.service \
     ${systemd_system_unitdir}/rtc-sync.service \
+    ${docdir}/${PN}/README.md \
+    ${docdir}/${PN}/QUICK-REFERENCE.md \
 "
 
 inherit systemd

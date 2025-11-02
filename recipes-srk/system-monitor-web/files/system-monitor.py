@@ -261,6 +261,70 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             color: #f44336;
             font-weight: bold;
         }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            cursor: pointer;
+        }
+        .notification.success {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        }
+        .notification.warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+        .notification.error {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        .notification-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .notification-message {
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        .notification-close:hover {
+            opacity: 1;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
         .led-unavailable {
             background: #f0f0f0;
             color: #999;
@@ -513,6 +577,45 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
     </div>
     
     <script>
+        let notificationTimeout = null;
+        
+        function showNotification(title, message, type = 'info', duration = 5000) {
+            // Remove any existing notification
+            const existingNotif = document.querySelector('.notification');
+            if (existingNotif) {
+                existingNotif.remove();
+            }
+            
+            // Clear existing timeout
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+            }
+            
+            // Create notification element
+            const notif = document.createElement('div');
+            notif.className = 'notification ' + type;
+            notif.innerHTML = `
+                <span class="notification-close" onclick="this.parentElement.remove()">&times;</span>
+                <div class="notification-title">${title}</div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            // Add to page
+            document.body.appendChild(notif);
+            
+            // Auto-remove after duration
+            notificationTimeout = setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notif.remove(), 300);
+            }, duration);
+            
+            // Remove on click
+            notif.addEventListener('click', () => {
+                notif.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notif.remove(), 300);
+            });
+        }
+        
         function formatBytes(bytes) {
             if (bytes === 0) return '0 B';
             const k = 1024;
@@ -654,6 +757,12 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                     rtcDiv.innerHTML = '<div class="metric-label">RTC not available</div>';
                     return;
                 }
+                
+                // Check for alarm state change (from set to not set = alarm fired)
+                if (window.rtcAlarmWasSet && !data.alarm_set) {
+                    showNotification('RTC Alarm Triggered!', 'The RTC alarm has fired. System may have resumed from suspend.');
+                }
+                window.rtcAlarmWasSet = data.alarm_set;
                 
                 const suspendSupport = [];
                 if (data.suspend_support.mem) suspendSupport.push('Suspend-to-RAM');
