@@ -50,9 +50,10 @@ IMAGE_INSTALL = "\
     i2c-tools \
     python3-smbus \
     python3-smbus2 \
+    gdbserver \
 "
 
-# Allow larger initramfs for additional tools, Python, and build tools
+# Allow larger initramfs for additional tools, Python, debugging tools
 INITRAMFS_MAXSIZE = "786432"
 
 
