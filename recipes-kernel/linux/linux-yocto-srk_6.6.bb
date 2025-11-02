@@ -18,6 +18,9 @@ SRC_URI += "file://printk_time.cfg"
 # Add AM33xx PM support for suspend-to-RAM
 SRC_URI += "file://pm33xx.cfg"
 
+# Add Trust M Crypto Co-Processor support
+SRC_URI += "file://trustm.cfg"
+
 KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto|beaglebone-yocto-srk"

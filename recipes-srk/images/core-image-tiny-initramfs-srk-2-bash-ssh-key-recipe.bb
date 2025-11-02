@@ -53,6 +53,7 @@ IMAGE_INSTALL = "\
     gdbserver \
     rtc-pm \
     am335x-pm-firmware \
+    trustm-rsa-examples \
 "
 
 # Allow larger initramfs for additional tools, Python, debugging tools
