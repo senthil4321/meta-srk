@@ -1,0 +1,142 @@
+#!/bin/bash
+#
+# RTC Suspend Script - Suspend to RAM with RTC alarm wakeup
+# Usage: rtc-suspend [seconds]
+#
+
+set -e
+
+RTC_DEVICE="/dev/rtc0"
+SYS_POWER="/sys/power/state"
+ALARM_FILE="/sys/class/rtc/rtc0/wakealarm"
+
+# Default sleep time (seconds)
+SLEEP_TIME=${1:-60}
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}  RTC Suspend to RAM${NC}"
+echo -e "${BLUE}========================================${NC}"
+
+# Check if running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Error: This script must be run as root${NC}"
+    exit 1
+fi
+
+# Check if RTC device exists
+if [ ! -e "$RTC_DEVICE" ]; then
+    echo -e "${RED}Error: RTC device $RTC_DEVICE not found${NC}"
+    exit 1
+fi
+
+# Check if suspend is supported
+if [ ! -e "$SYS_POWER" ]; then
+    echo -e "${RED}Error: Suspend interface $SYS_POWER not found${NC}"
+    exit 1
+fi
+
+# Display current time
+echo -e "${GREEN}Current time:${NC}"
+date
+echo ""
+
+# Display RTC time
+echo -e "${GREEN}RTC time:${NC}"
+hwclock -r
+echo ""
+
+# Calculate wake time
+CURRENT_EPOCH=$(date +%s)
+WAKE_EPOCH=$((CURRENT_EPOCH + SLEEP_TIME))
+WAKE_TIME=$(date -d "@$WAKE_EPOCH" "+%Y-%m-%d %H:%M:%S")
+
+echo -e "${YELLOW}Suspend configuration:${NC}"
+echo -e "  Sleep duration: ${GREEN}${SLEEP_TIME}${NC} seconds"
+echo -e "  Wake time: ${GREEN}${WAKE_TIME}${NC}"
+echo ""
+
+# Clear any existing alarm
+echo -e "${BLUE}Clearing existing RTC alarm...${NC}"
+echo 0 > "$ALARM_FILE" 2>/dev/null || true
+
+# Set RTC alarm
+echo -e "${BLUE}Setting RTC alarm for ${SLEEP_TIME} seconds from now...${NC}"
+echo "+${SLEEP_TIME}" > "$ALARM_FILE"
+
+# Verify alarm was set
+if [ -e "$ALARM_FILE" ]; then
+    ALARM_VALUE=$(cat "$ALARM_FILE")
+    if [ -n "$ALARM_VALUE" ] && [ "$ALARM_VALUE" != "0" ]; then
+        ALARM_DATE=$(date -d "@$ALARM_VALUE" "+%Y-%m-%d %H:%M:%S")
+        echo -e "${GREEN}✓ RTC alarm set successfully${NC}"
+        echo -e "  Alarm time: ${ALARM_DATE}"
+    else
+        echo -e "${RED}Warning: Could not verify RTC alarm${NC}"
+    fi
+fi
+echo ""
+
+# Sync filesystems
+echo -e "${BLUE}Syncing filesystems...${NC}"
+sync
+sync
+sync
+echo -e "${GREEN}✓ Filesystems synced${NC}"
+echo ""
+
+# Display available power states
+echo -e "${YELLOW}Available power states:${NC}"
+cat "$SYS_POWER"
+echo ""
+
+# Countdown before suspend
+echo -e "${YELLOW}Suspending to RAM in:${NC}"
+for i in 3 2 1; do
+    echo -e "  ${GREEN}$i...${NC}"
+    sleep 1
+done
+
+echo -e "${BLUE}Entering suspend state...${NC}"
+echo ""
+
+# Log suspend time
+logger -t rtc-suspend "Suspending to RAM for ${SLEEP_TIME} seconds"
+
+# Suspend to RAM
+echo mem > "$SYS_POWER"
+
+# System will resume here after wakeup
+echo ""
+echo -e "${GREEN}========================================${NC}"
+echo -e "${GREEN}  System Resumed!${NC}"
+echo -e "${GREEN}========================================${NC}"
+echo -e "${GREEN}Resume time:${NC}"
+date
+echo ""
+
+# Clear the alarm
+echo 0 > "$ALARM_FILE" 2>/dev/null || true
+
+# Log resume
+logger -t rtc-suspend "System resumed from suspend"
+
+# Display wake reason
+if [ -e "/sys/power/pm_wakeup_irq" ]; then
+    WAKEUP_IRQ=$(cat /sys/power/pm_wakeup_irq 2>/dev/null || echo "unknown")
+    echo -e "${BLUE}Wakeup IRQ: ${WAKEUP_IRQ}${NC}"
+fi
+
+if [ -e "/sys/power/wakeup_count" ]; then
+    WAKEUP_COUNT=$(cat /sys/power/wakeup_count 2>/dev/null || echo "unknown")
+    echo -e "${BLUE}Wakeup count: ${WAKEUP_COUNT}${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}✓ Suspend/Resume cycle completed successfully${NC}"

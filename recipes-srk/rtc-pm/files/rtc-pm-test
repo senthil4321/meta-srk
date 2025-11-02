@@ -1,0 +1,167 @@
+#!/bin/bash
+#
+# RTC Power Management Test Script
+# Tests suspend/resume functionality
+#
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+echo -e "${CYAN}========================================${NC}"
+echo -e "${CYAN}  RTC Power Management Test${NC}"
+echo -e "${CYAN}========================================${NC}"
+echo ""
+
+# Check if running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Error: This script must be run as root${NC}"
+    exit 1
+fi
+
+# Test 1: Check RTC device
+echo -e "${BLUE}Test 1: Checking RTC device...${NC}"
+if [ -e /dev/rtc0 ]; then
+    echo -e "${GREEN}✓ RTC device found: /dev/rtc0${NC}"
+    ls -l /dev/rtc0
+else
+    echo -e "${RED}✗ RTC device not found${NC}"
+fi
+echo ""
+
+# Test 2: Check RTC time
+echo -e "${BLUE}Test 2: Reading RTC time...${NC}"
+if hwclock -r 2>/dev/null; then
+    echo -e "${GREEN}✓ RTC time read successfully${NC}"
+else
+    echo -e "${RED}✗ Failed to read RTC time${NC}"
+fi
+echo ""
+
+# Test 3: Check wakealarm interface
+echo -e "${BLUE}Test 3: Checking wakealarm interface...${NC}"
+ALARM_FILE="/sys/class/rtc/rtc0/wakealarm"
+if [ -e "$ALARM_FILE" ]; then
+    echo -e "${GREEN}✓ Wakealarm interface found${NC}"
+    echo -e "  Path: ${ALARM_FILE}"
+    echo -n "  Current value: "
+    cat "$ALARM_FILE" || echo "0"
+else
+    echo -e "${RED}✗ Wakealarm interface not found${NC}"
+fi
+echo ""
+
+# Test 4: Check suspend support
+echo -e "${BLUE}Test 4: Checking suspend support...${NC}"
+if [ -e /sys/power/state ]; then
+    echo -e "${GREEN}✓ Power state interface found${NC}"
+    echo -n "  Available states: "
+    cat /sys/power/state
+    
+    if grep -q "mem" /sys/power/state; then
+        echo -e "${GREEN}✓ Suspend to RAM (mem) is supported${NC}"
+    else
+        echo -e "${YELLOW}⚠ Suspend to RAM (mem) may not be supported${NC}"
+    fi
+else
+    echo -e "${RED}✗ Power state interface not found${NC}"
+fi
+echo ""
+
+# Test 5: Check wakeup sources
+echo -e "${BLUE}Test 5: Checking wakeup sources...${NC}"
+if [ -d /sys/class/wakeup ]; then
+    echo -e "${GREEN}✓ Wakeup sources found:${NC}"
+    for ws in /sys/class/wakeup/wakeup*/name; do
+        if [ -e "$ws" ]; then
+            NAME=$(cat "$ws")
+            WS_DIR=$(dirname "$ws")
+            ACTIVE=$(cat "$WS_DIR/active_count" 2>/dev/null || echo "N/A")
+            echo -e "  - ${NAME} (active_count: ${ACTIVE})"
+        fi
+    done
+else
+    echo -e "${YELLOW}⚠ Wakeup sources directory not found${NC}"
+fi
+echo ""
+
+# Test 6: Test alarm setting (without suspend)
+echo -e "${BLUE}Test 6: Testing alarm setting...${NC}"
+if [ -e "$ALARM_FILE" ]; then
+    echo -e "${YELLOW}  Clearing any existing alarm...${NC}"
+    echo 0 > "$ALARM_FILE" 2>/dev/null || true
+    
+    echo -e "${YELLOW}  Setting test alarm for 5 seconds from now...${NC}"
+    if echo "+5" > "$ALARM_FILE" 2>/dev/null; then
+        ALARM_VAL=$(cat "$ALARM_FILE")
+        if [ -n "$ALARM_VAL" ] && [ "$ALARM_VAL" != "0" ]; then
+            ALARM_DATE=$(date -d "@$ALARM_VAL" "+%Y-%m-%d %H:%M:%S" 2>/dev/null || echo "$ALARM_VAL")
+            echo -e "${GREEN}✓ Alarm set successfully${NC}"
+            echo -e "  Alarm time: ${ALARM_DATE}"
+            
+            # Clear the test alarm
+            echo 0 > "$ALARM_FILE" 2>/dev/null || true
+            echo -e "${GREEN}✓ Alarm cleared${NC}"
+        else
+            echo -e "${RED}✗ Failed to verify alarm${NC}"
+        fi
+    else
+        echo -e "${RED}✗ Failed to set alarm${NC}"
+    fi
+else
+    echo -e "${RED}✗ Alarm interface not available${NC}"
+fi
+echo ""
+
+# Test 7: Check RTC driver
+echo -e "${BLUE}Test 7: Checking RTC driver information...${NC}"
+if [ -e /sys/class/rtc/rtc0/name ]; then
+    RTC_NAME=$(cat /sys/class/rtc/rtc0/name)
+    echo -e "${GREEN}✓ RTC driver: ${RTC_NAME}${NC}"
+fi
+
+if [ -e /sys/class/rtc/rtc0/since_epoch ]; then
+    SINCE_EPOCH=$(cat /sys/class/rtc/rtc0/since_epoch)
+    echo -e "  Seconds since epoch: ${SINCE_EPOCH}"
+fi
+
+if [ -e /sys/class/rtc/rtc0/date ]; then
+    RTC_DATE=$(cat /sys/class/rtc/rtc0/date)
+    echo -e "  RTC date: ${RTC_DATE}"
+fi
+
+if [ -e /sys/class/rtc/rtc0/time ]; then
+    RTC_TIME=$(cat /sys/class/rtc/rtc0/time)
+    echo -e "  RTC time: ${RTC_TIME}"
+fi
+echo ""
+
+# Test 8: Check PM capabilities
+echo -e "${BLUE}Test 8: Checking power management capabilities...${NC}"
+if [ -e /sys/power/mem_sleep ]; then
+    echo -n "  Available mem_sleep modes: "
+    cat /sys/power/mem_sleep
+fi
+
+if [ -e /sys/power/disk ]; then
+    echo -n "  Available disk modes: "
+    cat /sys/power/disk
+fi
+echo ""
+
+# Summary
+echo -e "${CYAN}========================================${NC}"
+echo -e "${CYAN}  Test Summary${NC}"
+echo -e "${CYAN}========================================${NC}"
+echo -e "${GREEN}All basic tests completed!${NC}"
+echo ""
+echo -e "${YELLOW}To test suspend/resume:${NC}"
+echo -e "  ${BLUE}rtc-suspend 30${NC}  # Suspend for 30 seconds"
+echo ""
+echo -e "${YELLOW}To set an alarm:${NC}"
+echo -e "  ${BLUE}rtc-wakeup 60${NC}   # Set alarm for 60 seconds"
+echo ""

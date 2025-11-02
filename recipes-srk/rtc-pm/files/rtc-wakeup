@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# RTC Wakeup Utility - Set RTC alarm without suspending
+# Usage: rtc-wakeup [seconds] [command]
+#
+
+RTC_DEVICE="/dev/rtc0"
+ALARM_FILE="/sys/class/rtc/rtc0/wakealarm"
+
+# Default alarm time (seconds)
+ALARM_TIME=${1:-60}
+COMMAND=${2:-""}
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}========================================${NC}"
+echo -e "${BLUE}  RTC Alarm Configuration${NC}"
+echo -e "${BLUE}========================================${NC}"
+
+# Check if running as root
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Error: This script must be run as root${NC}"
+    exit 1
+fi
+
+# Check if RTC device exists
+if [ ! -e "$RTC_DEVICE" ]; then
+    echo -e "${RED}Error: RTC device $RTC_DEVICE not found${NC}"
+    exit 1
+fi
+
+# Display current status
+echo -e "${GREEN}Current time:${NC}"
+date
+echo ""
+
+echo -e "${GREEN}RTC time:${NC}"
+hwclock -r
+echo ""
+
+# Calculate alarm time
+CURRENT_EPOCH=$(date +%s)
+ALARM_EPOCH=$((CURRENT_EPOCH + ALARM_TIME))
+ALARM_DATE=$(date -d "@$ALARM_EPOCH" "+%Y-%m-%d %H:%M:%S")
+
+echo -e "${YELLOW}Alarm configuration:${NC}"
+echo -e "  Time from now: ${GREEN}${ALARM_TIME}${NC} seconds"
+echo -e "  Alarm time: ${GREEN}${ALARM_DATE}${NC}"
+echo ""
+
+# Clear existing alarm
+echo -e "${BLUE}Clearing existing alarm...${NC}"
+echo 0 > "$ALARM_FILE" 2>/dev/null || true
+
+# Set new alarm
+echo -e "${BLUE}Setting RTC alarm...${NC}"
+echo "+${ALARM_TIME}" > "$ALARM_FILE"
+
+# Verify alarm
+if [ -e "$ALARM_FILE" ]; then
+    ALARM_VALUE=$(cat "$ALARM_FILE")
+    if [ -n "$ALARM_VALUE" ] && [ "$ALARM_VALUE" != "0" ]; then
+        VERIFY_DATE=$(date -d "@$ALARM_VALUE" "+%Y-%m-%d %H:%M:%S")
+        echo -e "${GREEN}✓ RTC alarm set successfully${NC}"
+        echo -e "  Alarm will trigger at: ${GREEN}${VERIFY_DATE}${NC}"
+    else
+        echo -e "${RED}Error: Failed to set RTC alarm${NC}"
+        exit 1
+    fi
+fi
+echo ""
+
+# Execute command if provided
+if [ -n "$COMMAND" ]; then
+    echo -e "${BLUE}Waiting for alarm to trigger...${NC}"
+    echo -e "${YELLOW}Command to execute: ${COMMAND}${NC}"
+    echo ""
+    
+    # Wait for alarm
+    sleep "$ALARM_TIME"
+    
+    # Execute command
+    echo -e "${GREEN}Alarm triggered! Executing command...${NC}"
+    eval "$COMMAND"
+    
+    # Clear alarm
+    echo 0 > "$ALARM_FILE" 2>/dev/null || true
+else
+    echo -e "${YELLOW}Alarm is set. No command specified.${NC}"
+    echo -e "${BLUE}Use 'cat ${ALARM_FILE}' to check alarm status${NC}"
+    echo -e "${BLUE}Use 'echo 0 > ${ALARM_FILE}' to cancel alarm${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}✓ Done${NC}"

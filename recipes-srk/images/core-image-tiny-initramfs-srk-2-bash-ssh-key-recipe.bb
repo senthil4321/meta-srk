@@ -51,6 +51,7 @@ IMAGE_INSTALL = "\
     python3-smbus \
     python3-smbus2 \
     gdbserver \
+    rtc-pm \
 "
 
 # Allow larger initramfs for additional tools, Python, debugging tools
