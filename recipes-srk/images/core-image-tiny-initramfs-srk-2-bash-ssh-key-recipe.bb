@@ -52,6 +52,7 @@ IMAGE_INSTALL = "\
     python3-smbus2 \
     gdbserver \
     rtc-pm \
+    am335x-pm-firmware \
 "
 
 # Allow larger initramfs for additional tools, Python, debugging tools

@@ -15,6 +15,9 @@ SRC_URI += "file://leds.cfg"
 # Add kernel printk timestamps
 SRC_URI += "file://printk_time.cfg"
 
+# Add AM33xx PM support for suspend-to-RAM
+SRC_URI += "file://pm33xx.cfg"
+
 KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto|beaglebone-yocto-srk"
