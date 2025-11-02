@@ -47,6 +47,9 @@ IMAGE_INSTALL = "\
     ipsec-modules-loader \
     acl \
     acl-demo \
+    i2c-tools \
+    python3-smbus \
+    python3-smbus2 \
 "
 
 # Allow larger initramfs for additional tools and Python
