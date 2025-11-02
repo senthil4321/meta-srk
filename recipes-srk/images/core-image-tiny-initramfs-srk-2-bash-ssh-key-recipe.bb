@@ -50,11 +50,6 @@ IMAGE_INSTALL = "\
     i2c-tools \
     python3-smbus \
     python3-smbus2 \
-    make \
-    binutils \
-    file \
-    diffutils \
-    patch \
 "
 
 # Allow larger initramfs for additional tools, Python, and build tools
