@@ -1,0 +1,15 @@
+[Unit]
+Description=RTC Time Synchronization
+Documentation=man:hwclock(8)
+After=systemd-timesyncd.service time-sync.target
+Wants=time-sync.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/rtc-sync.sh
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

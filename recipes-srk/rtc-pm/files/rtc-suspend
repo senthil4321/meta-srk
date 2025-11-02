@@ -109,8 +109,39 @@ echo ""
 # Log suspend time
 logger -t rtc-suspend "Suspending to RAM for ${SLEEP_TIME} seconds"
 
-# Suspend to RAM
-echo mem > "$SYS_POWER"
+# Check if suspend is supported
+AVAILABLE_STATES=$(cat "$SYS_POWER")
+if ! echo "$AVAILABLE_STATES" | grep -q "mem"; then
+    echo -e "${RED}Error: 'mem' state not available${NC}"
+    echo -e "${YELLOW}Available states: ${AVAILABLE_STATES}${NC}"
+    echo -e "${YELLOW}Checking PM firmware status...${NC}"
+    
+    if [ -e /sys/kernel/debug/pm33xx/status ]; then
+        echo -e "${BLUE}PM33xx status:${NC}"
+        cat /sys/kernel/debug/pm33xx/status 2>/dev/null || echo "Cannot read status"
+    fi
+    
+    echo -e "${YELLOW}Note: BeagleBone Black requires pm33xx firmware for suspend${NC}"
+    echo -e "${YELLOW}Using s2idle (freeze) instead...${NC}"
+    
+    # Try s2idle/freeze as fallback
+    if echo "$AVAILABLE_STATES" | grep -q "freeze"; then
+        echo freeze > "$SYS_POWER"
+    else
+        echo -e "${RED}Error: No suitable suspend state available${NC}"
+        # Clear the alarm before exiting
+        echo 0 > "$ALARM_FILE" 2>/dev/null || true
+        exit 1
+    fi
+else
+    # Suspend to RAM
+    if ! echo mem > "$SYS_POWER" 2>&1; then
+        echo -e "${RED}Error: Failed to enter suspend state${NC}"
+        # Clear the alarm before exiting
+        echo 0 > "$ALARM_FILE" 2>/dev/null || true
+        exit 1
+    fi
+fi
 
 # System will resume here after wakeup
 echo ""
@@ -121,8 +152,10 @@ echo -e "${GREEN}Resume time:${NC}"
 date
 echo ""
 
-# Clear the alarm
-echo 0 > "$ALARM_FILE" 2>/dev/null || true
+# Clear the alarm (may fail if already triggered)
+if ! echo 0 > "$ALARM_FILE" 2>/dev/null; then
+    echo -e "${YELLOW}Note: Alarm already cleared (normal after wakeup)${NC}"
+fi
 
 # Log resume
 logger -t rtc-suspend "System resumed from suspend"

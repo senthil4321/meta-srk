@@ -26,12 +26,16 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             self.serve_led_status()
         elif self.path == '/api/ipsec':
             self.serve_ipsec_status()
+        elif self.path == '/api/rtc':
+            self.serve_rtc_status()
         else:
             self.send_error(404)
     
     def do_POST(self):
         if self.path.startswith('/api/led/'):
             self.control_led()
+        elif self.path.startswith('/api/rtc/'):
+            self.control_rtc()
         else:
             self.send_error(404)
     
@@ -208,6 +212,54 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         .led-off {
             background: linear-gradient(135deg, #ccc 0%, #999 100%);
             color: #333;
+        }
+        .rtc-button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .rtc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .rtc-button:active {
+            transform: translateY(0);
+        }
+        .rtc-status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: #f7f7f7;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .rtc-status-label {
+            font-weight: bold;
+            color: #666;
+        }
+        .rtc-status-value {
+            color: #333;
+            font-family: monospace;
+        }
+        .rtc-status-ok {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .rtc-status-warn {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        .rtc-status-error {
+            color: #f44336;
+            font-weight: bold;
         }
         .led-unavailable {
             background: #f0f0f0;
@@ -389,6 +441,43 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             </div>
         </div>
         
+        <div class="metric-card" id="rtc-card">
+            <div class="metric-title">⏰ RTC Power Management</div>
+            <div id="rtc-status">
+                <div class="metric-label">Loading...</div>
+            </div>
+            <div class="rtc-controls" style="margin-top: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 10px;">
+                    <button onclick="syncRTC()" class="rtc-button">
+                        🔄 Sync RTC
+                    </button>
+                    <button onclick="testRTC()" class="rtc-button">
+                        🧪 Run Tests
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <input type="number" id="alarm-duration" value="60" min="10" max="3600" 
+                           placeholder="Duration (seconds)" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button onclick="setAlarm()" class="rtc-button">
+                        ⏰ Set Alarm
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                    <input type="number" id="suspend-duration" value="30" min="10" max="600" 
+                           placeholder="Suspend duration (sec)" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button onclick="suspendSystem()" class="rtc-button" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        💤 Suspend
+                    </button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button onclick="clearAlarm()" class="rtc-button" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        🗑️ Clear Alarm
+                    </button>
+                </div>
+            </div>
+            <div id="rtc-output" style="margin-top: 15px; padding: 10px; background: #f7f7f7; border-radius: 5px; display: none; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;"></div>
+        </div>
+        
         <div class="metric-card">
             <div class="metric-title">🌐 Network Interfaces</div>
             <table class="network-table" id="network-table">
@@ -554,6 +643,188 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             }
         }
         
+        async function updateRTCStatus() {
+            try {
+                const response = await fetch('/api/rtc');
+                const data = await response.json();
+                
+                const rtcDiv = document.getElementById('rtc-status');
+                
+                if (!data.available) {
+                    rtcDiv.innerHTML = '<div class="metric-label">RTC not available</div>';
+                    return;
+                }
+                
+                const suspendSupport = [];
+                if (data.suspend_support.mem) suspendSupport.push('Suspend-to-RAM');
+                if (data.suspend_support.freeze) suspendSupport.push('S2Idle');
+                if (data.suspend_support.standby) suspendSupport.push('Standby');
+                
+                rtcDiv.innerHTML = `
+                    <div class="rtc-status-item">
+                        <span class="rtc-status-label">System Time:</span>
+                        <span class="rtc-status-value">${data.system_time}</span>
+                    </div>
+                    <div class="rtc-status-item">
+                        <span class="rtc-status-label">RTC Time:</span>
+                        <span class="rtc-status-value">${data.rtc_time || 'N/A'}</span>
+                    </div>
+                    <div class="rtc-status-item">
+                        <span class="rtc-status-label">Alarm Status:</span>
+                        <span class="rtc-status-value ${data.alarm_set ? 'rtc-status-warn' : 'rtc-status-ok'}">
+                            ${data.alarm_set ? 'SET (' + data.alarm_time + ')' : 'Not Set'}
+                        </span>
+                    </div>
+                    <div class="rtc-status-item">
+                        <span class="rtc-status-label">Suspend Support:</span>
+                        <span class="rtc-status-value ${suspendSupport.length > 0 ? 'rtc-status-ok' : 'rtc-status-error'}">
+                            ${suspendSupport.length > 0 ? suspendSupport.join(', ') : 'None'}
+                        </span>
+                    </div>
+                    <div class="rtc-status-item">
+                        <span class="rtc-status-label">PM Firmware:</span>
+                        <span class="rtc-status-value ${data.pm_firmware ? 'rtc-status-ok' : 'rtc-status-warn'}">
+                            ${data.pm_firmware ? 'Ready' : 'Not Loaded'}
+                        </span>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error fetching RTC status:', error);
+                document.getElementById('rtc-status').innerHTML = 
+                    '<div class="metric-label">Error loading RTC status</div>';
+            }
+        }
+        
+        async function syncRTC() {
+            const outputDiv = document.getElementById('rtc-output');
+            outputDiv.style.display = 'block';
+            outputDiv.textContent = 'Syncing RTC...';
+            
+            try {
+                const response = await fetch('/api/rtc/sync', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    outputDiv.textContent = '[OK] ' + data.message + '\\n' + (data.output || '');
+                    outputDiv.style.color = '#4caf50';
+                    setTimeout(() => updateRTCStatus(), 1000);
+                } else {
+                    outputDiv.textContent = '[ERROR] ' + data.message + '\\n' + (data.error || '');
+                    outputDiv.style.color = '#f44336';
+                }
+            } catch (error) {
+                outputDiv.textContent = '[ERROR] Error: ' + error.message;
+                outputDiv.style.color = '#f44336';
+            }
+        }
+        
+        async function testRTC() {
+            const outputDiv = document.getElementById('rtc-output');
+            outputDiv.style.display = 'block';
+            outputDiv.textContent = 'Running RTC tests...\\nThis may take up to 30 seconds...';
+            
+            try {
+                const response = await fetch('/api/rtc/test', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                outputDiv.textContent = data.output || data.error || 'Test completed';
+                outputDiv.style.color = data.status === 'success' ? '#333' : '#f44336';
+            } catch (error) {
+                outputDiv.textContent = '[ERROR] Error: ' + error.message;
+                outputDiv.style.color = '#f44336';
+            }
+        }
+        
+        async function setAlarm() {
+            const duration = document.getElementById('alarm-duration').value;
+            const outputDiv = document.getElementById('rtc-output');
+            outputDiv.style.display = 'block';
+            outputDiv.textContent = 'Setting alarm for ' + duration + ' seconds...';
+            
+            try {
+                const response = await fetch('/api/rtc/alarm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ duration: parseInt(duration) })
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    outputDiv.textContent = '[OK] ' + data.message + '\\n' + (data.output || '');
+                    outputDiv.style.color = '#4caf50';
+                    setTimeout(() => updateRTCStatus(), 1000);
+                } else {
+                    outputDiv.textContent = '[ERROR] ' + data.message + '\\n' + (data.error || '');
+                    outputDiv.style.color = '#f44336';
+                }
+            } catch (error) {
+                outputDiv.textContent = '[ERROR] Error: ' + error.message;
+                outputDiv.style.color = '#f44336';
+            }
+        }
+        
+        async function suspendSystem() {
+            const duration = document.getElementById('suspend-duration').value;
+            
+            if (!confirm('System will suspend for ' + duration + ' seconds. Continue?')) {
+                return;
+            }
+            
+            const outputDiv = document.getElementById('rtc-output');
+            outputDiv.style.display = 'block';
+            outputDiv.textContent = 'Suspending system for ' + duration + ' seconds...\\nThe page will stop updating until system resumes.';
+            outputDiv.style.color = '#ff9800';
+            
+            try {
+                const response = await fetch('/api/rtc/suspend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ duration: parseInt(duration) })
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    outputDiv.textContent = '[SUSPEND] ' + data.message + '\\n\\nWaiting for system to resume...';
+                    outputDiv.style.color = '#ff9800';
+                } else {
+                    outputDiv.textContent = '[ERROR] ' + data.message;
+                    outputDiv.style.color = '#f44336';
+                }
+            } catch (error) {
+                outputDiv.textContent = '[ERROR] Error: ' + error.message;
+                outputDiv.style.color = '#f44336';
+            }
+        }
+        
+        async function clearAlarm() {
+            const outputDiv = document.getElementById('rtc-output');
+            outputDiv.style.display = 'block';
+            outputDiv.textContent = 'Clearing RTC alarm...';
+            
+            try {
+                const response = await fetch('/api/rtc/clear', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    outputDiv.textContent = '[OK] ' + data.message;
+                    outputDiv.style.color = '#4caf50';
+                    setTimeout(() => updateRTCStatus(), 1000);
+                } else {
+                    outputDiv.textContent = '[ERROR] ' + data.message;
+                    outputDiv.style.color = '#f44336';
+                }
+            } catch (error) {
+                outputDiv.textContent = '[ERROR] Error: ' + error.message;
+                outputDiv.style.color = '#f44336';
+            }
+        }
+        
         async function updateSystemInfo() {
             try {
                 const response = await fetch('/api/system-info');
@@ -707,6 +978,7 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         updateMetrics();
         updateLEDStatus();
         updateIPsecStatus();
+        updateRTCStatus();
         
         // Auto-refresh every 2 seconds
         setInterval(updateMetrics, 2000);
@@ -714,6 +986,8 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         setInterval(updateLEDStatus, 5000);
         // Update IPsec status every 5 seconds
         setInterval(updateIPsecStatus, 5000);
+        // Update RTC status every 5 seconds
+        setInterval(updateRTCStatus, 5000);
     </script>
 </body>
 </html>
@@ -1453,6 +1727,214 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             result['error'] = 'Command timeout'
         except FileNotFoundError:
             result['error'] = 'swanctl not found'
+        except Exception as e:
+            result['error'] = str(e)
+        
+        return result
+    
+    def serve_rtc_status(self):
+        """Serve RTC status and power management info"""
+        rtc_status = self.get_rtc_status()
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Cache-Control', 'no-cache')
+        self.end_headers()
+        self.wfile.write(json.dumps(rtc_status).encode())
+    
+    def control_rtc(self):
+        """Control RTC operations via POST request"""
+        import subprocess
+        
+        try:
+            # Parse URL: /api/rtc/<action>
+            parts = self.path.split('/')
+            if len(parts) < 4:
+                self.send_error(400, "Invalid RTC control path")
+                return
+            
+            action = parts[3]
+            
+            # Read POST data for parameters
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = {}
+            if content_length > 0:
+                import json as json_module
+                post_body = self.rfile.read(content_length)
+                post_data = json_module.loads(post_body.decode('utf-8'))
+            
+            result = {'status': 'error', 'message': 'Unknown action'}
+            
+            if action == 'sync':
+                # Sync system time to RTC
+                proc = subprocess.run(
+                    ['/usr/sbin/rtc-sync.sh'],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if proc.returncode == 0:
+                    result = {
+                        'status': 'success',
+                        'message': 'RTC synchronized with system time',
+                        'output': proc.stdout
+                    }
+                else:
+                    result = {
+                        'status': 'error',
+                        'message': 'Failed to sync RTC',
+                        'error': proc.stderr
+                    }
+            
+            elif action == 'test':
+                # Run RTC power management tests
+                proc = subprocess.run(
+                    ['/usr/sbin/rtc-pm-test'],
+                    capture_output=True,
+                    text=True,
+                    timeout=30
+                )
+                result = {
+                    'status': 'success' if proc.returncode == 0 else 'error',
+                    'message': 'RTC tests completed',
+                    'output': proc.stdout,
+                    'error': proc.stderr if proc.returncode != 0 else ''
+                }
+            
+            elif action == 'alarm':
+                # Set RTC alarm
+                duration = post_data.get('duration', 60)
+                proc = subprocess.run(
+                    ['/usr/sbin/rtc-wakeup', str(duration)],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if proc.returncode == 0:
+                    result = {
+                        'status': 'success',
+                        'message': f'RTC alarm set for {duration} seconds',
+                        'output': proc.stdout
+                    }
+                else:
+                    result = {
+                        'status': 'error',
+                        'message': 'Failed to set RTC alarm',
+                        'error': proc.stderr
+                    }
+            
+            elif action == 'suspend':
+                # Suspend to RAM with RTC wakeup
+                duration = post_data.get('duration', 30)
+                
+                # Start suspend in background
+                subprocess.Popen(
+                    ['/usr/sbin/rtc-suspend', str(duration)],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE
+                )
+                
+                result = {
+                    'status': 'success',
+                    'message': f'System will suspend for {duration} seconds',
+                    'duration': duration
+                }
+            
+            elif action == 'clear':
+                # Clear RTC alarm
+                try:
+                    with open('/sys/class/rtc/rtc0/wakealarm', 'w') as f:
+                        f.write('0')
+                    result = {
+                        'status': 'success',
+                        'message': 'RTC alarm cleared'
+                    }
+                except Exception as e:
+                    result = {
+                        'status': 'error',
+                        'message': f'Failed to clear alarm: {str(e)}'
+                    }
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(result).encode())
+        
+        except Exception as e:
+            self.send_error(500, f"Error controlling RTC: {str(e)}")
+    
+    def get_rtc_status(self):
+        """Get RTC status and power management capabilities"""
+        import subprocess
+        
+        result = {
+            'available': False,
+            'device': '/dev/rtc0',
+            'system_time': '',
+            'rtc_time': '',
+            'alarm_set': False,
+            'alarm_time': '',
+            'suspend_support': {
+                'mem': False,
+                'freeze': False,
+                'standby': False
+            },
+            'pm_firmware': False
+        }
+        
+        try:
+            # Check if RTC device exists
+            if not os.path.exists('/dev/rtc0'):
+                return result
+            
+            result['available'] = True
+            
+            # Get system time
+            result['system_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Get RTC time
+            try:
+                proc = subprocess.run(
+                    ['hwclock', '-r'],
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
+                if proc.returncode == 0:
+                    result['rtc_time'] = proc.stdout.strip()
+            except:
+                pass
+            
+            # Check for alarm
+            try:
+                with open('/sys/class/rtc/rtc0/wakealarm', 'r') as f:
+                    alarm = f.read().strip()
+                    if alarm and alarm != '0':
+                        result['alarm_set'] = True
+                        result['alarm_time'] = alarm
+            except:
+                pass
+            
+            # Check suspend support
+            try:
+                with open('/sys/power/state', 'r') as f:
+                    states = f.read().strip().split()
+                    result['suspend_support']['mem'] = 'mem' in states
+                    result['suspend_support']['freeze'] = 'freeze' in states
+                    result['suspend_support']['standby'] = 'standby' in states
+            except:
+                pass
+            
+            # Check PM firmware status
+            pm_status_path = '/sys/kernel/debug/pm33xx/status'
+            if os.path.exists(pm_status_path):
+                try:
+                    with open(pm_status_path, 'r') as f:
+                        status = f.read()
+                        result['pm_firmware'] = 'ready' in status.lower()
+                except:
+                    pass
+        
         except Exception as e:
             result['error'] = str(e)
         

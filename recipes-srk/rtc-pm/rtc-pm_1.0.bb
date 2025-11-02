@@ -8,6 +8,8 @@ SRC_URI = "\
     file://rtc-wakeup \
     file://rtc-pm-test \
     file://rtc-pm.service \
+    file://rtc-sync.sh \
+    file://rtc-sync.service \
 "
 
 S = "${WORKDIR}/sources"
@@ -21,19 +23,24 @@ do_install() {
     install -m 0755 ${S}/rtc-suspend ${D}${sbindir}/
     install -m 0755 ${S}/rtc-wakeup ${D}${sbindir}/
     install -m 0755 ${S}/rtc-pm-test ${D}${sbindir}/
+    install -m 0755 ${S}/rtc-sync.sh ${D}${sbindir}/
     
-    # Install systemd service
+    # Install systemd services
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${S}/rtc-pm.service ${D}${systemd_system_unitdir}/
+    install -m 0644 ${S}/rtc-sync.service ${D}${systemd_system_unitdir}/
 }
 
 FILES:${PN} += "\
     ${sbindir}/rtc-suspend \
     ${sbindir}/rtc-wakeup \
     ${sbindir}/rtc-pm-test \
+    ${sbindir}/rtc-sync.sh \
     ${systemd_system_unitdir}/rtc-pm.service \
+    ${systemd_system_unitdir}/rtc-sync.service \
 "
 
 inherit systemd
-SYSTEMD_SERVICE:${PN} = "rtc-pm.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_SERVICE:${PN} = "rtc-pm.service rtc-sync.service"
+SYSTEMD_AUTO_ENABLE:${PN}:rtc-pm.service = "disable"
+SYSTEMD_AUTO_ENABLE:${PN}:rtc-sync.service = "enable"
