@@ -45,6 +45,8 @@ IMAGE_INSTALL = "\
     strongswan \
     ipsec-config \
     ipsec-modules-loader \
+    acl \
+    acl-demo \
 "
 
 # Allow larger initramfs for additional tools and Python
