@@ -40,7 +40,7 @@ do_install() {
     install -m 0644 ${WORKDIR}/sources-unpack/pru-blink.c ${D}${docdir}/${PN}/
 }
 
-INSANE_SKIP:${PN} += "installed-vs-shipped"
+INSANE_SKIP:${PN} += "installed-vs-shipped arch"
 
 FILES:${PN} = "${bindir}/pru-test ${bindir}/pru-load ${bindir}/pru-firmware-gen ${nonarch_base_libdir}/firmware/am335x-pru*-fw"
 FILES:${PN}-doc = "${docdir}/${PN}"
