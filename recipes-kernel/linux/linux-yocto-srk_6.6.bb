@@ -15,18 +15,21 @@ SRC_URI += "file://leds.cfg"
 # Add kernel printk timestamps
 SRC_URI += "file://printk_time.cfg"
 
-# Add AM33xx PM support for suspend-to-RAM
-SRC_URI += "file://pm33xx.cfg"
+# Add AM33xx PM support for suspend-to-RAM - DISABLED
+# SRC_URI += "file://pm33xx.cfg"
 
 # Add Trust M Crypto Co-Processor support
 SRC_URI += "file://trustm.cfg"
+
+# Add PRU (Programmable Real-time Unit) support
+SRC_URI += "file://pru.cfg"
 
 KCONFIG_MODE = "alldefconfig"
 
 COMPATIBLE_MACHINE = "beaglebone-yocto|beaglebone-yocto-srk"
 
-# Depend on PM firmware for building it into kernel
-DEPENDS += "am335x-pm-firmware"
+# Depend on PM firmware for building it into kernel - DISABLED
+# DEPENDS += "am335x-pm-firmware"
 
 # Copy PM firmware to kernel source for CONFIG_EXTRA_FIRMWARE
 do_configure:prepend() {
