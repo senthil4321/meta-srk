@@ -54,10 +54,14 @@ IMAGE_INSTALL = "\
     rtc-pm \
     am335x-pm-firmware \
     trustm-rsa-examples \
+    pru-blink \
+    python3-modules \
+    python3-pip \
+    elfutils \
 "
 
-# Allow larger initramfs for additional tools, Python, debugging tools
-INITRAMFS_MAXSIZE = "786432"
+# Allow larger initramfs for additional tools, Python, debugging tools, and PRU development
+INITRAMFS_MAXSIZE = "917504"
 
 
 IMAGE_FEATURES = ""

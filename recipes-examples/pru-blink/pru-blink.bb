@@ -7,6 +7,7 @@ SRC_URI = " \
     file://pru-blink.c \
     file://pru-test.sh \
     file://pru-load.sh \
+    file://pru-compile \
     file://generate-pru-firmware.py \
 "
 
@@ -26,6 +27,7 @@ do_install() {
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/sources-unpack/pru-test.sh ${D}${bindir}/pru-test
     install -m 0755 ${WORKDIR}/sources-unpack/pru-load.sh ${D}${bindir}/pru-load
+    install -m 0755 ${WORKDIR}/sources-unpack/pru-compile ${D}${bindir}/pru-compile
     
     # Install firmware generator
     install -m 0755 ${WORKDIR}/sources-unpack/generate-pru-firmware.py ${D}${bindir}/pru-firmware-gen
@@ -42,7 +44,7 @@ do_install() {
 
 INSANE_SKIP:${PN} += "installed-vs-shipped arch"
 
-FILES:${PN} = "${bindir}/pru-test ${bindir}/pru-load ${bindir}/pru-firmware-gen ${nonarch_base_libdir}/firmware/am335x-pru*-fw"
+FILES:${PN} = "${bindir}/pru-test ${bindir}/pru-load ${bindir}/pru-compile ${bindir}/pru-firmware-gen ${nonarch_base_libdir}/firmware/am335x-pru*-fw"
 FILES:${PN}-doc = "${docdir}/${PN}"
 
 RDEPENDS:${PN} = "bash python3-core"

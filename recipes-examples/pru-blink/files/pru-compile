@@ -1,0 +1,121 @@
+#!/bin/bash
+# PRU Compilation Helper Script
+# Compiles PRU programs using Python-based ELF generator
+
+set -e
+
+SCRIPT_NAME=$(basename "$0")
+
+show_help() {
+    cat << EOF
+$SCRIPT_NAME - PRU Firmware Compilation Helper
+
+Usage: $SCRIPT_NAME [OPTIONS] <source.py>
+
+Description:
+  Compiles PRU programs written in Python (using the PRU instruction encoder)
+  into ELF firmware files that can be loaded by the remoteproc driver.
+
+Options:
+  -o, --output FILE    Output firmware filename (default: pru-fw)
+  -p, --pru NUM        PRU core number (0 or 1, default: 0)
+  -h, --help           Show this help message
+
+Examples:
+  $SCRIPT_NAME my-pru-program.py
+  $SCRIPT_NAME -o my-firmware -p 0 blink.py
+
+Environment:
+  PRU firmware files should be placed in /lib/firmware/
+  Use 'pru-load' to load and start PRU cores
+
+See also:
+  pru-load      - Load and start PRU cores
+  pru-test      - Test PRU core detection
+  pru-firmware-gen - Generate example firmware
+
+EOF
+}
+
+# Parse arguments
+OUTPUT_FILE="pru-fw"
+PRU_NUM=0
+SOURCE_FILE=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -o|--output)
+            OUTPUT_FILE="$2"
+            shift 2
+            ;;
+        -p|--pru)
+            PRU_NUM="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+            echo "Error: Unknown option: $1"
+            show_help
+            exit 1
+            ;;
+        *)
+            SOURCE_FILE="$1"
+            shift
+            ;;
+    esac
+done
+
+# Validate inputs
+if [ -z "$SOURCE_FILE" ]; then
+    echo "Error: No source file specified"
+    show_help
+    exit 1
+fi
+
+if [ ! -f "$SOURCE_FILE" ]; then
+    echo "Error: Source file not found: $SOURCE_FILE"
+    exit 1
+fi
+
+if ! [[ "$PRU_NUM" =~ ^[0-1]$ ]]; then
+    echo "Error: PRU number must be 0 or 1"
+    exit 1
+fi
+
+# Compile the PRU program
+echo "=== PRU Firmware Compiler ==="
+echo "Source:  $SOURCE_FILE"
+echo "Output:  $OUTPUT_FILE"
+echo "PRU:     $PRU_NUM"
+echo ""
+
+# For now, we use the Python-based firmware generator
+# In the future, this could be extended to support other formats
+if ! python3 "$SOURCE_FILE" > "$OUTPUT_FILE"; then
+    echo "Error: Compilation failed"
+    exit 1
+fi
+
+# Check if output file was created
+if [ ! -f "$OUTPUT_FILE" ]; then
+    echo "Error: Output file was not created"
+    exit 1
+fi
+
+# Verify it's an ELF file
+if ! file "$OUTPUT_FILE" | grep -q "ELF"; then
+    echo "Warning: Output file may not be a valid ELF file"
+fi
+
+FILE_SIZE=$(stat -c%s "$OUTPUT_FILE")
+echo ""
+echo "✓ Compilation successful"
+echo "  Output file: $OUTPUT_FILE ($FILE_SIZE bytes)"
+echo ""
+echo "To install and load this firmware:"
+echo "  sudo cp $OUTPUT_FILE /lib/firmware/am335x-pru${PRU_NUM}-fw"
+echo "  pru-load"
+echo ""
