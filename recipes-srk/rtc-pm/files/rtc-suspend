@@ -1,7 +1,8 @@
 #!/bin/bash
 #
 # RTC Suspend Script - Suspend to RAM with RTC alarm wakeup
-# Usage: rtc-suspend [seconds]
+# Usage: rtc-suspend [seconds] [mode]
+#   mode: freeze (S2Idle), standby, mem (Suspend-to-RAM)
 #
 
 set -e
@@ -12,6 +13,9 @@ ALARM_FILE="/sys/class/rtc/rtc0/wakealarm"
 
 # Default sleep time (seconds)
 SLEEP_TIME=${1:-60}
+
+# Power mode (freeze, standby, mem)
+POWER_MODE=${2:-mem}
 
 # Color output
 RED='\033[0;31m'
@@ -58,6 +62,7 @@ WAKE_EPOCH=$((CURRENT_EPOCH + SLEEP_TIME))
 WAKE_TIME=$(date -d "@$WAKE_EPOCH" "+%Y-%m-%d %H:%M:%S")
 
 echo -e "${YELLOW}Suspend configuration:${NC}"
+echo -e "  Power mode: ${GREEN}${POWER_MODE}${NC}"
 echo -e "  Sleep duration: ${GREEN}${SLEEP_TIME}${NC} seconds"
 echo -e "  Wake time: ${GREEN}${WAKE_TIME}${NC}"
 echo ""
@@ -107,40 +112,26 @@ echo -e "${BLUE}Entering suspend state...${NC}"
 echo ""
 
 # Log suspend time
-logger -t rtc-suspend "Suspending to RAM for ${SLEEP_TIME} seconds"
+logger -t rtc-suspend "Suspending to ${POWER_MODE} for ${SLEEP_TIME} seconds"
 
-# Check if suspend is supported
+# Validate power mode
 AVAILABLE_STATES=$(cat "$SYS_POWER")
-if ! echo "$AVAILABLE_STATES" | grep -q "mem"; then
-    echo -e "${RED}Error: 'mem' state not available${NC}"
+if ! echo "$AVAILABLE_STATES" | grep -qw "$POWER_MODE"; then
+    echo -e "${RED}Error: Power mode '${POWER_MODE}' not available${NC}"
     echo -e "${YELLOW}Available states: ${AVAILABLE_STATES}${NC}"
-    echo -e "${YELLOW}Checking PM firmware status...${NC}"
     
-    if [ -e /sys/kernel/debug/pm33xx/status ]; then
-        echo -e "${BLUE}PM33xx status:${NC}"
-        cat /sys/kernel/debug/pm33xx/status 2>/dev/null || echo "Cannot read status"
-    fi
-    
-    echo -e "${YELLOW}Note: BeagleBone Black requires pm33xx firmware for suspend${NC}"
-    echo -e "${YELLOW}Using s2idle (freeze) instead...${NC}"
-    
-    # Try s2idle/freeze as fallback
-    if echo "$AVAILABLE_STATES" | grep -q "freeze"; then
-        echo freeze > "$SYS_POWER"
-    else
-        echo -e "${RED}Error: No suitable suspend state available${NC}"
-        # Clear the alarm before exiting
-        echo 0 > "$ALARM_FILE" 2>/dev/null || true
-        exit 1
-    fi
-else
-    # Suspend to RAM
-    if ! echo mem > "$SYS_POWER" 2>&1; then
-        echo -e "${RED}Error: Failed to enter suspend state${NC}"
-        # Clear the alarm before exiting
-        echo 0 > "$ALARM_FILE" 2>/dev/null || true
-        exit 1
-    fi
+    # Clear the alarm before exiting
+    echo 0 > "$ALARM_FILE" 2>/dev/null || true
+    exit 1
+fi
+
+# Enter requested power state
+echo -e "${BLUE}Entering ${POWER_MODE} state...${NC}"
+if ! echo "$POWER_MODE" > "$SYS_POWER" 2>&1; then
+    echo -e "${RED}Error: Failed to enter ${POWER_MODE} state${NC}"
+    # Clear the alarm before exiting
+    echo 0 > "$ALARM_FILE" 2>/dev/null || true
+    exit 1
 fi
 
 # System will resume here after wakeup

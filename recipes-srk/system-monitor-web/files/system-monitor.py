@@ -526,7 +526,12 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                         ⏰ Set Alarm
                     </button>
                 </div>
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                    <select id="suspend-mode" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; background: white;">
+                        <option value="freeze">Freeze (S2Idle - Lightest sleep, fastest resume)</option>
+                        <option value="standby">Standby (Medium power savings)</option>
+                        <option value="mem" selected>Suspend-to-RAM (Deepest sleep, max power savings)</option>
+                    </select>
                     <input type="number" id="suspend-duration" value="30" min="10" max="600" 
                            placeholder="Suspend duration (sec)" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
                     <button onclick="suspendSystem()" class="rtc-button" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
@@ -769,6 +774,9 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                 if (data.suspend_support.freeze) suspendSupport.push('S2Idle');
                 if (data.suspend_support.standby) suspendSupport.push('Standby');
                 
+                // Update suspend mode dropdown
+                updateSuspendModeDropdown(data.suspend_support);
+                
                 rtcDiv.innerHTML = `
                     <div class="rtc-status-item">
                         <span class="rtc-status-label">System Time:</span>
@@ -801,6 +809,47 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
                 console.error('Error fetching RTC status:', error);
                 document.getElementById('rtc-status').innerHTML = 
                     '<div class="metric-label">Error loading RTC status</div>';
+            }
+        }
+        
+        function updateSuspendModeDropdown(suspendSupport) {
+            const dropdown = document.getElementById('suspend-mode');
+            if (!dropdown) return;
+            
+            // Clear existing options
+            dropdown.innerHTML = '';
+            
+            // Add options based on available modes
+            const modeDescriptions = {
+                'freeze': 'Freeze (S2Idle - Lightest sleep, fastest resume)',
+                'standby': 'Standby (Medium power savings)',
+                'mem': 'Suspend-to-RAM (Deepest sleep, max power savings)'
+            };
+            
+            const modeOrder = ['freeze', 'standby', 'mem'];
+            let hasOptions = false;
+            
+            for (const mode of modeOrder) {
+                if (suspendSupport[mode]) {
+                    const option = document.createElement('option');
+                    option.value = mode;
+                    option.textContent = modeDescriptions[mode];
+                    // Select 'mem' by default if available, otherwise the first option
+                    if (mode === 'mem' || !hasOptions) {
+                        option.selected = true;
+                    }
+                    dropdown.appendChild(option);
+                    hasOptions = true;
+                }
+            }
+            
+            // Disable suspend button if no modes available
+            const suspendButton = dropdown.parentElement.querySelector('button[onclick="suspendSystem()"]');
+            if (suspendButton) {
+                suspendButton.disabled = !hasOptions;
+                if (!hasOptions) {
+                    dropdown.innerHTML = '<option>No suspend modes available</option>';
+                }
             }
         }
         
@@ -878,21 +927,27 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
         
         async function suspendSystem() {
             const duration = document.getElementById('suspend-duration').value;
+            const mode = document.getElementById('suspend-mode').value;
+            const modeNames = {
+                'freeze': 'Freeze (S2Idle)',
+                'standby': 'Standby',
+                'mem': 'Suspend-to-RAM'
+            };
             
-            if (!confirm('System will suspend for ' + duration + ' seconds. Continue?')) {
+            if (!confirm('System will enter ' + modeNames[mode] + ' for ' + duration + ' seconds. Continue?')) {
                 return;
             }
             
             const outputDiv = document.getElementById('rtc-output');
             outputDiv.style.display = 'block';
-            outputDiv.textContent = 'Suspending system for ' + duration + ' seconds...\\nThe page will stop updating until system resumes.';
+            outputDiv.textContent = 'Suspending system (' + modeNames[mode] + ') for ' + duration + ' seconds...\\nThe page will stop updating until system resumes.';
             outputDiv.style.color = '#ff9800';
             
             try {
                 const response = await fetch('/api/rtc/suspend', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ duration: parseInt(duration) })
+                    body: JSON.stringify({ duration: parseInt(duration), mode: mode })
                 });
                 const data = await response.json();
                 
@@ -1935,19 +1990,35 @@ class SystemMonitorHandler(http.server.BaseHTTPRequestHandler):
             elif action == 'suspend':
                 # Suspend to RAM with RTC wakeup
                 duration = post_data.get('duration', 30)
+                mode = post_data.get('mode', 'mem')
                 
-                # Start suspend in background
-                subprocess.Popen(
-                    ['/usr/sbin/rtc-suspend', str(duration)],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
-                )
-                
-                result = {
-                    'status': 'success',
-                    'message': f'System will suspend for {duration} seconds',
-                    'duration': duration
-                }
+                # Validate mode
+                valid_modes = ['freeze', 'standby', 'mem']
+                if mode not in valid_modes:
+                    result = {
+                        'status': 'error',
+                        'message': f'Invalid power mode: {mode}. Must be one of: {", ".join(valid_modes)}'
+                    }
+                else:
+                    # Start suspend in background
+                    subprocess.Popen(
+                        ['/usr/sbin/rtc-suspend', str(duration), mode],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE
+                    )
+                    
+                    mode_names = {
+                        'freeze': 'Freeze (S2Idle)',
+                        'standby': 'Standby',
+                        'mem': 'Suspend-to-RAM'
+                    }
+                    
+                    result = {
+                        'status': 'success',
+                        'message': f'System will enter {mode_names.get(mode, mode)} for {duration} seconds',
+                        'duration': duration,
+                        'mode': mode
+                    }
             
             elif action == 'clear':
                 # Clear RTC alarm
