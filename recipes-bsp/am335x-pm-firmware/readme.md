@@ -9,3 +9,6 @@ https://git.ti.com/cgit/processor-firmware/ti-amx3-cm3-pm-firmware/?h=ti-v4.1.y-
 
 [    3.892401] remoteproc remoteproc0: remote processor wkup_m3 is now up
 [    3.892430] wkup_m3_ipc 44e11324.wkup_m3_ipc: CM3 Firmware Version = 0x192
+
+[  187.957190] pm33xx pm33xx: PM: Successfully put all powerdomains to target state
+[  187.957190] PM: Wakeup source UART
